@@ -172,7 +172,7 @@ dialog form{display:grid;gap:12px}
     <div class="grid2">
       <div class="f full"><label for="cfgUrl">Dirección de la planilla</label><input id="cfgUrl" type="url" placeholder="https://script.google.com/macros/s/…/exec"><small>Es la dirección que termina en /exec.</small></div>
       <div class="f"><label for="cfgClave">Clave del panel</label><input id="cfgClave" type="text" autocomplete="off" placeholder="Está en la hoja Config"></div>
-      <div class="f"><label for="cfgLink">Dirección de la invitación</label><input id="cfgLink" type="url" placeholder="https://tusitio.netlify.app/jardin.html"><small>Con esta se arma el link de cada invitado.</small></div>
+      <div class="f"><label for="cfgLink">Dirección de la invitación</label><input id="cfgLink" type="url" placeholder="https://evocard.com.ar/jardin.html"><small>Con esta se arma el link de cada invitado.</small></div>
     </div>
     <div class="row-btns">
       <button class="btn main" type="button" id="btnConectar">Conectar</button>
@@ -333,7 +333,7 @@ function leerCfg(){ try{ const c = JSON.parse(localStorage.getItem("convite-pane
 function toast(t){ const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2600); }
 
 function linkDe(inv){
-  const base = (cfg.link || "https://tusitio.netlify.app/jardin.html").trim();
+  const base = (cfg.link || "https://evocard.com.ar/jardin.html").trim();
   return base + (base.includes("?") ? "&" : "?") + "i=" + encodeURIComponent(inv.codigo);
 }
 function textoWsp(inv){
@@ -557,6 +557,7 @@ $("#btnImportar").addEventListener("click", async () => {
 /* Conexión */
 function mostrarConexion(msg, tipo){
   $("#conexion").hidden = false;
+  window.scrollTo({ top: 0, behavior: "smooth" });
   $("#cfgUrl").value = cfg.url; $("#cfgClave").value = cfg.clave; $("#cfgLink").value = cfg.link;
   const av = $("#cfgAviso");
   if(msg){ av.hidden = false; av.textContent = msg; av.className = "aviso" + (tipo ? " " + tipo : ""); } else av.hidden = true;
