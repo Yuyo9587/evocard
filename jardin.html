@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 <title>Lucía y Tomás</title>
@@ -236,6 +236,10 @@ footer .nombres{font-size:3rem;margin:0}
       <p class="sub" id="lugares">Reservamos 3 lugares para Familia Gómez.</p>
       <div class="card" id="rsvpCard">
         <form id="rsvp" novalidate>
+          <div class="campo" id="campoNombre" hidden>
+            <label for="nombreInv">Tu nombre y apellido</label>
+            <input type="text" id="nombreInv" maxlength="80" autocomplete="name">
+          </div>
           <fieldset>
             <legend>¿Vienen?</legend>
             <div class="choices">
@@ -268,7 +272,7 @@ footer .nombres{font-size:3rem;margin:0}
           <button class="btn" type="submit">Enviar confirmación</button>
         </form>
       </div>
-      <p class="fine">Esta invitación es personal. Te pedimos no reenviarla.</p>
+      <p class="fine" id="finePersonal">Esta invitación es personal. Te pedimos no reenviarla.</p>
     </div>
   </section>
 </main>
@@ -290,6 +294,10 @@ const INV = {
   titulo: "Casamiento de Lucía y Tomás",
   lugarAgenda: "Parroquia San José, Luján, Buenos Aires",
   horaFiesta: "00:30",
+  /* Plan Básico (sin planilla): número del cliente que recibe las confirmaciones por WhatsApp, con código de país. Ej: 5491112345678 */
+  whatsapp: "",
+  /* Plan Básico: hasta cuántas personas puede confirmar cada invitado */
+  maxLugares: 6,
   /* Dirección de la planilla del evento (termina en /exec). Vacía = invitación de muestra. */
   planilla: ""
 };
@@ -322,6 +330,8 @@ const Conexion = {
 /* El código del invitado viene en el link: jardin.html?i=K7PQ2M (o #K7PQ2M) */
 const CODIGO = (new URLSearchParams(location.search).get("i") || location.hash.slice(1) || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 let respuestaPrevia = null;
+/* Tres modos: "planilla" (con panel), "whatsapp" (plan Básico: la respuesta se manda por WhatsApp al cliente) y "muestra" (demo) */
+const MODO = INV.planilla ? "planilla" : (INV.whatsapp ? "whatsapp" : "muestra");
 
 function aplicarInvitado(){
   const generico = !INV.invitado;
@@ -349,6 +359,15 @@ function aplicarInvitado(){
 }
 
 async function iniciarInvitado(){
+  if(MODO === "whatsapp"){
+    $("#ribbon").hidden = true;
+    INV.invitado = ""; INV.lugares = INV.maxLugares || 6;
+    aplicarInvitado();
+    $("#rsvp").hidden = false; $("#campoNombre").hidden = false; $("#finePersonal").hidden = true;
+    $("#cant").value = "1";
+    $("#lugares").textContent = "Completá tus datos y tu respuesta nos llega por WhatsApp.";
+    return;
+  }
   if(!Conexion.activa()){ aplicarInvitado(); return; }   /* muestra con datos de ejemplo */
   $("#ribbon").hidden = true;
   if(!CODIGO){ INV.invitado = ""; INV.lugares = 1; aplicarInvitado(); return; }
@@ -479,6 +498,19 @@ $("#rsvp").addEventListener("submit", async e => {
   $("#rsvpErr").textContent = "";
   const cant = $("#cant").value;
   const boton = $("#rsvp").querySelector('button[type="submit"]');
+  if(MODO === "whatsapp"){
+    const quien = $("#nombreInv").value.trim();
+    if(!quien){ $("#rsvpErr").textContent = "Escribí tu nombre para saber quién confirma."; $("#nombreInv").focus(); return; }
+    const lineas = asiste === "si"
+      ? [`¡Hola! Confirmo asistencia a ${INV.titulo}.`, `Nombre: ${quien}`, `Vamos: ${cant === "1" ? "1 persona" : cant + " personas"}`,
+         $("#menu").value !== "Ninguno" ? `Menú especial: ${$("#menu").value}` : "", $("#trasSi").checked ? "Usamos el traslado: sí" : ""]
+      : [`¡Hola! Lamentablemente no vamos a poder ir a ${INV.titulo}.`, `Nombre: ${quien}`];
+    if($("#mensaje").value.trim()) lineas.push(`Mensaje: ${$("#mensaje").value.trim()}`);
+    const url = `https://wa.me/${INV.whatsapp}?text=${encodeURIComponent(lineas.filter(Boolean).join("\n"))}`;
+    window.open(url, "_blank", "noopener");
+    $("#rsvpCard").innerHTML = `<div class="gracias"><h3>${asiste === "si" ? "¡Nos vemos ahí!" : "Te vamos a extrañar"}</h3><p>Se abrió WhatsApp con tu respuesta. Tocá Enviar para que nos llegue.</p><a class="btn out" target="_blank" rel="noopener" href="${url}">Abrir WhatsApp</a></div>`;
+    return;
+  }
   const real = Conexion.activa();
   if(real){
     boton.disabled = true; boton.textContent = "Enviando…";

@@ -223,6 +223,10 @@ footer .nombre{font-size:3.6rem;margin:0}
       <p class="sub" id="lugares">Reservamos 3 lugares para Familia Gómez.</p>
       <div class="card" id="rsvpCard">
         <form id="rsvp" novalidate>
+          <div class="campo" id="campoNombre" hidden>
+            <label for="nombreInv">Tu nombre y apellido</label>
+            <input type="text" id="nombreInv" maxlength="80" autocomplete="name">
+          </div>
           <fieldset>
             <legend>¿Vienen?</legend>
             <div class="choices">
@@ -246,7 +250,7 @@ footer .nombre{font-size:3.6rem;margin:0}
           <button class="btn" type="submit">Enviar confirmación</button>
         </form>
       </div>
-      <p class="fine">Esta invitación es personal. Te pedimos no reenviarla.</p>
+      <p class="fine" id="finePersonal">Esta invitación es personal. Te pedimos no reenviarla.</p>
     </div>
   </section>
 </main>
@@ -268,6 +272,10 @@ const INV = {
   "titulo": "Primera comunión de Joaquín",
   "lugarAgenda": "Parroquia San José, Marcos Paz, Buenos Aires",
   "horaFiesta": "13:00",
+  /* Plan Básico (sin planilla): número del cliente que recibe las confirmaciones por WhatsApp, con código de país. Ej: 5491112345678 */
+  "whatsapp": "",
+  /* Plan Básico: hasta cuántas personas puede confirmar cada invitado */
+  "maxLugares": 6,
   /* Dirección de la planilla del evento (termina en /exec). Vacía = invitación de muestra. */
   "planilla": ""
 };
@@ -286,7 +294,10 @@ const TXT = {
   "nota": "le llega a la familia de Joaquín",
   "graciasSi": "¡Gracias por acompañarme!",
   "graciasNo": "Te vamos a extrañar",
-  "graciasNoP": "Gracias por avisarnos con tiempo."
+  "graciasNoP": "Gracias por avisarnos con tiempo.",
+  "porWhatsapp": "Completá tus datos y tu respuesta nos llega por WhatsApp.",
+  "faltaNombre": "Escribí tu nombre para que sepamos quién confirma.",
+  "abrioWhatsapp": "Se abrió WhatsApp con tu respuesta. Tocá Enviar para que nos llegue."
 };
 const MUSICA = { onda:"sine", notas:[523.25,587.33,659.25,523.25,698.46,659.25,587.33,523.25,659.25,698.46,783.99,659.25,587.33,523.25,493.88,523.25], paso:700, volumen:0.045, cola:2.4 };
 
@@ -318,6 +329,8 @@ const Conexion = {
 /* El código del invitado viene en el link: modelo.html?i=K7PQ2M (o #K7PQ2M) */
 const CODIGO = (new URLSearchParams(location.search).get("i") || location.hash.slice(1) || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 let respuestaPrevia = null;
+/* Tres modos: "planilla" (con panel), "whatsapp" (plan Básico: la respuesta se manda por WhatsApp al cliente) y "muestra" (demo) */
+const MODO = INV.planilla ? "planilla" : (INV.whatsapp ? "whatsapp" : "muestra");
 const plural = (n, a, b) => n + " " + (n === 1 ? a : b);
 
 function aplicarInvitado(){
@@ -349,6 +362,15 @@ function aplicarInvitado(){
 }
 
 async function iniciarInvitado(){
+  if(MODO === "whatsapp"){
+    $("#ribbon").hidden = true;
+    INV.invitado = ""; INV.lugares = INV.maxLugares || 6;
+    aplicarInvitado();
+    $("#rsvp").hidden = false; $("#campoNombre").hidden = false; $("#finePersonal").hidden = true;
+    $("#cant").value = "1";
+    $("#lugares").textContent = TXT.porWhatsapp;
+    return;
+  }
   if(!Conexion.activa()){ aplicarInvitado(); return; }   /* muestra con datos de ejemplo */
   $("#ribbon").hidden = true;
   if(!CODIGO){ INV.invitado = ""; INV.lugares = 1; aplicarInvitado(); return; }
@@ -451,6 +473,19 @@ $("#rsvp").addEventListener("submit", async e => {
   }).filter(Boolean) : [];
   const mensaje = [$("#mensaje").value.trim(), ...extras].filter(Boolean).join("\n");
   const boton = $("#rsvp").querySelector('button[type="submit"]');
+  if(MODO === "whatsapp"){
+    const quien = $("#nombreInv").value.trim();
+    if(!quien){ $("#rsvpErr").textContent = TXT.faltaNombre; $("#nombreInv").focus(); return; }
+    const lineas = asiste === "si"
+      ? [`¡Hola! Confirmo asistencia a ${INV.titulo}.`, `Nombre: ${quien}`, `Vamos: ${cant === "1" ? "1 persona" : cant + " personas"}`,
+         $("#menu") && $("#menu").value !== "Ninguno" ? `Menú especial: ${$("#menu").value}` : "", ...extras]
+      : [`¡Hola! Lamentablemente no vamos a poder ir a ${INV.titulo}.`, `Nombre: ${quien}`];
+    if($("#mensaje").value.trim()) lineas.push(`Mensaje: ${$("#mensaje").value.trim()}`);
+    const url = `https://wa.me/${INV.whatsapp}?text=${encodeURIComponent(lineas.filter(Boolean).join("\n"))}`;
+    window.open(url, "_blank", "noopener");
+    $("#rsvpCard").innerHTML = `<div class="gracias"><h3>${asiste === "si" ? TXT.graciasSi : TXT.graciasNo}</h3><p>${TXT.abrioWhatsapp}</p><a class="btn out" target="_blank" rel="noopener" href="${url}">Abrir WhatsApp</a></div>`;
+    return;
+  }
   const real = Conexion.activa();
   if(real){
     boton.disabled = true; boton.textContent = "Enviando…";
