@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px) --gold-text:#8A6A2E;}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Evocard Invitaciones</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: una sola columna editorial; el sobre con lacre abre la página y el configurador es el centro. */
+:root{
+  --paper:#F8F5EF; --surface:#FFFDF9; --ink:#0B0B0C; --muted:#55504A; --line:#E9E2D8;
+  --wax:#0B0B0C; --wax-ink:#F8F5EF; --wax-soft:#EFE7DA; --sage:#9A7A3A; --sage-soft:#F3EBDD;
+  --gold:#C9A45C;
+  --f-display:"Cormorant Garamond", "Garamond", Georgia, serif;
+  --f-body:"DM Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"DM Sans", "Segoe UI", system-ui, sans-serif;
+  --radius:14px; --gold-text:#8A6A2E;}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0B0B0C; --surface:#171614; --ink:#F8F5EF; --muted:#B5ADA2; --line:#2C2925;
+    --wax:#C9A45C; --wax-ink:#0B0B0C; --wax-soft:#2A2419; --sage:#D9B8A0; --sage-soft:#241E19; --gold:#D8B66E;
+    color-scheme:dark; --gold-text:#D8B66E;}
+}
+:root[data-theme="dark"]{
+  --paper:#0B0B0C; --surface:#171614; --ink:#F8F5EF; --muted:#B5ADA2; --line:#2C2925;
+  --wax:#C9A45C; --wax-ink:#0B0B0C; --wax-soft:#2A2419; --sage:#D9B8A0; --sage-soft:#241E19; --gold:#D8B66E;
+  color-scheme:dark; --gold-text:#D8B66E;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+a{color:var(--wax)}
+:focus-visible{outline:2px solid var(--wax);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:500;text-wrap:balance;line-height:1.1;margin:0}
+h2{font-size:clamp(1.9rem,4vw,2.7rem)}
+h3{font-size:1.25rem}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--wax)}
+.lead{color:var(--muted);max-width:60ch;font-size:1.05rem}
+section{padding-block:72px}
+.sec-head{display:grid;gap:12px;margin-bottom:36px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 1rem var(--f-body);padding:13px 22px;border-radius:999px;border:1.5px solid var(--wax);background:var(--wax);color:var(--wax-ink);text-decoration:none;cursor:pointer;transition:transform .15s ease, background .15s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--wax)}
+.btn.small{padding:9px 16px;font-size:.92rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+/* Header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+.brand{font-family:var(--f-display);font-size:1.6rem;font-style:italic;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.brand .seal-mini{width:26px;height:26px;border-radius:50%;background:var(--wax);display:grid;place-items:center;color:var(--wax-ink);font:700 .8rem var(--f-display);font-style:normal}
+nav.menu{display:flex;gap:22px}
+nav.menu a{color:var(--ink);text-decoration:none;font-size:.95rem}
+nav.menu a:hover{color:var(--wax)}
+@media (max-width:820px){nav.menu{display:none}}
+
+/* Hero */
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding-block:56px 24px}
+.hero h1{font-size:clamp(2.6rem,6vw,4.4rem)}
+.hero h1 em{color:var(--wax)}
+.hero-copy{display:grid;gap:22px;min-width:0}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px}
+.hero-facts{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.hero-facts span::before{content:"✓ ";color:var(--sage)}
+@media (max-width:820px){.hero .wrap{grid-template-columns:1fr}}
+
+/* Sobre */
+.envelope-stage{display:grid;place-items:center;padding-top:40px}
+.envelope{position:relative;width:min(340px,100%);aspect-ratio:1.45;max-width:100%}
+.env-back{position:absolute;inset:0;background:var(--wax-soft);border-radius:10px}
+.env-card{position:absolute;left:8%;right:8%;top:10%;height:118%;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:0 18px 40px -20px rgba(35,30,43,.35);padding:22px 18px;text-align:center;display:grid;align-content:start;gap:6px;transform:translateY(-34%);animation:cardUp 1.4s .9s both cubic-bezier(.2,.8,.2,1);z-index:1}
+.env-card .kicker{font-family:var(--f-mono);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.env-card .names{font-family:var(--f-display);font-style:italic;font-size:1.9rem;color:var(--ink);line-height:1.05}
+.env-card .date{font-family:var(--f-mono);font-size:.78rem;color:var(--wax)}
+.env-card .cd{display:flex;justify-content:center;gap:10px;margin-top:6px}
+.env-card .cd div{display:grid;font-family:var(--f-mono);font-size:1rem;color:var(--ink)}
+.env-card .cd small{font-size:.55rem;letter-spacing:.1em;color:var(--muted)}
+.env-card .rsvp{margin:8px auto 0;font-size:.72rem;padding:6px 14px;border-radius:999px;background:var(--sage);color:var(--surface);font-weight:600}
+.env-front{position:absolute;inset:0;border-radius:10px;overflow:hidden;pointer-events:none;z-index:2}
+.env-front::before,.env-front::after{content:"";position:absolute;bottom:0;width:60%;height:100%;background:color-mix(in srgb,var(--wax-soft) 70%,var(--surface));}
+.env-front::before{left:0;clip-path:polygon(0 0,100% 62%,100% 100%,0 100%)}
+.env-front::after{right:0;clip-path:polygon(100% 0,0 62%,0 100%,100% 100%)}
+.env-flap{position:absolute;left:0;right:0;top:0;height:62%;transform-origin:top;background:color-mix(in srgb,var(--wax-soft) 85%,var(--ink) 4%);clip-path:polygon(0 0,100% 0,50% 100%);transform:rotateX(180deg);animation:flapOpen .9s .2s both ease-in-out;z-index:0}
+.env-seal{position:absolute;left:50%;top:52%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--wax) 70%,#fff) 0,var(--wax) 55%);display:grid;place-items:center;color:var(--wax-ink);font:700 1.1rem var(--f-display);font-style:italic;box-shadow:0 4px 10px -4px rgba(0,0,0,.4);z-index:2;animation:sealPop .5s 0s both}
+@keyframes flapOpen{from{transform:rotateX(0);z-index:3}99%{z-index:3}to{transform:rotateX(180deg);z-index:0}}
+@keyframes cardUp{from{transform:translateY(0)}to{transform:translateY(-34%)}}
+@keyframes sealPop{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.6)}}
+.env-seal{opacity:0}
+@media (prefers-reduced-motion: reduce){.env-card,.env-flap,.env-seal{animation:none}}
+
+/* Eventos */
+.events{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.events{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:440px){.events{grid-template-columns:1fr}}
+.ev{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:grid;gap:6px;align-content:start}
+.ev .ic{font-family:var(--f-display);font-size:1.6rem;color:var(--wax);font-style:italic}
+.ev p{color:var(--muted);font-size:.92rem}
+.ev.new{border-color:var(--sage);background:var(--sage-soft)}
+.tag{justify-self:start;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--sage);color:var(--surface)}
+
+/* Modelos */
+.models{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+@media (max-width:900px){.models{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.models{grid-template-columns:1fr}}
+.model{display:grid;gap:12px;justify-items:center;text-align:center}
+.phone{width:200px;max-width:100%;aspect-ratio:9/17;border-radius:28px;border:7px solid var(--ink);overflow:hidden;position:relative;display:grid;align-content:center;justify-items:center;gap:6px;padding:18px 14px;text-align:center}
+.phone .k{font-family:var(--f-mono);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase}
+.phone .n{font-family:var(--f-display);font-style:italic;font-size:1.55rem;line-height:1.05}
+.phone .d{font-family:var(--f-mono);font-size:.62rem}
+.phone .b{margin-top:8px;font-size:.6rem;font-weight:600;padding:5px 12px;border-radius:999px}
+.model h3{font-size:1.1rem}
+.model p{color:var(--muted);font-size:.88rem;max-width:30ch}
+/* estilos de cada modelo: colores propios de cada invitación, iguales en ambos temas */
+.m-boda{background:linear-gradient(180deg,#EEF2EC,#FBFBF8);color:#2F3B32}
+.m-boda .b{background:#5E7A68;color:#fff}
+.m-boda::before{content:"";position:absolute;inset:auto -20% 62% -20%;height:40%;background:radial-gradient(circle at 30% 70%,#B9CDB6 0 18%,transparent 19%),radial-gradient(circle at 70% 60%,#D7E3D3 0 22%,transparent 23%)}
+.m-xv{background:radial-gradient(circle at 50% 20%,#3B2A5C,#160F24 70%);color:#F3E9FF}
+.m-xv .b{background:#E5C3FF;color:#160F24}
+.m-xv::before{content:"✦ · ✧ · ✦";position:absolute;top:14%;font-size:.7rem;letter-spacing:.3em;color:#E5C3FF}
+.m-cumple{background:#FFE9C7;color:#3A2410}
+.m-cumple .n{font-family:var(--f-body);font-style:normal;font-weight:700}
+.m-cumple .b{background:#E2572B;color:#fff}
+.m-cumple::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,#E2572B 0 3px,transparent 4px) 0 0/34px 34px,radial-gradient(circle,#2E8B87 0 3px,transparent 4px) 17px 17px/34px 34px;opacity:.25}
+.m-baby{background:linear-gradient(180deg,#E6F0F8,#FDF6F0);color:#33475A}
+.m-baby .b{background:#7FA6C6;color:#fff}
+.m-inst{background:#14213D;color:#F2EBDD;border-color:var(--ink)}
+.m-inst .n{font-style:normal;font-weight:700;letter-spacing:.02em}
+.m-inst .b{background:#C9A55C;color:#14213D}
+.m-inst::before{content:"";position:absolute;inset:10px;border:1px solid #C9A55C;border-radius:16px}
+.m-comu{background:#FFFDF8;color:#4B3F2A}
+.m-comu .b{background:#B8995A;color:#fff}
+.m-comu::before{content:"";position:absolute;top:13%;width:2px;height:26px;background:#B8995A;box-shadow:0 9px 0 0 transparent}
+.m-comu::after{content:"";position:absolute;top:calc(13% + 7px);width:16px;height:2px;background:#B8995A}
+.note{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);text-align:center;margin-top:24px}
+
+/* Incluye */
+.features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+@media (max-width:820px){.features{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.features{grid-template-columns:1fr}}
+.feat{background:var(--surface);padding:22px;display:grid;gap:6px;align-content:start;min-width:0}
+.feat h3{font-family:var(--f-body);font-weight:600;font-size:1rem}
+.feat p{color:var(--muted);font-size:.92rem}
+
+/* Precios */
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+@media (max-width:860px){.plans{grid-template-columns:1fr}}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;display:grid;gap:16px;align-content:start}
+.plan.star{border:2px solid var(--wax);position:relative}
+.plan.star .tag{background:var(--wax);color:var(--wax-ink)}
+.price{font-family:var(--f-display);font-size:2.4rem;line-height:1}
+.price small{font-family:var(--f-body);font-size:.85rem;color:var(--muted)}
+.plan ul{list-style:none;padding:0;margin:0;display:grid;gap:8px;font-size:.94rem}
+.plan li{padding-left:22px;position:relative}
+.plan li::before{content:"";position:absolute;left:2px;top:.55em;width:9px;height:9px;border-radius:50%;background:var(--sage)}
+.plan li.no{color:var(--muted)}
+.plan li.no::before{background:transparent;border:1.5px solid var(--line)}
+.plan .btn{justify-self:start}
+
+/* Papel vs digital */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:720px){.compare{grid-template-columns:1fr}}
+.cbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px;display:grid;gap:10px}
+.cbox.dig{background:var(--sage-soft);border-color:var(--sage)}
+.row{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums;border-bottom:1px dashed var(--line);padding-block:6px}
+.row.total{font-weight:700;border-bottom:0}
+
+/* Pasos */
+.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;counter-reset:s}
+@media (max-width:860px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.steps{grid-template-columns:1fr}}
+.steps li{counter-increment:s;display:grid;gap:8px;border-top:2px solid var(--wax);padding-top:14px}
+.steps li::before{content:"Paso " counter(s);font-family:var(--f-mono);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--wax)}
+.steps p{color:var(--muted);font-size:.93rem}
+
+/* Configurador */
+#armar{background:var(--surface);border-block:1px solid var(--line)}
+.cfg{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:900px){.cfg{grid-template-columns:1fr}}
+.cfg-steps{display:grid;gap:30px}
+fieldset{border:0;padding:0;margin:0;display:grid;gap:12px;min-width:0}
+legend{font-family:var(--f-display);font-size:1.35rem;padding:0;margin-bottom:4px}
+legend .num{font-family:var(--f-mono);font-size:.8rem;color:var(--wax);margin-right:8px;vertical-align:middle}
+.hint{color:var(--muted);font-size:.9rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt label{display:grid;gap:2px;height:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;cursor:pointer;background:var(--paper);font-size:.94rem;transition:border-color .15s, background .15s}
+.opt label small{color:var(--muted);font-size:.8rem}
+.opt input:checked + label{border-color:var(--wax);background:var(--wax-soft)}
+.opt input:focus-visible + label{outline:2px solid var(--wax);outline-offset:2px}
+.opt input:disabled + label{opacity:.5;cursor:not-allowed}
+.counter{font-family:var(--f-mono);font-size:.82rem;color:var(--muted)}
+.counter b{color:var(--ink)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.fields{grid-template-columns:1fr}}
+.field{display:grid;gap:4px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:.85rem;font-weight:600}
+.field input,.field textarea,.field select{font:inherit;font-size:.95rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);width:100%}
+.field input:focus,.field textarea:focus{border-color:var(--wax);outline:none}
+.summary{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:grid;gap:14px}
+.summary h3{font-size:1.3rem}
+.sum-lines{display:grid;gap:4px;font-size:.92rem;font-variant-numeric:tabular-nums}
+.sum-lines .row{border-bottom:0;padding-block:3px}
+.sum-lines .row span:first-child{color:var(--muted)}
+.sum-total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:12px}
+.sum-total strong{font-family:var(--f-display);font-size:2rem;font-variant-numeric:tabular-nums}
+.sena{background:var(--wax-soft);border-radius:10px;padding:10px 12px;font-size:.92rem;display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums}
+.sum-actions{display:grid;gap:10px}
+.sum-actions .btn{width:100%}
+.msg{font-size:.85rem;color:var(--muted);min-height:1.2em}
+.msg.err{color:var(--wax)}
+
+/* FAQ */
+.faq{display:grid;gap:10px;max-width:780px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 18px}
+summary{cursor:pointer;font-weight:600;padding-block:14px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--f-mono);color:var(--wax)}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);padding-bottom:16px;max-width:65ch}
+
+/* Legales y footer */
+.legal{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:720px){.legal{grid-template-columns:1fr}}
+.legal article{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:grid;gap:8px;font-size:.92rem}
+.legal ul{margin:0;padding-left:18px;color:var(--muted);display:grid;gap:4px}
+footer{border-top:1px solid var(--line);padding-block:32px;color:var(--muted);font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer a{color:var(--muted)}
+
+/* Marca Evocard: negro ónix, marfil y dorado champagne */
+.eyebrow,.steps li::before,legend .num{color:var(--gold-text)}
+.hero h1 em,.ev .ic{color:var(--gold-text)}
+.brand{font-style:normal!important;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.seal-mini,.seal{background:transparent!important;color:var(--gold)!important;font-size:1rem!important;border:1px solid var(--gold)}
+.env-seal{background:radial-gradient(circle at 35% 30%,#F1DDA8 0,#C9A45C 55%,#9A7A3A 100%)!important;color:#0B0B0C!important;font-style:normal!important;font-weight:600}
+.plan.star{border-color:var(--gold)!important}
+.plan.star .tag{background:var(--ink)!important;color:var(--paper)!important}
+h1,h2,h3{letter-spacing:.005em}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio"><span class="seal-mini" aria-hidden="true">✦</span><span data-name>Evocard</span></a>
+    <nav class="menu" aria-label="Secciones">
+      <a href="#eventos">Eventos</a>
+      <a href="#modelos">Modelos</a>
+      <a href="#precios">Precios</a>
+      <a href="#como">Cómo funciona</a>
+      <a href="#preguntas">Preguntas</a>
+    </nav>
+    <a class="btn small" href="#armar">Armá tu pedido</a>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero" style="padding-block:0">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="eyebrow">Invitaciones digitales hechas a mano</span>
+        <h1>Tu invitación, <em>diseñada para vos</em> y lista para mandar por WhatsApp.</h1>
+        <p class="lead">Elegís el estilo y las secciones, nosotros la diseñamos y te entregamos un link. Tus invitados confirman desde el celular y vos ves quién viene, qué come y cuántos son.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#armar">Armá tu pedido</a>
+          <a class="btn ghost" href="#modelos">Ver modelos</a>
+        </div>
+        <div class="hero-facts">
+          <span>Entrega en 4 a 7 días hábiles</span>
+          <span>Link con el nombre de cada invitado</span>
+          <span>Un solo pago, sin suscripciones</span>
+        </div>
+      </div>
+      <div class="envelope-stage" aria-hidden="true">
+        <div class="envelope">
+          <div class="env-back"></div>
+          <div class="env-card">
+            <span class="kicker">Nos casamos</span>
+            <span class="names">Lucía &amp; Tomás</span>
+            <span class="date">SÁB 14 · MARZO · 2027</span>
+            <div class="cd"><div>136<small>DÍAS</small></div><div>08<small>HS</small></div><div>42<small>MIN</small></div></div>
+            <span class="rsvp">Confirmar asistencia</span>
+          </div>
+          <div class="env-front"></div>
+          <div class="env-flap"></div>
+          <div class="env-seal">L&amp;T</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="eventos">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Para cada celebración</span>
+        <h2>Ocho tipos de eventos, un mismo cuidado</h2>
+        <p class="lead">Además de bodas y quince, hacemos las invitaciones que casi nadie ofrece: actos institucionales, comuniones y bautismos.</p>
+      </div>
+      <div class="events">
+        <div class="ev"><span class="ic">Bodas</span><p>Civil, iglesia y fiesta en una sola invitación, con cronograma y mapa de cada lugar.</p></div>
+        <div class="ev"><span class="ic">XV años</span><p>Portada con la quinceañera, color reservado, playlist y fotos de la noche.</p></div>
+        <div class="ev"><span class="ic">Cumpleaños</span><p>Infantiles, 18, 40 o 50: desde lo divertido hasta lo elegante.</p></div>
+        <div class="ev"><span class="ic">Baby shower</span><p>Cronograma por momentos, regalos para el bebé y confirmación simple.</p></div>
+        <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Institucionales</span><p>Aniversarios, cenas de gala y actos de clubes, escuelas, empresas y entidades.</p></div>
+        <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Egresados</span><p>Fiestas de egresados y cenas de fin de curso con lista por familia.</p></div>
+        <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Comuniones</span><p>Primera comunión y confirmación, con la celebración en la parroquia y la reunión.</p></div>
+        <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Bautismos</span><p>Padrinos, ceremonia y almuerzo familiar en un diseño suave.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="modelos" style="padding-top:24px">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Modelos</span>
+        <h2>Elegí un estilo de partida</h2>
+        <p class="lead">Cada modelo es un punto de partida: cambiamos colores, letras, fotos y textos para que quede como lo imaginás.</p>
+      </div>
+      <div class="models">
+        <div class="model">
+          <div class="phone m-boda"><span class="k">Nos casamos</span><span class="n">Lucía<br>&amp; Tomás</span><span class="d">14.03.2027 · Luján</span><span class="b">Confirmar</span></div>
+          <h3>Jardín</h3><p>Boda con hojas en acuarela, cronograma completo y lista de regalos.</p><a class="btn ghost small" href="jardin.html" target="_blank" rel="noopener">Ver demo</a>
+        </div>
+        <div class="model">
+          <div class="phone m-xv"><span class="k">Mis XV</span><span class="n">Martina</span><span class="d">22.05.2027 · 21:30 h</span><span class="b">Ahí voy</span></div>
+          <h3>Noche estrellada</h3><p>Quince con fondo oscuro, música al abrir y álbum de fotos por QR.</p>
+        </div>
+        <div class="model">
+          <div class="phone m-cumple"><span class="k">¡Cumplo 6!</span><span class="n">Benja</span><span class="d">SÁB 10.04 · 16 h</span><span class="b">Voy a ir</span></div>
+          <h3>Confeti</h3><p>Cumpleaños infantil, colores fuertes y confirmación con cantidad de chicos.</p>
+        </div>
+        <div class="model">
+          <div class="phone m-baby"><span class="k">Baby shower</span><span class="n">Esperando<br>a Emma</span><span class="d">18.04.2027 · 17 h</span><span class="b">Confirmar</span></div>
+          <h3>Nube</h3><p>Tonos suaves, momentos de la tarde y regalos sugeridos.</p>
+        </div>
+        <div class="model">
+          <div class="phone m-inst"><span class="k">80 aniversario</span><span class="n">Club Social<br>Las Acacias</span><span class="d">CENA DE GALA · 05.06</span><span class="b">Reservar lugar</span></div>
+          <h3>Gala</h3><p>Aniversarios y actos con valor de tarjeta, mesas por institución y dress code.</p>
+        </div>
+        <div class="model">
+          <div class="phone m-comu"><span class="k">Mi primera comunión</span><span class="n">Joaquín</span><span class="d">Parroquia San José · 10 h</span><span class="b">Confirmar</span></div>
+          <h3>Luz</h3><p>Comunión o bautismo con padrinos, misa y almuerzo familiar.</p>
+        </div>
+      </div>
+      <p class="note">Nombres y datos de ejemplo</p>
+    </div>
+  </section>
+
+  <section id="incluye" style="padding-top:24px">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Qué puede tener tu invitación</span>
+        <h2>Todo lo que tus invitados necesitan saber, en un link</h2>
+      </div>
+      <div class="features">
+        <div class="feat"><h3>Sobre con lacre</h3><p>Se abre al tocarlo y suena la canción que elijas.</p></div>
+        <div class="feat"><h3>Nombre de cada invitado</h3><p>Cada familia recibe su link con su nombre y la cantidad de lugares que le corresponden.</p></div>
+        <div class="feat"><h3>Confirmación completa</h3><p>Asiste o no, cuántos son, menú especial, traslado y un mensaje para vos.</p></div>
+        <div class="feat"><h3>Panel de invitados</h3><p>Confirmados, pendientes y ausentes en vivo. Exportás la lista para el catering.</p></div>
+        <div class="feat"><h3>Lugares y cronograma</h3><p>Cada lugar con horario y botón para abrir el mapa. Botón para agendar la fecha.</p></div>
+        <div class="feat"><h3>Regalos</h3><p>Alias, CBU o lista de regalos con monto sugerido. Los datos se copian con un toque.</p></div>
+        <div class="feat"><h3>Álbum de fotos por QR</h3><p>Los invitados suben sus fotos de la fiesta. Te damos el cartel listo para imprimir.</p></div>
+        <div class="feat"><h3>Historia y galería</h3><p>Cómo se conocieron, momentos importantes y tus mejores fotos.</p></div>
+        <div class="feat"><h3>Segundo idioma</h3><p>Para familias que vienen de lejos: cada invitado cambia el idioma con un toque.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="precios" style="padding-top:24px">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Precios</span>
+        <h2>Un solo pago, sin sorpresas</h2>
+        <p class="lead">Reservás con el 50% y pagás el resto cuando recibís tu invitación terminada.</p>
+      </div>
+      <div class="plans" id="plansGrid"></div>
+    </div>
+  </section>
+
+  <section id="papel" style="padding-top:24px">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Papel o digital</span>
+        <h2>Lo que cuesta invitar a 120 personas</h2>
+      </div>
+      <div class="compare">
+        <div class="cbox">
+          <h3>Tarjeta en papel</h3>
+          <div class="row"><span>Diseño</span><span>$260.000</span></div>
+          <div class="row"><span>Impresión de 130 tarjetas</span><span>$160.000</span></div>
+          <div class="row"><span>Sobres y sellos</span><span>$120.000</span></div>
+          <div class="row"><span>Envío por correo</span><span>$95.000</span></div>
+          <div class="row total"><span>Total aproximado</span><span>$635.000</span></div>
+        </div>
+        <div class="cbox dig">
+          <h3>Invitación digital</h3>
+          <div class="row"><span>Diseño, confirmaciones y panel</span><span id="cmpPrice">$69.000</span></div>
+          <div class="row"><span>Impresión, sobres y envíos</span><span>$0</span></div>
+          <div class="row"><span>Cambiar un dato después de enviar</span><span>Gratis</span></div>
+          <div class="row total"><span>Plan Completo</span><span id="cmpTotal">$69.000</span></div>
+        </div>
+      </div>
+      <p class="note">Valores del papel orientativos, Argentina 2026</p>
+    </div>
+  </section>
+
+  <section id="como" style="padding-top:24px">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Cómo funciona</span>
+        <h2>De tu idea al link, en cuatro pasos</h2>
+      </div>
+      <ol class="steps">
+        <li><h3>Armás tu pedido</h3><p>Elegís evento, plan, secciones y extras en el formulario de abajo. Ves el total al instante.</p></li>
+        <li><h3>Reservás con seña</h3><p>Nos mandás el resumen por WhatsApp y señás el 50% por transferencia o Mercado Pago.</p></li>
+        <li><h3>Diseñamos juntos</h3><p>Te pedimos fotos y textos, te mostramos un borrador y ajustamos lo que quieras.</p></li>
+        <li><h3>Recibís tu link</h3><p>En 4 a 7 días hábiles. Pagás el resto y lo compartís por WhatsApp, redes o mail.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="armar">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Armá tu pedido</span>
+        <h2>Configurá tu invitación y mirá el total</h2>
+        <p class="lead">No pagás nada todavía. Al final nos mandás el resumen por WhatsApp y coordinamos.</p>
+      </div>
+      <form class="cfg" id="cfg" novalidate>
+        <div class="cfg-steps">
+          <fieldset>
+            <legend><span class="num">1</span>¿Qué celebrás?</legend>
+            <div class="opts" id="optEvento"></div>
+            <div class="field" id="otroWrap" hidden><label for="eventoOtro">Contanos qué evento es</label><input id="eventoOtro" type="text" placeholder="Ej: cena de fin de año de la empresa"></div>
+          </fieldset>
+          <fieldset>
+            <legend><span class="num">2</span>Elegí el plan</legend>
+            <div class="opts" id="optPlan"></div>
+          </fieldset>
+          <fieldset>
+            <legend><span class="num">3</span>Estilo de partida</legend>
+            <div class="opts" id="optEstilo"></div>
+          </fieldset>
+          <fieldset>
+            <legend><span class="num">4</span>Secciones</legend>
+            <p class="hint" id="secHint"></p>
+            <p class="counter" id="secCounter"></p>
+            <div class="opts" id="optSecciones"></div>
+          </fieldset>
+          <fieldset>
+            <legend><span class="num">5</span>Panel de invitados</legend>
+            <p class="hint">Con el panel cada invitado recibe un link con su nombre y vos ves las confirmaciones en vivo. Sin panel, las confirmaciones te llegan por WhatsApp.</p>
+            <div class="opts" id="optPanel"></div>
+          </fieldset>
+          <fieldset>
+            <legend><span class="num">6</span>Extras</legend>
+            <div class="opts" id="optExtras"></div>
+          </fieldset>
+          <fieldset>
+            <legend><span class="num">7</span>Tus datos</legend>
+            <div class="fields">
+              <div class="field"><label for="dNombres">Nombre de quien festeja</label><input id="dNombres" type="text" placeholder="Ej: Lucía y Tomás" autocomplete="off"></div>
+              <div class="field"><label for="dFecha">Fecha del evento</label><input id="dFecha" type="date"></div>
+              <div class="field"><label for="dContacto">Tu nombre</label><input id="dContacto" type="text" placeholder="Quién hace el pedido" autocomplete="name"></div>
+              <div class="field"><label for="dLugar">Ciudad del evento</label><input id="dLugar" type="text" placeholder="Ej: Marcos Paz"></div>
+              <div class="field full"><label for="dNotas">Algo más que quieras contarnos</label><textarea id="dNotas" rows="3" placeholder="Colores que te gustan, una idea, una canción..."></textarea></div>
+              <div class="field full"><label for="dCupon">Cupón</label><input id="dCupon" type="text" placeholder="Si tenés uno, escribilo acá" autocomplete="off"></div>
+            </div>
+          </fieldset>
+        </div>
+
+        <aside class="summary" aria-live="polite">
+          <h3>Tu pedido</h3>
+          <div class="sum-lines" id="sumLines"></div>
+          <div class="sum-total"><span>Total</span><strong id="sumTotal">$0</strong></div>
+          <div class="sena"><span>Seña para reservar (50%)</span><b id="sumSena">$0</b></div>
+          <p class="hint" id="sumEntrega"></p>
+          <div class="sum-actions">
+            <a class="btn" id="btnWsp" href="#armar" target="_blank" rel="noopener">Enviar pedido por WhatsApp</a>
+            <button class="btn ghost" type="button" id="btnCopy">Copiar resumen</button>
+          </div>
+          <p class="msg" id="sumMsg"></p>
+          <textarea id="sumText" rows="6" readonly hidden style="width:100%;font:.8rem var(--f-mono);border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--surface);color:var(--ink)"></textarea>
+        </aside>
+      </form>
+    </div>
+  </section>
+
+  <section id="preguntas">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2>Lo que nos preguntan antes de reservar</h2>
+      </div>
+      <div class="faq">
+        <details><summary>¿Cómo se manda la invitación?</summary><p>Te entregamos un link. Lo mandás por WhatsApp, Instagram o mail. Tus invitados lo abren desde el celular sin instalar nada.</p></details>
+        <details><summary>¿Cuánto tarda?</summary><p>Entre 4 y 7 días hábiles desde que recibimos la seña, las fotos y los textos. Si estás apurado, sumá la entrega en 24 horas.</p></details>
+        <details><summary>¿Puedo cambiar algo después de enviarla?</summary><p>Sí. Si cambia un horario o un lugar, lo actualizamos y todos ven el dato nuevo en el mismo link. Los cambios de datos son gratis hasta el día del evento.</p></details>
+        <details><summary>¿Cómo pago?</summary><p>Señás el 50% por transferencia o Mercado Pago para reservar, y pagás el resto cuando te entregamos la invitación terminada.</p></details>
+        <details><summary>¿Cuánto tiempo queda activo el link?</summary><p>Hasta 6 meses después del evento, así tus invitados pueden volver a ver las fotos del álbum.</p></details>
+        <details><summary>¿Cuál es la diferencia entre confirmar por WhatsApp y el panel?</summary><p>Sin panel, cada confirmación te llega como mensaje y llevás la cuenta vos. Con panel, todo queda ordenado: quién viene, quién falta responder, menús especiales y mensajes, y lo podés descargar.</p></details>
+        <details><summary>¿Hacen invitaciones para instituciones?</summary><p>Sí. Aniversarios, cenas de gala, actos y fiestas de egresados. Podemos agregar valor de tarjeta, mesas por entidad y lista de confirmados por institución.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="legales" style="padding-top:24px">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Reglas claras</span>
+        <h2>Términos y privacidad</h2>
+      </div>
+      <div class="legal">
+        <article id="terminos">
+          <h3>Términos del servicio</h3>
+          <ul>
+            <li>La seña del 50% reserva tu lugar en la agenda de diseño.</li>
+            <li>Si cancelás antes de que empecemos a diseñar, te devolvemos la seña completa.</li>
+            <li>Una vez entregado el primer borrador, la seña no se devuelve.</li>
+            <li>Incluye hasta 2 rondas de ajustes de diseño antes de la entrega final.</li>
+            <li>El link queda activo hasta 6 meses después del evento.</li>
+            <li>Las fotos y textos son tuyos; solo mostramos tu invitación como ejemplo si nos das permiso.</li>
+          </ul>
+        </article>
+        <article id="privacidad">
+          <h3>Privacidad</h3>
+          <ul>
+            <li>Usamos los datos de tus invitados solo para mostrar la invitación y las confirmaciones.</li>
+            <li>No vendemos ni compartimos esos datos con nadie.</li>
+            <li>Podés pedir que borremos la lista de invitados en cualquier momento.</li>
+            <li>Al terminar el período activo, borramos las confirmaciones y el álbum.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><span data-name>Evocard</span> · Invitaciones digitales</span>
+    <span>WhatsApp: <span id="wspShow"></span> · <a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a></span>
+  </div>
+</footer>
+
+<script>
+/* ===== CONFIGURACIÓN: cambiá acá nombre, WhatsApp y precios ===== */
+const CONFIG = {
+  nombre: "Evocard",
+  whatsapp: "5491123210224",            // número con código de país, sin + ni espacios
+  whatsappVisible: "+54 9 11 2321-0224",
+  precioSeccionExtra: 4000,
+  cupones: { "LANZAMIENTO": 0.10 },    // cupón: descuento (0.10 = 10%)
+  planes: [
+    { id:"basico",   nombre:"Básico",   precio:42000, secciones:5,  panel:false, album:false, bienvenida:false,
+      resumen:"Para eventos simples que confirman por WhatsApp." },
+    { id:"completo", nombre:"Completo", precio:69000, secciones:8,  panel:true,  album:true,  bienvenida:false, destacado:true,
+      resumen:"Panel de invitados con nombres y álbum de fotos incluidos." },
+    { id:"medida",   nombre:"A medida", precio:105000, secciones:99, panel:true,  album:true,  bienvenida:true,
+      resumen:"Diseño desde cero: ilustraciones, acuarelas o video de fondo." }
+  ],
+  panelBasico: 18000,
+  cupos: [ {id:"150", txt:"Hasta 150 invitados", extra:0}, {id:"300", txt:"Hasta 300 invitados", extra:6000}, {id:"500", txt:"Hasta 500 invitados", extra:12000} ],
+  extras: [
+    { id:"idioma",   nombre:"Segundo idioma",          det:"Inglés, portugués, italiano u otro", precio:15000 },
+    { id:"album",    nombre:"Álbum de fotos por QR",   det:"Los invitados suben sus fotos",       precio:15000, incluidoSi:"album" },
+    { id:"cartel",   nombre:"Cartel QR para mesas",    det:"Archivo listo para imprimir",         precio:8000 },
+    { id:"bienvenida", nombre:"Pantalla de bienvenida a medida", det:"Animación de entrada propia", precio:12000, incluidoSi:"bienvenida" },
+    { id:"urgente",  nombre:"Entrega en 24 horas",     det:"Prioridad máxima",                    precio:20000 },
+    { id:"dominio",  nombre:"Dominio propio",          det:"Ej: luciaytomas.com.ar",              precio:50000 }
+  ],
+  eventos: ["Boda","XV años","Cumpleaños","Baby shower","Institucional","Egresados","Comunión","Bautismo","Otro"],
+  estilos: ["Jardín","Noche estrellada","Confeti","Nube","Gala","Luz","Ninguno, tengo otra idea"],
+  secciones: ["Ubicación y mapa","Cuenta regresiva","Cronograma","Dress code","Regalos y alias","Confirmación con menú","Valor de tarjeta","Galería de fotos","Nuestra historia","Padrinos y familia","Playlist colaborativa","Hospedaje sugerido","Trivia divertida","Preguntas frecuentes"]
+};
+/* ================================================================ */
+
+const $ = s => document.querySelector(s);
+const money = n => "$" + Math.round(n).toLocaleString("es-AR");
+document.querySelectorAll("[data-name]").forEach(el => el.textContent = CONFIG.nombre);
+document.title = CONFIG.nombre + " Invitaciones";
+$("#wspShow").textContent = CONFIG.whatsappVisible;
+
+/* Tarjetas de precios */
+(function renderPlans(){
+  const incl = p => [
+    [p.secciones >= 99 ? "Todas las secciones" : p.secciones + " secciones a elección", true],
+    ["Hasta 5 fotos y colores a tu gusto", true],
+    ["Confirmación de asistencia", true],
+    ["Panel con link por invitado", p.panel],
+    ["Álbum de fotos por QR", p.album],
+    ["Pantalla de bienvenida a medida", p.bienvenida]
+  ];
+  $("#plansGrid").innerHTML = CONFIG.planes.map(p => `
+    <div class="plan ${p.destacado ? "star" : ""}">
+      ${p.destacado ? '<span class="tag">El más elegido</span>' : ""}
+      <h3>${p.nombre}</h3>
+      <div class="price">${p.id === "medida" ? "<small>desde </small>" : ""}${money(p.precio)}</div>
+      <p class="hint">${p.resumen}</p>
+      <ul>${incl(p).map(([t,ok]) => `<li class="${ok ? "" : "no"}">${ok ? t : t + " (extra)"}</li>`).join("")}</ul>
+      <a class="btn ${p.destacado ? "" : "ghost"} small" href="#armar" data-plan="${p.id}">Elegir ${p.nombre}</a>
+    </div>`).join("");
+  const comp = CONFIG.planes.find(p => p.id === "completo");
+  $("#cmpPrice").textContent = money(comp.precio);
+  $("#cmpTotal").textContent = money(comp.precio);
+})();
+
+/* Opciones del configurador */
+function opt(group, type, id, label, small, checked){
+  return `<div class="opt"><input type="${type}" name="${group}" id="${group}-${id}" value="${id}" ${checked ? "checked" : ""}><label for="${group}-${id}">${label}${small ? `<small>${small}</small>` : ""}</label></div>`;
+}
+const slug = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-");
+
+$("#optEvento").innerHTML = CONFIG.eventos.map((e,i) => opt("evento","radio",slug(e),e,"",i===0)).join("");
+$("#optPlan").innerHTML = CONFIG.planes.map(p => opt("plan","radio",p.id,p.nombre,(p.id==="medida"?"desde ":"") + money(p.precio), p.destacado)).join("");
+$("#optEstilo").innerHTML = CONFIG.estilos.map((e,i) => opt("estilo","radio",slug(e),e,"",i===0)).join("");
+const defaultSec = new Set(["Ubicación y mapa","Cuenta regresiva","Cronograma","Dress code","Regalos y alias","Confirmación con menú"]);
+$("#optSecciones").innerHTML = CONFIG.secciones.map(s => opt("seccion","checkbox",slug(s),s,"",defaultSec.has(s))).join("");
+$("#optExtras").innerHTML = CONFIG.extras.map(x => opt("extra","checkbox",x.id,x.nombre,x.det + " · +" + money(x.precio),false)).join("");
+
+function plan(){ return CONFIG.planes.find(p => p.id === (document.querySelector('input[name="plan"]:checked')||{}).value) || CONFIG.planes[1]; }
+
+function renderPanelOpts(){
+  const p = plan();
+  const prev = (document.querySelector('input[name="panel"]:checked')||{}).value;
+  const items = [];
+  if(!p.panel) items.push(opt("panel","radio","no","Sin panel","Confirmaciones por WhatsApp", !prev || prev==="no"));
+  CONFIG.cupos.forEach(c => {
+    const base = p.panel ? 0 : CONFIG.panelBasico;
+    const precio = base + c.extra;
+    const sub = precio === 0 ? "Incluido en tu plan" : "+" + money(precio);
+    items.push(opt("panel","radio",c.id,c.txt,sub, p.panel ? (prev ? prev===c.id : c.id==="150") : prev===c.id));
+  });
+  $("#optPanel").innerHTML = items.join("");
+  if(!document.querySelector('input[name="panel"]:checked')){
+    const first = document.querySelector('input[name="panel"]'); if(first) first.checked = true;
+  }
+}
+
+function refreshExtras(){
+  const p = plan();
+  CONFIG.extras.forEach(x => {
+    const inp = $("#extra-" + x.id); const lab = inp.nextElementSibling;
+    const incl = x.incluidoSi && p[x.incluidoSi];
+    inp.disabled = !!incl;
+    if(incl) inp.checked = true;
+    lab.querySelector("small").textContent = incl ? "Incluido en tu plan" : x.det + " · +" + money(x.precio);
+  });
+}
+
+function compute(){
+  const p = plan();
+  const lines = [];
+  lines.push([ "Plan " + p.nombre, p.precio ]);
+  const secs = [...document.querySelectorAll('input[name="seccion"]:checked')].map(i => i.nextElementSibling.textContent);
+  const extraSecs = Math.max(0, secs.length - p.secciones);
+  if(extraSecs) lines.push([ extraSecs + (extraSecs === 1 ? " sección extra" : " secciones extra"), extraSecs * CONFIG.precioSeccionExtra ]);
+  const panelId = (document.querySelector('input[name="panel"]:checked')||{}).value || "no";
+  let panelTxt = "Sin panel";
+  if(panelId !== "no"){
+    const c = CONFIG.cupos.find(c => c.id === panelId);
+    const precio = (p.panel ? 0 : CONFIG.panelBasico) + c.extra;
+    panelTxt = "Panel " + c.txt.toLowerCase();
+    if(precio) lines.push([ panelTxt, precio ]);
+  }
+  const extras = [];
+  CONFIG.extras.forEach(x => {
+    const inp = $("#extra-" + x.id);
+    if(inp.checked){
+      const incl = x.incluidoSi && p[x.incluidoSi];
+      extras.push(x.nombre + (incl ? " (incluido)" : ""));
+      if(!incl) lines.push([ x.nombre, x.precio ]);
+    }
+  });
+  let subtotal = lines.reduce((s,[,v]) => s + v, 0);
+  const cup = $("#dCupon").value.trim().toUpperCase();
+  const desc = CONFIG.cupones[cup];
+  if(desc){ lines.push([ "Cupón " + cup, -subtotal * desc ]); }
+  const total = lines.reduce((s,[,v]) => s + v, 0);
+  return { p, secs, extraSecs, panelTxt, extras, lines, total, cup, cupValido: !!desc,
+    urgente: $("#extra-urgente").checked };
+}
+
+function eventoTxt(){
+  const v = (document.querySelector('input[name="evento"]:checked')||{});
+  const lab = v.nextElementSibling ? v.nextElementSibling.textContent : "";
+  if(v.value === "otro") return "Otro: " + ($("#eventoOtro").value.trim() || "a definir");
+  return lab;
+}
+
+function fmtFecha(v){
+  if(!v) return "a definir";
+  const [y,m,d] = v.split("-"); return `${d}/${m}/${y}`;
+}
+
+function buildText(r){
+  const estilo = (document.querySelector('input[name="estilo"]:checked')||{}).nextElementSibling?.textContent || "";
+  const t = [];
+  t.push(`Hola! Quiero reservar una invitación con ${CONFIG.nombre}.`);
+  t.push("");
+  t.push(`Evento: ${eventoTxt()}`);
+  t.push(`Quién festeja: ${$("#dNombres").value.trim() || "a definir"}`);
+  t.push(`Fecha: ${fmtFecha($("#dFecha").value)}`);
+  if($("#dLugar").value.trim()) t.push(`Ciudad: ${$("#dLugar").value.trim()}`);
+  t.push(`Plan: ${r.p.nombre}`);
+  t.push(`Estilo de partida: ${estilo}`);
+  t.push(`Secciones (${r.secs.length}): ${r.secs.join(", ") || "ninguna"}`);
+  t.push(`Panel: ${r.panelTxt}`);
+  if(r.extras.length) t.push(`Extras: ${r.extras.join(", ")}`);
+  if(r.cupValido) t.push(`Cupón: ${r.cup}`);
+  t.push("");
+  t.push(`Total: ${money(r.total)}`);
+  t.push(`Seña (50%): ${money(r.total/2)}`);
+  if($("#dNotas").value.trim()){ t.push(""); t.push(`Notas: ${$("#dNotas").value.trim()}`); }
+  if($("#dContacto").value.trim()){ t.push(""); t.push(`Pedido de: ${$("#dContacto").value.trim()}`); }
+  return t.join("\n");
+}
+
+function update(){
+  const r = compute();
+  const p = r.p;
+  $("#otroWrap").hidden = (document.querySelector('input[name="evento"]:checked')||{}).value !== "otro";
+  $("#secHint").textContent = p.secciones >= 99
+    ? "Tu plan incluye todas las secciones que quieras."
+    : `Tu plan incluye ${p.secciones} secciones. Cada sección de más suma ${money(CONFIG.precioSeccionExtra)}.`;
+  $("#secCounter").innerHTML = p.secciones >= 99
+    ? `<b>${r.secs.length}</b> elegidas`
+    : `<b>${r.secs.length}</b> de ${p.secciones} incluidas` + (r.extraSecs ? ` · ${r.extraSecs} extra` : "");
+  $("#sumLines").innerHTML = r.lines.map(([t,v]) => `<div class="row"><span>${t}</span><span>${v < 0 ? "−" + money(-v) : money(v)}</span></div>`).join("");
+  $("#sumTotal").textContent = money(r.total);
+  $("#sumSena").textContent = money(r.total / 2);
+  $("#sumEntrega").textContent = r.urgente ? "Entrega en 24 horas desde que recibimos fotos y textos." : "Entrega en 4 a 7 días hábiles desde que recibimos fotos y textos.";
+  const cupIn = $("#dCupon").value.trim();
+  const msg = $("#sumMsg");
+  if(cupIn && !r.cupValido){ msg.textContent = "Ese cupón no existe. Revisá cómo está escrito."; msg.className = "msg err"; }
+  else if(r.cupValido){ msg.textContent = "Cupón aplicado."; msg.className = "msg"; }
+  else { msg.textContent = ""; msg.className = "msg"; }
+  const text = buildText(r);
+  $("#sumText").value = text;
+  $("#btnWsp").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}`;
+}
+
+$("#cfg").addEventListener("change", e => {
+  if(e.target.name === "plan"){ renderPanelOpts(); refreshExtras(); }
+  update();
+});
+$("#cfg").addEventListener("input", update);
+$("#cfg").addEventListener("submit", e => e.preventDefault());
+
+document.querySelectorAll("[data-plan]").forEach(a => a.addEventListener("click", () => {
+  const r = $("#plan-" + a.dataset.plan); if(r){ r.checked = true; renderPanelOpts(); refreshExtras(); update(); }
+}));
+
+$("#btnCopy").addEventListener("click", () => {
+  const ta = $("#sumText");
+  const done = () => { $("#sumMsg").textContent = "Resumen copiado. Pegalo en WhatsApp."; $("#sumMsg").className = "msg"; };
+  const fallback = () => { ta.hidden = false; ta.focus(); ta.select(); $("#sumMsg").textContent = "Seleccioná el texto de abajo y copialo."; };
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(ta.value).then(done, fallback); }
+    else fallback();
+  }catch(err){ fallback(); }
+});
+
+renderPanelOpts();
+refreshExtras();
+update();
+</script>
+
+</body>
+</html>
