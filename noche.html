@@ -102,9 +102,6 @@ h2{font-family:var(--f-script);font-weight:400;font-size:3rem;line-height:1.1;co
 .dato b{font-weight:500;word-break:break-all}
 .copiar{font-family:var(--f-sans);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;background:var(--lila-soft);border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer;color:var(--lila);flex-shrink:0}
 
-/* Álbum */
-.qr{width:132px;height:132px;margin:20px auto 18px;background:#fff;border-radius:12px;padding:10px}
-.qr svg{width:100%;height:100%;display:block}
 
 /* RSVP */
 form{display:grid;gap:18px;text-align:left;margin-top:8px}
@@ -125,6 +122,13 @@ select,textarea,input[type=text]{border:1px solid var(--line);border-radius:10px
 .fine{font-family:var(--f-sans);font-size:.75rem;color:var(--muted);margin-top:14px}
 footer{padding-block:40px 90px;text-align:center}
 footer .nombre{font-size:3.6rem;margin:4px 0 0}
+
+/* Álbum de fotos */
+.album-card{text-align:center}
+.album-card .campo{text-align:left;margin-bottom:16px}
+.album-card input[type=text]{border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;background:transparent}
+.album-barra{height:6px;border-radius:9px;background:var(--line);overflow:hidden;margin:16px auto 0;max-width:320px}
+.album-barra i{display:block;height:100%;width:0;background:var(--acc,var(--leaf,var(--lila)));transition:width .3s}
 </style>
 
 <canvas id="cielo" aria-hidden="true"></canvas>
@@ -215,13 +219,22 @@ footer .nombre{font-size:3.6rem;margin:4px 0 0}
     </div>
   </section>
 
-  <section>
+
+  <section id="album">
     <div class="wrap">
-      <span class="lab">Álbum de la noche</span>
+      <span class="lab">Álbum de la fiesta</span>
       <h2>Compartí tus fotos</h2>
-      <p class="sub">La noche de la fiesta, escaneá el código de las mesas o tocá el botón y subí tus fotos. Todas van a un mismo álbum para que nadie se pierda nada.</p>
-      <div class="qr" aria-hidden="true"><svg viewBox="0 0 21 21" shape-rendering="crispEdges" id="qrDibujo"></svg></div>
-      <a class="btn out" id="albumBtn" href="#" aria-disabled="true">Se habilita el día de la fiesta</a>
+      <p class="sub">Esa noche, subí acá tus fotos. Todas van a un mismo álbum para que nadie se pierda nada.</p>
+      <div class="card album-card">
+        <input type="file" id="albumArchivos" accept="image/*" multiple hidden>
+        <div class="campo" id="albumAutorCampo">
+          <label for="albumAutor">Tu nombre (opcional)</label>
+          <input type="text" id="albumAutor" maxlength="60" autocomplete="name">
+        </div>
+        <button class="btn" type="button" id="albumBtn">Subir mis fotos</button>
+        <div class="album-barra" id="albumBarra" hidden><i id="albumProg"></i></div>
+        <p class="fine" id="albumMsg" role="status"></p>
+      </div>
     </div>
   </section>
 
@@ -287,12 +300,14 @@ const INV = {
   titulo: "XV de Martina",
   lugarAgenda: "Salón Los Aromos, Marcos Paz, Buenos Aires",
   horaFiesta: "00:30",
-  /* Link del álbum de fotos (Google Fotos, Drive, etc.). Vacío = el botón dice que se habilita el día de la fiesta. */
+  /* Álbum externo (Google Fotos, etc.), solo si NO hay planilla. Con planilla, las fotos se suben a la carpeta del evento. */
   album: "",
   /* Plan Básico (sin planilla): número del cliente que recibe las confirmaciones por WhatsApp, con código de país. Ej: 5491112345678 */
   whatsapp: "",
   /* Plan Básico: hasta cuántas personas puede confirmar cada invitado */
   maxLugares: 6,
+  /* Álbum de fotos: true = los invitados pueden subir fotos (necesita planilla). false = se oculta la sección */
+  albumActivo: true,
   /* Dirección de la planilla del evento (termina en /exec). Vacía = invitación de muestra. */
   planilla: ""
 };
@@ -318,6 +333,14 @@ const Conexion = {
     const j = await r.json();
     if(!j.ok) throw new Error(j.error || "No se pudo guardar tu respuesta.");
     return j.invitado;
+  },
+  async subirFoto(datos){
+    let r;
+    try{ r = await fetch(INV.planilla, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ accion:"subirFoto" }, datos)) }); }
+    catch(e){ throw new Error("No se pudo subir. Revisá tu conexión e intentá de nuevo."); }
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || "No se pudo subir la foto.");
+    return j.foto;
   }
 };
 /* ====================================================================================== */
@@ -386,21 +409,6 @@ async function iniciarInvitado(){
     + "&text=" + encodeURIComponent(INV.titulo)
     + "&dates=" + f(INV.fechaEvento) + "/" + f(INV.fechaFin)
     + "&location=" + encodeURIComponent(INV.lugarAgenda);
-})();
-
-/* Álbum */
-(function(){
-  const b = $("#albumBtn");
-  if(INV.album){ b.href = INV.album; b.target = "_blank"; b.rel = "noopener"; b.removeAttribute("aria-disabled"); b.textContent = "Subir mis fotos"; }
-  else b.addEventListener("click", e => e.preventDefault());
-  /* Dibujo de ejemplo de un código QR (el real se genera con el link del álbum) */
-  let s = 11, p = ""; const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
-  const ojo = (x, y) => `<rect x="${x}" y="${y}" width="7" height="7" fill="#160F24"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3" fill="#160F24"/>`;
-  for(let y = 0; y < 21; y++) for(let x = 0; x < 21; x++){
-    const enOjo = (x < 8 && y < 8) || (x > 12 && y < 8) || (x < 8 && y > 12);
-    if(!enOjo && rnd() > .52) p += `<rect x="${x}" y="${y}" width="1" height="1" fill="#160F24"/>`;
-  }
-  $("#qrDibujo").innerHTML = p + ojo(0,0) + ojo(14,0) + ojo(0,14);
 })();
 
 /* Cuenta regresiva */
@@ -545,6 +553,53 @@ $("#rsvp").addEventListener("submit", async e => {
     ? `<div class="gracias"><h3>¡Nos vemos esa noche!</h3><p>Confirmaste ${cant} ${cant === "1" ? "lugar" : "lugares"} para ${nombre.innerHTML}. Si algo cambia, podés volver a esta invitación y modificar tu respuesta.</p>${nota}</div>`
     : `<div class="gracias"><h3>Te voy a extrañar</h3><p>Gracias por avisarme con tiempo.</p>${nota}</div>`;
 });
+
+
+/* ===== Álbum de fotos: los invitados suben sus fotos a la carpeta del evento ===== */
+(function(){
+  const sec = $("#album"); if(!sec) return;
+  if(INV.albumActivo === false){ sec.hidden = true; return; }
+  const btn = $("#albumBtn"), input = $("#albumArchivos"), msg = $("#albumMsg"), barra = $("#albumBarra"), prog = $("#albumProg");
+  const real = !!INV.planilla;
+  if(!real && INV.album){   /* sin planilla, pero con un álbum externo (por ejemplo Google Fotos) */
+    $("#albumAutorCampo").hidden = true; btn.textContent = "Abrir el álbum";
+    btn.addEventListener("click", () => window.open(INV.album, "_blank", "noopener")); return;
+  }
+  btn.addEventListener("click", () => input.click());
+  async function achicar(archivo){
+    const url = URL.createObjectURL(archivo);
+    try{
+      const img = await new Promise((ok, mal) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => mal(new Error("No se pudo leer la foto.")); im.src = url; });
+      const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      return c.toDataURL("image/jpeg", 0.82).split(",")[1];
+    } finally { URL.revokeObjectURL(url); }
+  }
+  input.addEventListener("change", async () => {
+    const archivos = [...input.files].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|heif|webp)$/i.test(f.name)); input.value = "";
+    if(!archivos.length) return;
+    if(!real){ msg.textContent = `Elegiste ${archivos.length === 1 ? "1 foto" : archivos.length + " fotos"}. En la invitación real se suben al álbum del evento y se ven en el panel.`; return; }
+    btn.disabled = true; barra.hidden = false; let subidas = 0, fallas = 0, aviso = "";
+    for(let i = 0; i < archivos.length; i++){
+      msg.textContent = `Subiendo ${i + 1} de ${archivos.length}…`; prog.style.width = (i / archivos.length * 100) + "%";
+      try{
+        const datos = await achicar(archivos[i]);
+        await Conexion.subirFoto({ tipo:"image/jpeg", datos, autor: $("#albumAutor").value.trim() || INV.invitado || "" });
+        subidas++;
+      }catch(e){ fallas++; if(/cerrado|lleno/.test(e.message)){ aviso = e.message; break; } }
+    }
+    prog.style.width = "100%"; btn.disabled = false; setTimeout(() => barra.hidden = true, 1500);
+    msg.textContent = aviso || (subidas
+      ? `¡Gracias! ${subidas === 1 ? "Se subió 1 foto" : "Se subieron " + subidas + " fotos"} al álbum.` + (fallas ? ` ${fallas === 1 ? "Una no se pudo subir" : fallas + " no se pudieron subir"}: probá de nuevo con esas.` : "")
+      : "No se pudo subir. Revisá tu conexión e intentá de nuevo.");
+  });
+  /* El QR de las mesas abre la invitación con ?album: saltea el sobre y va directo a esta sección */
+  if(new URLSearchParams(location.search).has("album")){
+    const s = $("#sobre"); s.classList.add("abriendo", "abierto"); $("#musica").hidden = false;
+    setTimeout(() => sec.scrollIntoView({ block:"start" }), 150);
+  }
+})();
 
 iniciarInvitado();
 </script>

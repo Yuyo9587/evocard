@@ -152,6 +152,26 @@ textarea.lista{font-family:var(--f-mono);font-size:.82rem;min-height:150px}
 dialog{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:20px;width:min(460px,calc(100vw - 32px))}
 dialog::backdrop{background:rgba(20,16,24,.45)}
 dialog form{display:grid;gap:12px}
+/* Fotos */
+.fotos-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px;align-items:start;margin-bottom:18px}
+@media (max-width:760px){.fotos-top{grid-template-columns:1fr}}
+.qr-mini{width:150px;height:150px;background:#fff;padding:8px;border-radius:10px;border:1px solid var(--line);box-sizing:content-box}
+.qr-mini img,.qr-mini canvas{display:block;width:150px;height:150px}
+.galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.foto{position:relative;display:block;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--line)}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto span{position:absolute;left:0;right:0;bottom:0;padding:4px 8px;font-size:.72rem;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.6));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cartel{display:none}
+@media print{
+  body.cartel > *:not(#cartel){display:none!important}
+  body.cartel{background:#fff!important}
+  body.cartel #cartel{display:flex!important;flex-direction:column;align-items:center;justify-content:center;min-height:95vh;text-align:center;color:#0B0B0C;font-family:var(--f-body)}
+  #cartel .c-lab{font-size:14pt;letter-spacing:.3em;text-transform:uppercase;color:#8A6A2E;margin:0}
+  #cartel .c-tit{font-family:var(--f-display);font-weight:500;font-size:44pt;margin:10pt 0 6pt}
+  #cartel .c-ev{font-size:16pt;margin:0 0 24pt}
+  #cartel #qrGrande img,#cartel #qrGrande canvas{width:9cm!important;height:9cm!important}
+  #cartel .c-pie{font-size:14pt;margin-top:20pt;max-width:14cm}
+}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:.88rem;z-index:50;max-width:calc(100vw - 32px)}
 </style>
 
@@ -187,6 +207,7 @@ dialog form{display:grid;gap:12px}
     <button role="tab" id="tab-lista" aria-selected="true" aria-controls="pane-lista">Invitados<span class="cnt" id="cntLista"></span></button>
     <button role="tab" id="tab-mensajes" aria-selected="false" aria-controls="pane-mensajes">Mensajes<span class="cnt" id="cntMsg"></span></button>
     <button role="tab" id="tab-cargar" aria-selected="false" aria-controls="pane-cargar">Agregar invitados</button>
+    <button role="tab" id="tab-fotos" aria-selected="false" aria-controls="pane-fotos">Fotos<span class="cnt" id="cntFotos"></span></button>
   </nav>
 
   <section id="pane-lista" role="tabpanel" aria-labelledby="tab-lista" style="display:grid;gap:14px">
@@ -239,7 +260,33 @@ dialog form{display:grid;gap:12px}
     </div>
     <datalist id="cats"></datalist>
   </section>
+
+  <section id="pane-fotos" role="tabpanel" aria-labelledby="tab-fotos" hidden>
+    <div class="fotos-top">
+      <div class="box qr-box">
+        <h3>Cartel para las mesas</h3>
+        <p class="muted" style="font-size:.88rem">Los invitados escanean este código con la cámara del celular y suben sus fotos, sin instalar nada.</p>
+        <div id="qrMini" class="qr-mini" aria-label="Código QR del álbum"></div>
+        <p class="mono muted" id="qrLink" style="font-size:.75rem;word-break:break-all"></p>
+        <div class="row-btns"><button class="btn main" type="button" id="btnCartel">Imprimir cartel</button><button class="btn" type="button" id="btnCopiarAlbum">Copiar link del álbum</button></div>
+      </div>
+      <div class="box">
+        <h3>Fotos de los invitados</h3>
+        <p class="muted" id="fotosInfo" style="font-size:.88rem">Cargando…</p>
+        <div class="row-btns"><button class="btn" type="button" id="btnFotos">Actualizar fotos</button><a class="btn" id="btnCarpeta" target="_blank" rel="noopener" hidden>Abrir carpeta (descargar todas)</a></div>
+      </div>
+    </div>
+    <div class="galeria" id="galeria"></div>
+  </section>
 </main>
+
+<div id="cartel" aria-hidden="true">
+  <p class="c-lab">Álbum de la fiesta</p>
+  <h1 class="c-tit">Compartí tus fotos</h1>
+  <p class="c-ev" id="cartelEvento"></p>
+  <div id="qrGrande"></div>
+  <p class="c-pie">Escaneá el código con la cámara del celular y subí tus fotos</p>
+</div>
 
 <dialog id="dlgEditar">
   <form method="dialog" id="formEditar">
@@ -257,6 +304,7 @@ dialog form{display:grid;gap:12px}
 
 <div class="toast" id="toast" role="status" hidden></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 /* ============================================================
    PIEZA DE CONEXIÓN
@@ -299,6 +347,7 @@ const Conexion = {
   borrar(codigo){ return this.pedir({ accion:"borrar", codigo }); },
   importar(invitados){ return this.pedir({ accion:"importar", invitados }); },
   enviada(codigo){ return this.pedir({ accion:"enviada", codigo }); },
+  fotos(){ return this.pedir({ accion:"fotos" }); },
   /* Simulación con datos de ejemplo: se pierde al recargar */
   demo(d){
     const L = Demo.invitados;
@@ -315,6 +364,7 @@ const Conexion = {
     if(d.accion === "borrar"){ const k = L.findIndex(i => i.codigo === d.codigo); if(k >= 0) L.splice(k, 1); return Promise.resolve({ ok:true }); }
     if(d.accion === "importar"){ let n = 0; d.invitados.forEach(x => { const b = limpio(x); if(b.nombre){ L.push(Object.assign({ codigo: nuevoCodigo(), estado:"pendiente", cantidad:0, menu:"", traslado:"", mensaje:"", respondido:"", enviada:"" }, b)); n++; } }); return Promise.resolve({ ok:true, agregados:n }); }
     if(d.accion === "enviada"){ const ex = L.find(i => i.codigo === d.codigo); if(ex) ex.enviada = "si"; return Promise.resolve({ ok:true }); }
+    if(d.accion === "fotos") return Promise.resolve({ ok:true, carpeta:"", fotos:[], demo:true });
     return Promise.reject(new Error("Acción desconocida"));
   }
 };
@@ -516,7 +566,49 @@ $("#btnCopiarLista").addEventListener("click", () => copiar(csv().replace(/^﻿/
 /* Pestañas */
 document.querySelectorAll('[role="tab"]').forEach(t => t.addEventListener("click", () => {
   document.querySelectorAll('[role="tab"]').forEach(x => { const on = x === t; x.setAttribute("aria-selected", String(on)); $("#" + x.getAttribute("aria-controls")).hidden = !on; });
+  if(t.id === "tab-fotos") abrirFotos();
 }));
+
+/* Fotos y cartel QR */
+function linkAlbum(){
+  const base = (cfg.link || "https://evocard.com.ar/jardin.html").trim();
+  return base + (base.includes("?") ? "&" : "?") + "album";
+}
+function dibujarQR(el, tam){
+  el.innerHTML = "";
+  if(!window.QRCode){ el.textContent = "No se pudo cargar el generador de QR. Revisá tu conexión."; return; }
+  new QRCode(el, { text: linkAlbum(), width: tam, height: tam, colorDark:"#0B0B0C", colorLight:"#FFFFFF", correctLevel: QRCode.CorrectLevel.M });
+}
+async function abrirFotos(){
+  dibujarQR($("#qrMini"), 150);
+  $("#qrLink").textContent = linkAlbum();
+  if(!cfg.link) $("#qrLink").textContent += "  (cargá la dirección de la invitación en Conexión)";
+  await cargarFotos();
+}
+async function cargarFotos(){
+  $("#btnFotos").disabled = true; $("#fotosInfo").textContent = "Cargando…";
+  try{
+    const r = await Conexion.fotos();
+    const F = r.fotos || [];
+    $("#cntFotos").textContent = F.length || "";
+    if(r.demo){ $("#fotosInfo").textContent = "Con datos de ejemplo no hay fotos. Conectá la planilla del evento para ver las que suben los invitados."; }
+    else if(!F.length){ $("#fotosInfo").textContent = "Todavía nadie subió fotos. Aparecen acá a medida que los invitados las suben."; }
+    else { $("#fotosInfo").textContent = `${F.length === 1 ? "1 foto" : F.length + " fotos"}. Tocá una para verla grande.`; }
+    const c = $("#btnCarpeta"); c.hidden = !r.carpeta; if(r.carpeta) c.href = r.carpeta;
+    $("#galeria").innerHTML = F.map(f => `<a class="foto" target="_blank" rel="noopener" href="https://drive.google.com/file/d/${encodeURIComponent(f.id)}/view" title="${esc(f.autor || "")}">
+      <img loading="lazy" alt="Foto${f.autor ? " de " + esc(f.autor) : ""}" src="https://drive.google.com/thumbnail?id=${encodeURIComponent(f.id)}&sz=w400">
+      ${f.autor ? `<span>${esc(f.autor)}</span>` : ""}</a>`).join("");
+  }catch(e){ $("#fotosInfo").textContent = e.message; }
+  finally{ $("#btnFotos").disabled = false; }
+}
+$("#btnFotos").addEventListener("click", cargarFotos);
+$("#btnCopiarAlbum").addEventListener("click", () => copiar(linkAlbum(), "Link del álbum copiado"));
+$("#btnCartel").addEventListener("click", () => {
+  $("#cartelEvento").textContent = (datos.evento.nombre || "").replace(/ \(ejemplo\)$/, "");
+  dibujarQR($("#qrGrande"), 360);
+  document.body.classList.add("cartel");
+  setTimeout(() => { window.print(); setTimeout(() => document.body.classList.remove("cartel"), 500); }, 300);
+});
 
 /* Agregar uno */
 $("#formNuevo").addEventListener("submit", async e => {
