@@ -35,7 +35,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
-body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-variant-numeric:lining-nums;font-size:16px;line-height:1.6}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
 a{color:var(--wax)}
 :focus-visible{outline:2px solid var(--wax);outline-offset:3px;border-radius:6px}
@@ -171,7 +171,7 @@ nav.menu a:hover{color:var(--wax)}
 @media (max-width:720px){.compare{grid-template-columns:1fr}}
 .cbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px;display:grid;gap:10px}
 .cbox.dig{background:var(--sage-soft);border-color:var(--sage)}
-.row{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums;border-bottom:1px dashed var(--line);padding-block:6px}
+.row{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:lining-nums tabular-nums;border-bottom:1px dashed var(--line);padding-block:6px}
 .row.total{font-weight:700;border-bottom:0}
 
 /* Pasos */
@@ -210,12 +210,12 @@ legend .num{font-family:var(--f-mono);font-size:.8rem;color:var(--wax);margin-ri
 .field input:focus,.field textarea:focus{border-color:var(--wax);outline:none}
 .summary{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:grid;gap:14px}
 .summary h3{font-size:1.3rem}
-.sum-lines{display:grid;gap:4px;font-size:.92rem;font-variant-numeric:tabular-nums}
+.sum-lines{display:grid;gap:4px;font-size:.92rem;font-variant-numeric:lining-nums tabular-nums}
 .sum-lines .row{border-bottom:0;padding-block:3px}
 .sum-lines .row span:first-child{color:var(--muted)}
 .sum-total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:12px}
-.sum-total strong{font-family:var(--f-display);font-size:2rem;font-variant-numeric:tabular-nums}
-.sena{background:var(--wax-soft);border-radius:10px;padding:10px 12px;font-size:.92rem;display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums}
+.sum-total strong{font-family:var(--f-display);font-size:2rem;font-variant-numeric:lining-nums tabular-nums}
+.sena{background:var(--wax-soft);border-radius:10px;padding:10px 12px;font-size:.92rem;display:flex;justify-content:space-between;gap:10px;font-variant-numeric:lining-nums tabular-nums}
 .sum-actions{display:grid;gap:10px}
 .sum-actions .btn{width:100%}
 .msg{font-size:.85rem;color:var(--muted);min-height:1.2em}

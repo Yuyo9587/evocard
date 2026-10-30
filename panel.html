@@ -51,7 +51,7 @@ h1,h2,h3{letter-spacing:.005em}
   --ok:#7CC79A; --ok-soft:#1F3328; --wait:#E3B663; --wait-soft:#3A2F17; --no:#E58A80; --no-soft:#3B1F1C;
   color-scheme:dark; --gold-text:#D8B66E;}
 *{box-sizing:border-box}
-body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-variant-numeric:lining-nums;font-size:15px;line-height:1.5}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--wax);outline-offset:2px;border-radius:6px}
@@ -98,7 +98,7 @@ main{display:grid;gap:22px;padding-block:22px 60px}
 @media (max-width:560px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:4px;align-content:start;min-width:0}
 .tile .k{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
-.tile .v{font-family:var(--f-display);font-size:2rem;line-height:1.05;font-variant-numeric:tabular-nums}
+.tile .v{font-family:var(--f-display);font-size:2rem;line-height:1.05;font-variant-numeric:lining-nums tabular-nums}
 .tile .s{font-size:.8rem;color:var(--muted)}
 .tile.hero{border-color:var(--ok)}
 .tile.hero .v{color:var(--ok)}
@@ -124,7 +124,7 @@ table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:820px}
 th{text-align:left;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line);background:var(--paper);font-weight:600}
 td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:center;font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:center;font-variant-numeric:lining-nums tabular-nums}
 .nom{font-weight:600}
 .sub{font-size:.78rem;color:var(--muted)}
 .pill{display:inline-block;font-size:.75rem;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
