@@ -481,7 +481,6 @@ h1,h2,h3{letter-spacing:.005em}
               <div class="field"><label for="dContacto">Tu nombre</label><input id="dContacto" type="text" placeholder="Quién hace el pedido" autocomplete="name"></div>
               <div class="field"><label for="dLugar">Ciudad del evento</label><input id="dLugar" type="text" placeholder="Ej: Marcos Paz"></div>
               <div class="field full"><label for="dNotas">Algo más que quieras contarnos</label><textarea id="dNotas" rows="3" placeholder="Colores que te gustan, una idea, una canción..."></textarea></div>
-              <div class="field full"><label for="dCupon">Cupón</label><input id="dCupon" type="text" placeholder="Si tenés uno, escribilo acá" autocomplete="off"></div>
             </div>
           </fieldset>
         </div>
@@ -567,6 +566,7 @@ const CONFIG = {
   whatsapp: "5491123210224",            // número con código de país, sin + ni espacios
   whatsappVisible: "+54 9 11 2321-0224",
   precioSeccionExtra: 4000,
+  // El casillero de cupón está sacado de la página. Los códigos de abajo quedan guardados para cuando se vuelva a poner.
   cupones: { "LANZAMIENTO": 0.10 },    // cupón: descuento (0.10 = 10%)
   planes: [
     { id:"basico",   nombre:"Básico",   precio:42000, secciones:5,  panel:false, album:false, bienvenida:false,
@@ -690,7 +690,7 @@ function compute(){
     }
   });
   let subtotal = lines.reduce((s,[,v]) => s + v, 0);
-  const cup = $("#dCupon").value.trim().toUpperCase();
+  const cup = $("#dCupon") ? $("#dCupon").value.trim().toUpperCase() : "";
   const desc = CONFIG.cupones[cup];
   if(desc){ lines.push([ "Cupón " + cup, -subtotal * desc ]); }
   const total = lines.reduce((s,[,v]) => s + v, 0);
@@ -747,7 +747,7 @@ function update(){
   $("#sumTotal").textContent = money(r.total);
   $("#sumSena").textContent = money(r.total / 2);
   $("#sumEntrega").textContent = r.urgente ? "Entrega en 24 horas desde que recibimos fotos y textos." : "Entrega en 4 a 7 días hábiles desde que recibimos fotos y textos.";
-  const cupIn = $("#dCupon").value.trim();
+  const cupIn = $("#dCupon") ? $("#dCupon").value.trim() : "";
   const msg = $("#sumMsg");
   if(cupIn && !r.cupValido){ msg.textContent = "Ese cupón no existe. Revisá cómo está escrito."; msg.className = "msg err"; }
   else if(r.cupValido){ msg.textContent = "Cupón aplicado."; msg.className = "msg"; }
