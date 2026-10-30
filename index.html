@@ -99,7 +99,7 @@ nav.menu a:hover{color:var(--wax)}
 @media (prefers-reduced-motion: reduce){.env-card,.env-flap,.env-seal{animation:none}}
 
 /* Eventos */
-.events{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.events{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 @media (max-width:900px){.events{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:440px){.events{grid-template-columns:1fr}}
 .ev{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:grid;gap:6px;align-content:start}
@@ -109,9 +109,10 @@ nav.menu a:hover{color:var(--wax)}
 .tag{justify-self:start;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--sage);color:var(--surface)}
 
 /* Modelos */
-.models{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
-@media (max-width:900px){.models{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:520px){.models{grid-template-columns:1fr}}
+.models{display:flex;flex-wrap:wrap;justify-content:center;gap:28px}
+.models>.model{flex:0 1 calc((100% - 56px) / 3);min-width:0}
+@media (max-width:900px){.models>.model{flex-basis:calc((100% - 28px) / 2)}}
+@media (max-width:520px){.models>.model{flex-basis:100%}}
 .model{display:grid;gap:12px;justify-items:center;text-align:center}
 .phone{width:200px;max-width:100%;aspect-ratio:9/17;border-radius:28px;border:7px solid var(--ink);overflow:hidden;position:relative;display:grid;align-content:center;justify-items:center;gap:6px;padding:18px 14px;text-align:center}
 .phone .k{font-family:var(--f-mono);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase}
@@ -143,6 +144,10 @@ nav.menu a:hover{color:var(--wax)}
 .m-inst .n{font-style:normal;font-weight:700;letter-spacing:.02em}
 .m-inst .b{background:#C9A55C;color:#14213D}
 .m-inst::before{content:"";position:absolute;inset:10px;border:1px solid #C9A55C;border-radius:16px}
+.m-corp{background:#F5F7FA;color:#16233A;background-image:radial-gradient(rgba(22,35,58,.12) 1px,transparent 1.5px);background-size:14px 14px}
+.m-corp .k{color:#0F7B6C;font-weight:600}
+.m-corp .n{font-family:var(--f-body);font-style:normal;font-weight:800;font-size:1.3rem;letter-spacing:-.01em}
+.m-corp .b{background:#0F7B6C;color:#fff}
 .m-comu{background:#FFFDF8;color:#4B3F2A}
 .m-comu .b{background:#B8995A;color:#fff}
 .m-comu::before{content:"";position:absolute;top:13%;width:2px;height:26px;background:#B8995A;box-shadow:0 9px 0 0 transparent}
@@ -321,8 +326,8 @@ h1,h2,h3{letter-spacing:.005em}
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">Para cada celebración</span>
-        <h2>Ocho tipos de eventos, un mismo cuidado</h2>
-        <p class="lead">Además de bodas y quince, hacemos las invitaciones que casi nadie ofrece: actos institucionales, comuniones y bautismos.</p>
+        <h2>Nueve tipos de eventos, un mismo cuidado</h2>
+        <p class="lead">Además de bodas y quince, hacemos las invitaciones que casi nadie ofrece: actos institucionales, eventos de empresa, comuniones y bautismos.</p>
       </div>
       <div class="events">
         <div class="ev"><span class="ic">Bodas</span><p>Civil, iglesia y fiesta en una sola invitación, con cronograma y mapa de cada lugar.</p></div>
@@ -330,6 +335,7 @@ h1,h2,h3{letter-spacing:.005em}
         <div class="ev"><span class="ic">Cumpleaños</span><p>Infantiles, 18, 40 o 50: desde lo divertido hasta lo elegante.</p></div>
         <div class="ev"><span class="ic">Baby shower</span><p>Cronograma por momentos, regalos para el bebé y confirmación simple.</p></div>
         <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Institucionales</span><p>Aniversarios, cenas de gala y actos de clubes, escuelas, empresas y entidades.</p></div>
+        <div class="ev new"><span class="tag">Nuevo</span><span class="ic">Corporativos</span><p>Jornadas, congresos, presentaciones y reuniones de empresa sin costo para el invitado: agenda, disertantes e inscripción.</p></div>
         <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Egresados</span><p>Fiestas de egresados y cenas de fin de curso con lista por familia.</p></div>
         <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Comuniones</span><p>Primera comunión y confirmación, con la celebración en la parroquia y la reunión.</p></div>
         <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Bautismos</span><p>Padrinos, ceremonia y almuerzo familiar en un diseño suave.</p></div>
@@ -368,6 +374,10 @@ h1,h2,h3{letter-spacing:.005em}
         <div class="model">
           <div class="phone m-comu"><span class="k">Mi primera comunión</span><span class="n">Joaquín</span><span class="d">Parroquia San José · 10 h</span><span class="b">Confirmar</span></div>
           <h3>Luz</h3><p>Comunión o bautismo con padrinos, misa y almuerzo familiar.</p><a class="btn ghost small" href="luz.html">Ver demo</a>
+        </div>
+        <div class="model">
+          <div class="phone m-corp"><span class="k">Jornada 2027</span><span class="n">Innovación<br>Pyme</span><span class="d">JUE 16.09 · 8:30 h</span><span class="b">Inscribirme</span></div>
+          <h3>Agenda</h3><p>Jornadas, congresos y reuniones de empresa: agenda, disertantes e inscripción, sin valor de tarjeta.</p><a class="btn ghost small" href="agenda.html">Ver demo</a>
         </div>
       </div>
       <p class="note">Nombres y datos de ejemplo</p>
@@ -600,8 +610,8 @@ const CONFIG = {
     { id:"urgente",  nombre:"Entrega en 24 horas",     det:"Prioridad máxima",                    precio:20000 },
     { id:"dominio",  nombre:"Dominio propio",          det:"Ej: luciaytomas.com.ar",              precio:50000 }
   ],
-  eventos: ["Boda","XV años","Cumpleaños","Baby shower","Institucional","Egresados","Comunión","Bautismo","Otro"],
-  estilos: ["Jardín","Noche estrellada","Confeti","Nube","Gala","Luz","Ninguno, tengo otra idea"],
+  eventos: ["Boda","XV años","Cumpleaños","Baby shower","Institucional","Corporativo / congreso","Egresados","Comunión","Bautismo","Otro"],
+  estilos: ["Jardín","Noche estrellada","Confeti","Nube","Gala","Luz","Agenda","Ninguno, tengo otra idea"],
   secciones: ["Ubicación y mapa","Cuenta regresiva","Cronograma","Dress code","Regalos y alias","Confirmación con menú","Valor de tarjeta","Galería de fotos","Nuestra historia","Padrinos y familia","Playlist colaborativa","Hospedaje sugerido","Trivia divertida","Preguntas frecuentes"]
 };
 /* ================================================================ */
