@@ -123,7 +123,13 @@ nav.menu a:hover{color:var(--wax)}
 /* estilos de cada modelo: colores propios de cada invitación, iguales en ambos temas */
 .m-boda{background:linear-gradient(180deg,#EEF2EC,#FBFBF8);color:#2F3B32}
 .m-boda .b{background:#5E7A68;color:#fff}
-.m-boda::before{content:"";position:absolute;inset:auto -20% 62% -20%;height:40%;background:radial-gradient(circle at 30% 70%,#B9CDB6 0 18%,transparent 19%),radial-gradient(circle at 70% 60%,#D7E3D3 0 22%,transparent 23%)}
+.m-boda::before,.m-boda::after{content:"";position:absolute;width:64px;height:64px;pointer-events:none;background:
+  radial-gradient(ellipse 16px 7px at 22px 18px,#B9CDB6 98%,transparent),
+  radial-gradient(ellipse 13px 6px at 40px 30px,#D7E3D3 98%,transparent),
+  radial-gradient(ellipse 11px 5px at 18px 40px,#C98E86 98%,transparent);opacity:.75}
+.m-boda::before{top:6px;left:4px;transform:rotate(-20deg)}
+.m-boda::after{top:6px;right:4px;transform:scaleX(-1) rotate(-20deg)}
+.phone>span{position:relative;z-index:1}
 .m-xv{background:radial-gradient(circle at 50% 20%,#3B2A5C,#160F24 70%);color:#F3E9FF}
 .m-xv .b{background:#E5C3FF;color:#160F24}
 .m-xv::before{content:"✦ · ✧ · ✦";position:absolute;top:14%;font-size:.7rem;letter-spacing:.3em;color:#E5C3FF}
