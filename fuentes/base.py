@@ -1,0 +1,421 @@
+"""Arma una invitación completa a partir de un modelo (estilo + secciones + textos).
+Todas comparten: sobre, música, cuenta regresiva, agenda, copiar datos y confirmación conectada a la planilla."""
+
+CSS_BASE = r"""
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{margin:0;font-family:var(--f-body);font-size:var(--fs,19px);line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+#deco{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main,footer{position:relative;z-index:1}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:6px}
+h1,h2,h3,p{margin:0}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+section{padding-block:56px;text-align:center}
+.banda{background:var(--banda)}
+.lab{font-family:var(--f-sans);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--hl)}
+h2{font-family:var(--f-title);font-weight:var(--title-w,400);font-size:var(--h2,2.9rem);line-height:1.1;margin-top:6px;color:var(--ink)}
+.sub{color:var(--muted);font-style:var(--sub-style,italic);margin-top:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--f-sans);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;padding:12px 22px;border-radius:var(--r-btn,999px);border:1px solid var(--acc);background:var(--acc);color:var(--acc-ink);cursor:pointer;text-decoration:none;font-weight:500}
+.btn.out{background:transparent;color:var(--acc)}
+.ribbon{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ribbon-bg);color:var(--ribbon-ink);font-family:var(--f-sans);font-size:.72rem;letter-spacing:.06em;text-align:center;padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card,18px);padding:28px 22px;margin-top:26px}
+
+/* Sobre */
+#sobre{position:fixed;inset:0;z-index:50;background:var(--sobre-bg);display:grid;place-items:center;padding:24px;cursor:pointer;transition:opacity .8s ease, visibility .8s}
+#sobre.abierto{opacity:0;visibility:hidden}
+.env{position:relative;width:min(360px,88vw);aspect-ratio:1.5;max-width:100%}
+.env .back{position:absolute;inset:0;background:var(--env-back);border-radius:8px;box-shadow:0 30px 60px -26px rgba(0,0,0,.45)}
+.env .front{position:absolute;inset:0;border-radius:8px;overflow:hidden}
+.env .front::before,.env .front::after{content:"";position:absolute;bottom:0;width:60%;height:100%;background:var(--env-front)}
+.env .front::before{left:0;clip-path:polygon(0 0,100% 62%,100% 100%,0 100%)}
+.env .front::after{right:0;clip-path:polygon(100% 0,0 62%,0 100%,100% 100%)}
+.env .flap{position:absolute;left:0;right:0;top:0;height:62%;background:var(--env-flap);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s ease}
+#sobre.abriendo .flap{transform:rotateX(180deg)}
+.env .seal{position:absolute;left:50%;top:58%;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:var(--seal-bg);display:grid;place-items:center;color:var(--seal-ink);font-family:var(--seal-font);font-size:var(--seal-fs,1.9rem);line-height:1;white-space:nowrap;box-shadow:0 6px 14px -6px rgba(0,0,0,.45);transition:transform .4s ease, opacity .4s}
+#sobre.abriendo .seal{transform:scale(.4);opacity:0}
+.env .to{position:absolute;left:0;right:0;bottom:11%;text-align:center;font-family:var(--f-body);font-style:italic;color:var(--env-ink);font-size:1.05rem}
+.tap{margin-top:28px;font-family:var(--f-sans);font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:var(--tap);text-align:center;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+@media (prefers-reduced-motion: reduce){.tap{animation:none}.env .flap,.env .seal,#sobre{transition:none}}
+
+/* Música */
+#musica{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:45;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card-solid);display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 16px -8px rgba(0,0,0,.4)}
+#musica svg{width:20px;height:20px;fill:none;stroke:var(--acc);stroke-width:1.6}
+
+/* Portada */
+.portada{padding-block:92px 60px}
+.saludo{font-family:var(--f-sans);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.fecha-grande{font-family:var(--f-sans);letter-spacing:.3em;font-size:.95rem;text-transform:uppercase;border-block:1px solid var(--line);display:inline-block;padding:10px 4px}
+.invita{max-width:32ch;margin:22px auto 0;font-style:var(--sub-style,italic);color:var(--muted)}
+
+/* Cuenta regresiva */
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:420px;margin:26px auto 24px}
+.cd div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 4px;display:grid;gap:2px}
+.cd b{font-family:var(--f-num);font-weight:var(--num-w,500);font-size:2rem;font-variant-numeric:tabular-nums;line-height:1}
+.cd small{font-family:var(--f-sans);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+/* Cronograma */
+.timeline{list-style:none;margin:30px auto 0;padding:0;display:grid;text-align:left;max-width:440px}
+.timeline li{display:grid;grid-template-columns:72px 1fr;gap:16px;padding-bottom:24px;position:relative}
+.timeline li::before{content:"";position:absolute;left:83px;top:10px;bottom:-4px;width:1px;background:var(--line)}
+.timeline li:last-child::before{display:none}
+.timeline .h{font-family:var(--f-sans);font-size:.9rem;letter-spacing:.06em;color:var(--hl);text-align:right;padding-top:2px;font-variant-numeric:tabular-nums}
+.timeline .t{padding-left:16px;position:relative}
+.timeline .t::before{content:"";position:absolute;left:-7px;top:9px;width:9px;height:9px;border-radius:var(--dot-r,50%);background:var(--bg);border:1.5px solid var(--hl)}
+.timeline h3{font-family:var(--f-body);font-weight:600;font-size:1.2rem}
+.timeline p{color:var(--muted);font-size:1rem}
+.timeline a,.lugar a{font-family:var(--f-sans);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);display:inline-block;margin-top:6px}
+
+/* Datos para copiar */
+.datos{display:grid;gap:10px;text-align:left;margin-top:16px}
+.dato{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px dashed var(--line);padding-block:8px;min-width:0}
+.dato span:first-child{font-family:var(--f-sans);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.dato b{font-weight:500;word-break:break-all}
+.copiar{font-family:var(--f-sans);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;background:var(--acc-soft);border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer;color:var(--acc);flex-shrink:0}
+.lista{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:10px;text-align:left}
+.lista li{display:flex;gap:12px;align-items:baseline}
+.lista li::before{content:var(--bullet,"•");color:var(--hl);flex:none}
+
+/* Confirmación */
+form{display:grid;gap:18px;text-align:left;margin-top:8px}
+.campo{display:grid;gap:6px}
+.campo > label,fieldset legend{font-family:var(--f-sans);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding:0}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:6px}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{position:relative}
+.choice input{position:absolute;opacity:0}
+.choice span{display:inline-block;padding:9px 16px;border-radius:var(--r-btn,999px);border:1px solid var(--line);background:var(--field);cursor:pointer;font-size:1rem}
+.choice input:checked + span{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.choice input:focus-visible + span{outline:2px solid var(--acc);outline-offset:2px}
+select,textarea,input[type=text]{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--field);width:100%}
+.err{color:var(--err,#A0453C);font-family:var(--f-sans);font-size:.85rem;min-height:1.2em}
+.gracias{display:grid;gap:10px;justify-items:center}
+.gracias h3{font-family:var(--f-title);font-weight:var(--title-w,400);font-size:2.6rem;line-height:1.15}
+.gracias p{color:var(--muted)}
+.fine{font-family:var(--f-sans);font-size:.75rem;color:var(--muted);margin-top:14px}
+footer{padding-block:40px 90px;text-align:center}
+"""
+
+JS_BASE = r"""
+const $ = s => document.querySelector(s);
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ===== PIEZA DE CONEXIÓN (igual en todos los modelos; para Firebase se cambia solo esto) ===== */
+const Conexion = {
+  activa: () => !!INV.planilla,
+  async invitado(codigo){
+    let r;
+    try{ r = await fetch(INV.planilla + "?accion=invitado&codigo=" + encodeURIComponent(codigo)); }
+    catch(e){ throw new Error("No pudimos cargar tu invitación. Revisá tu conexión y volvé a abrir el link."); }
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || "No encontramos tu invitación.");
+    return j.invitado;
+  },
+  async confirmar(datos){
+    let r;
+    try{ r = await fetch(INV.planilla, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ accion:"confirmar" }, datos)) }); }
+    catch(e){ throw new Error("No se pudo enviar. Revisá tu conexión e intentá de nuevo."); }
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || "No se pudo guardar tu respuesta.");
+    return j.invitado;
+  }
+};
+/* ============================================================================================ */
+
+/* El código del invitado viene en el link: modelo.html?i=K7PQ2M (o #K7PQ2M) */
+const CODIGO = (new URLSearchParams(location.search).get("i") || location.hash.slice(1) || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+let respuestaPrevia = null;
+/* Tres modos: "planilla" (con panel), "whatsapp" (plan Básico: la respuesta se manda por WhatsApp al cliente) y "muestra" (demo) */
+const MODO = INV.planilla ? "planilla" : (INV.whatsapp ? "whatsapp" : "muestra");
+const plural = (n, a, b) => n + " " + (n === 1 ? a : b);
+
+function aplicarInvitado(){
+  const generico = !INV.invitado;
+  $("#sobreNombre").textContent = generico ? "Para vos" : "Para " + INV.invitado;
+  $("#saludo").textContent = generico ? TXT.saludoGenerico : TXT.saludo + " " + INV.invitado;
+  $("#lugares").textContent = generico ? TXT.usaLink
+    : `${TXT.reservamos} ${plural(INV.lugares, "lugar", "lugares")} para ${INV.invitado}.`;
+  $("#cant").innerHTML = Array.from({length: INV.lugares}, (_, i) => `<option value="${i+1}">${plural(i+1, "persona", "personas")}</option>`).join("");
+  $("#cant").value = String(INV.lugares);
+  if($("#chicos")){
+    $("#chicos").innerHTML = Array.from({length: INV.lugares + 1}, (_, i) => `<option value="${i}">${i}</option>`).join("");
+    $("#chicos").value = String(Math.min(1, INV.lugares));
+  }
+  const soloFiesta = INV.tipo === "solo_fiesta";
+  document.querySelectorAll('[data-parte="cena"]').forEach(li => li.hidden = soloFiesta);
+  if(soloFiesta && $("#diaLab")) $("#diaLab").textContent = TXT.desdeLas + " " + INV.horaFiesta;
+  if(generico) $("#rsvp").hidden = true;
+  if(respuestaPrevia && respuestaPrevia.estado !== "pendiente"){
+    const r = respuestaPrevia;
+    (r.estado === "confirmado" ? $("#asisteSi") : $("#asisteNo")).checked = true;
+    if(r.cantidad) $("#cant").value = String(Math.min(r.cantidad, INV.lugares));
+    if(r.menu && $("#menu")) $("#menu").value = r.menu;
+    $("#lugares").textContent = r.estado === "confirmado"
+      ? `${TXT.yaConfirmaste} ${plural(r.cantidad, "lugar", "lugares")}. ${TXT.siCambio}`
+      : `${TXT.yaNoVienen} ${TXT.siCambio}`;
+  }
+  mostrarCampos();
+}
+
+async function iniciarInvitado(){
+  if(MODO === "whatsapp"){
+    $("#ribbon").hidden = true;
+    INV.invitado = ""; INV.lugares = INV.maxLugares || 6;
+    aplicarInvitado();
+    $("#rsvp").hidden = false; $("#campoNombre").hidden = false; $("#finePersonal").hidden = true;
+    $("#cant").value = "1";
+    $("#lugares").textContent = TXT.porWhatsapp;
+    return;
+  }
+  if(!Conexion.activa()){ aplicarInvitado(); return; }   /* muestra con datos de ejemplo */
+  $("#ribbon").hidden = true;
+  if(!CODIGO){ INV.invitado = ""; INV.lugares = 1; aplicarInvitado(); return; }
+  INV.invitado = ""; aplicarInvitado();
+  try{
+    const g = await Conexion.invitado(CODIGO);
+    INV.invitado = g.nombre; INV.lugares = Number(g.lugares) || 1; INV.tipo = g.tipo;
+    respuestaPrevia = g;
+    $("#rsvp").hidden = false;
+    aplicarInvitado();
+  }catch(e){
+    $("#sobreNombre").textContent = "Invitación no encontrada";
+    $("#lugares").textContent = e.message;
+  }
+}
+
+/* Agendar en Google Calendar */
+(function(){
+  const f = d => new Date(d).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  $("#agendar").href = "https://calendar.google.com/calendar/render?action=TEMPLATE"
+    + "&text=" + encodeURIComponent(INV.titulo)
+    + "&dates=" + f(INV.fechaEvento) + "/" + f(INV.fechaFin)
+    + "&location=" + encodeURIComponent(INV.lugarAgenda);
+})();
+
+/* Cuenta regresiva */
+const meta = new Date(INV.fechaEvento).getTime();
+function tick(){
+  let ms = Math.max(0, meta - Date.now());
+  const d = Math.floor(ms / 864e5); ms -= d * 864e5;
+  const h = Math.floor(ms / 36e5); ms -= h * 36e5;
+  const m = Math.floor(ms / 6e4); ms -= m * 6e4;
+  const s = Math.floor(ms / 1e3);
+  $("#cdD").textContent = d; $("#cdH").textContent = String(h).padStart(2, "0");
+  $("#cdM").textContent = String(m).padStart(2, "0"); $("#cdS").textContent = String(s).padStart(2, "0");
+}
+tick(); setInterval(tick, 1000);
+
+/* Música generada en el navegador */
+let audio = null, sonando = false, timer = null;
+function iniciarMusica(){
+  try{
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    if(audio.state === "suspended") audio.resume();
+    let i = 0;
+    const tocar = () => {
+      if(!sonando) return;
+      const t = audio.currentTime, o = audio.createOscillator(), g = audio.createGain();
+      o.type = MUSICA.onda; o.frequency.value = MUSICA.notas[i % MUSICA.notas.length];
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(MUSICA.volumen, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0006, t + MUSICA.cola);
+      o.connect(g).connect(audio.destination); o.start(t); o.stop(t + MUSICA.cola + 0.1); i++;
+    };
+    sonando = true; tocar(); timer = setInterval(tocar, MUSICA.paso);
+  }catch(e){ sonando = false; }
+  pintarBoton();
+}
+function pararMusica(){ sonando = false; clearInterval(timer); pintarBoton(); }
+function pintarBoton(){
+  $("#musica").setAttribute("aria-label", sonando ? "Silenciar música" : "Activar música");
+  $("#musIcon").innerHTML = sonando
+    ? '<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>'
+    : '<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/><path d="M3 3l18 18"/>';
+}
+$("#musica").addEventListener("click", () => sonando ? pararMusica() : iniciarMusica());
+
+/* Abrir el sobre */
+function abrir(){
+  const s = $("#sobre"); if(s.classList.contains("abriendo")) return;
+  s.classList.add("abriendo");
+  $("#musica").hidden = false;
+  iniciarMusica();
+  setTimeout(() => s.classList.add("abierto"), reduce ? 0 : 750);
+}
+$("#sobre").addEventListener("click", abrir);
+$("#sobre").addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); abrir(); } });
+
+/* Copiar datos */
+document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => {
+  const el = $("#" + b.dataset.copy), txt = el.textContent, msg = $("#copyMsg");
+  const ok = () => { msg.style.color = "var(--acc)"; msg.textContent = "Copiado: " + txt; };
+  const manual = () => { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); msg.style.color = "var(--muted)"; msg.textContent = "Quedó seleccionado. Copialo desde el menú del celular."; };
+  try{ navigator.clipboard.writeText(txt).then(ok, manual); }catch(e){ manual(); }
+}));
+
+/* Confirmación */
+function mostrarCampos(){
+  const no = $("#asisteNo").checked;
+  document.querySelectorAll("[data-si]").forEach(el => el.hidden = no);
+}
+document.querySelectorAll('input[name="asiste"]').forEach(r => r.addEventListener("change", mostrarCampos));
+$("#rsvp").addEventListener("submit", async e => {
+  e.preventDefault();
+  const asiste = (document.querySelector('input[name="asiste"]:checked') || {}).value;
+  if(!asiste){ $("#rsvpErr").textContent = TXT.elegi; return; }
+  $("#rsvpErr").textContent = "";
+  const cant = $("#cant").value;
+  /* Campos propios del modelo: se suman al mensaje para que se vean en el panel */
+  const extras = asiste === "si" ? [...document.querySelectorAll("[data-extra]")].map(el => {
+    const v = (el.value || "").trim(); return v ? el.dataset.extra + ": " + v : "";
+  }).filter(Boolean) : [];
+  const mensaje = [$("#mensaje").value.trim(), ...extras].filter(Boolean).join("\n");
+  const boton = $("#rsvp").querySelector('button[type="submit"]');
+  if(MODO === "whatsapp"){
+    const quien = $("#nombreInv").value.trim();
+    if(!quien){ $("#rsvpErr").textContent = TXT.faltaNombre; $("#nombreInv").focus(); return; }
+    const lineas = asiste === "si"
+      ? [`¡Hola! Confirmo asistencia a ${INV.titulo}.`, `Nombre: ${quien}`, `Vamos: ${cant === "1" ? "1 persona" : cant + " personas"}`,
+         $("#menu") && $("#menu").value !== "Ninguno" ? `Menú especial: ${$("#menu").value}` : "", ...extras]
+      : [`¡Hola! Lamentablemente no vamos a poder ir a ${INV.titulo}.`, `Nombre: ${quien}`];
+    if($("#mensaje").value.trim()) lineas.push(`Mensaje: ${$("#mensaje").value.trim()}`);
+    const url = `https://wa.me/${INV.whatsapp}?text=${encodeURIComponent(lineas.filter(Boolean).join("\n"))}`;
+    window.open(url, "_blank", "noopener");
+    $("#rsvpCard").innerHTML = `<div class="gracias"><h3>${asiste === "si" ? TXT.graciasSi : TXT.graciasNo}</h3><p>${TXT.abrioWhatsapp}</p><a class="btn out" target="_blank" rel="noopener" href="${url}">Abrir WhatsApp</a></div>`;
+    return;
+  }
+  const real = Conexion.activa();
+  if(real){
+    boton.disabled = true; boton.textContent = "Enviando…";
+    try{
+      await Conexion.confirmar({ codigo: CODIGO, asiste, cantidad: cant, menu: $("#menu") && asiste === "si" ? $("#menu").value : "", traslado: "no", mensaje });
+    }catch(err){
+      $("#rsvpErr").textContent = err.message; boton.disabled = false; boton.textContent = "Enviar confirmación"; return;
+    }
+  }
+  const nota = real ? "" : `<p class="fine">En la invitación real, esta respuesta ${TXT.nota} al instante en el panel.</p>`;
+  const nombre = document.createElement("span"); nombre.textContent = INV.invitado;
+  $("#rsvpCard").innerHTML = asiste === "si"
+    ? `<div class="gracias"><h3>${TXT.graciasSi}</h3><p>${TXT.confirmaste} ${cant === "1" ? "1 lugar" : cant + " lugares"} para ${nombre.innerHTML}. ${TXT.siCambio}</p>${nota}</div>`
+    : `<div class="gracias"><h3>${TXT.graciasNo}</h3><p>${TXT.graciasNoP}</p>${nota}</div>`;
+});
+"""
+
+def armar(m):
+    """m: dict con titulo, fuentes, css, sello, cuerpo, ribbon, inv, txt, musica, deco, extra_js"""
+    return f"""<title>{m['titulo']}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="{m['fuentes']}">
+<style>
+/* Layout: invitación de una columna angosta; un solo tema de color, a propósito (es la estética del evento). */
+{m['css']}
+{CSS_BASE}
+{m.get('css_extra','')}
+</style>
+
+<canvas id="deco" aria-hidden="true"></canvas>
+
+<div id="sobre" role="button" tabindex="0" aria-label="Abrir la invitación">
+  <div>
+    <div class="env">
+      <div class="back"></div>
+      <div class="front"></div>
+      <div class="flap"></div>
+      <div class="seal">{m['sello']}</div>
+      <div class="to" id="sobreNombre">Para Familia Gómez</div>
+    </div>
+    <p class="tap">Tocá para abrir</p>
+  </div>
+</div>
+
+<button id="musica" type="button" aria-label="Activar música" hidden>
+  <svg viewBox="0 0 24 24" id="musIcon"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>
+</button>
+
+{m['cuerpo']}
+
+<div class="ribbon" id="ribbon">{m['ribbon']}</div>
+
+<script>
+/* ===== DATOS DE LA INVITACIÓN: se cambian por cada cliente ===== */
+const INV = {m['inv']};
+/* ================================================================ */
+const TXT = {m['txt']};
+const MUSICA = {m['musica']};
+{JS_BASE}
+/* Decoración del fondo */
+{m['deco']}
+{m.get('extra_js','')}
+iniciarInvitado();
+</script>
+"""
+
+ESQUELETO = """<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+"""
+
+def cuenta_regresiva(lab="Falta muy poco", titulo="Cuenta regresiva"):
+    return f"""  <section style="padding-top:8px">
+    <div class="wrap">
+      <span class="lab">{lab}</span>
+      <h2>{titulo}</h2>
+      <div class="cd" aria-live="off">
+        <div><b id="cdD">--</b><small>Días</small></div>
+        <div><b id="cdH">--</b><small>Horas</small></div>
+        <div><b id="cdM">--</b><small>Min</small></div>
+        <div><b id="cdS">--</b><small>Seg</small></div>
+      </div>
+      <a class="btn out" id="agendar" target="_blank" rel="noopener" href="#">Agendar la fecha</a>
+    </div>
+  </section>"""
+
+def confirmacion(lab, titulo, lugares_txt, si, no, campos_extra, mensaje_label, fine, banda=True, menu=True, menu_opciones=None):
+    ops = menu_opciones or ["Ninguno", "Vegetariano", "Vegano", "Sin TACC (celíaco)", "Otro (lo aclaramos en el mensaje)"]
+    menu_html = ""
+    if menu:
+        menu_html = f"""          <div class="campo" data-si>
+            <label for="menu">¿Alguien necesita un menú especial?</label>
+            <select id="menu">{''.join(f'<option>{o}</option>' for o in ops)}</select>
+          </div>
+"""
+    return f"""  <section{' class="banda"' if banda else ''} id="confirmar">
+    <div class="wrap">
+      <span class="lab">{lab}</span>
+      <h2>{titulo}</h2>
+      <p class="sub" id="lugares">{lugares_txt}</p>
+      <div class="card" id="rsvpCard">
+        <form id="rsvp" novalidate>
+          <div class="campo" id="campoNombre" hidden>
+            <label for="nombreInv">Tu nombre y apellido</label>
+            <input type="text" id="nombreInv" maxlength="80" autocomplete="name">
+          </div>
+          <fieldset>
+            <legend>¿Vienen?</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="asiste" id="asisteSi" value="si"><span>{si}</span></label>
+              <label class="choice"><input type="radio" name="asiste" id="asisteNo" value="no"><span>{no}</span></label>
+            </div>
+          </fieldset>
+          <div class="campo" data-si>
+            <label for="cant">¿Cuántos van a ir?</label>
+            <select id="cant"></select>
+          </div>
+{campos_extra}{menu_html}          <div class="campo">
+            <label for="mensaje">{mensaje_label}</label>
+            <textarea id="mensaje" rows="3" placeholder="Opcional"></textarea>
+          </div>
+          <p class="err" id="rsvpErr" role="alert"></p>
+          <button class="btn" type="submit">Enviar confirmación</button>
+        </form>
+      </div>
+      <p class="fine" id="finePersonal">{fine}</p>
+    </div>
+  </section>"""
