@@ -92,6 +92,24 @@ h1,h2,h3,p{margin:0}
 .vista-barra .peso{font-size:.78rem;color:var(--gris)}
 .celular{width:390px;height:min(800px,calc(100vh - 90px));min-height:520px;border-radius:44px;background:#111;padding:12px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5);flex:none}
 .celular iframe{width:100%;height:100%;border:0;border-radius:34px;background:#fff;display:block}
+/* Editor de portada libre */
+#libre{position:fixed;inset:0;z-index:80;background:#EFE9DE;display:grid;grid-template-rows:auto 1fr}
+.libre-barra{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 14px;background:#fff;border-bottom:1px solid var(--linea)}
+.libre-barra .sep{width:1px;height:24px;background:var(--linea);margin:0 4px}
+.libre-barra .titulo{font-family:"Cormorant Garamond",serif;font-size:1.3rem;font-weight:600;margin-right:8px}
+.libre-cuerpo{display:grid;grid-template-columns:1fr 360px;min-height:0}
+.libre-centro{overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:24px}
+.libre-tel{background:#111;padding:10px;border-radius:30px;flex:none}
+#lienzo{width:360px;position:relative;border-radius:20px;container-type:inline-size;overflow:hidden;touch-action:none;user-select:none}
+#lienzo .pl-el{position:absolute;margin:0;white-space:pre-wrap;overflow-wrap:break-word;box-sizing:border-box;cursor:move;transform-origin:center}
+#lienzo img.pl-el{display:block;-webkit-user-drag:none}
+#lienzo .pl-el.sel{outline:1.5px dashed #378ADD;outline-offset:2px}
+.manijas{position:absolute;pointer-events:none;z-index:9999}
+.manijas .m{position:absolute;width:14px;height:14px;border-radius:50%;background:#378ADD;border:2px solid #fff;pointer-events:auto}
+.manijas .m-esq{right:-9px;bottom:-9px;cursor:nwse-resize}
+.manijas .m-der{right:-9px;top:50%;margin-top:-7px;cursor:ew-resize}
+.guia{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#E0457B;z-index:9998;pointer-events:none}
+#libreProp{overflow:auto;padding:16px;background:#fff;border-left:1px solid var(--linea)}
 #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--negro);color:var(--marfil);padding:10px 18px;border-radius:999px;font-size:.88rem;z-index:90;max-width:90vw;text-align:center}
 @media (max-width:900px){.app{grid-template-columns:1fr;height:auto}.lado{height:auto;border-right:0}#panel{max-height:none}.celular{width:min(390px,100%);height:720px}}
 </style>
@@ -127,6 +145,30 @@ h1,h2,h3,p{margin:0}
   </main>
 </div>
 <input type="file" id="abrirFicha" accept=".json,application/json" hidden>
+<div id="libre" hidden>
+  <div class="libre-barra" id="libreBarra">
+    <span class="titulo">Portada libre</span>
+    <button class="b out chico" type="button" data-l="+texto">+ Texto</button>
+    <button class="b out chico" type="button" data-l="+saludo">+ Saludo al invitado</button>
+    <button class="b out chico" type="button" data-l="+img">+ Imagen</button>
+    <button class="b out chico" type="button" data-l="+rect">+ Rectángulo</button>
+    <button class="b out chico" type="button" data-l="+circulo">+ Círculo</button>
+    <button class="b out chico" type="button" data-l="+linea">+ Línea</button>
+    <span class="sep"></span>
+    <button class="b out chico" type="button" data-l="duplicar">Duplicar</button>
+    <button class="b out chico" type="button" data-l="centrar">Centrar</button>
+    <button class="b out chico" type="button" data-l="frente">Al frente</button>
+    <button class="b out chico" type="button" data-l="fondo">Al fondo</button>
+    <button class="b out chico" type="button" data-l="borrar">Borrar</button>
+    <span class="sep"></span>
+    <button class="b out chico" type="button" data-l="rearmar">Rehacer desde la armada</button>
+    <button class="b chico" type="button" data-l="listo" style="margin-left:auto">Listo</button>
+  </div>
+  <div class="libre-cuerpo">
+    <div class="libre-centro"><div class="libre-tel"><div id="lienzo"></div></div></div>
+    <div id="libreProp"></div>
+  </div>
+</div>
 <div id="toast" hidden role="status"></div>
 
 <script>
@@ -288,6 +330,7 @@ function fichaBase(){
     deco: { tipo:"destellos", colores:["#C9A45C", "#E4DACA", "#FFFFFF"], cant:1, op:55 },
     musica: "jardin",
     letrasPropias: [],
+    portadaLibre: null,
     tono: "vos",
     secciones: [
       S.portada({ arriba:"Nos casamos", nombre:"Nombre & Nombre", fecha:"Sáb 14 · 03 · 2027", frase:"Queremos compartir este día tan especial con vos." }),
@@ -600,6 +643,7 @@ function htmlSeccion(s, banda, ctx, F){
   const cab = (lab, titulo, id = "") => `      ${lab ? `<span class="lab"${id}>${esc(lab)}</span>` : (id ? `<span class="lab"${id}></span>` : "")}\n      ${titulo ? `<h2>${esc(titulo)}</h2>` : ""}`;
   switch(s.tipo){
     case "portada": {
+      if(s.libre && F.portadaLibre) return htmlPortadaLibre(F);
       const foto = im.portada && s.foto !== "no" ? `      <img class="foto-portada ${im.forma}${im.borde ? " borde" : ""}" src="${im.portada}" alt="">\n` : "";
       const logo = im.logo && s.logo ? `      <img class="logo-portada" src="${im.logo}" alt="">\n` : "";
       const interior = `${logo}${s.foto === "arriba" ? foto : ""}      <p class="saludo" id="saludo">${esc(TXT_ACTUAL.saludo)} ${esc(F.evento.invitado)}</p>
@@ -765,7 +809,7 @@ ${linksLetras(F)}
 ${cssVariables(F)}
 ${cssLetrasPropias(F)}
 ${BASE.CSS_BASE}
-${CSS_EXTRA}${sinMusica ? "#musica{display:none!important}\n" : ""}${BASE.ALBUM_CSS}</style>
+${CSS_EXTRA}${por.libre && F.portadaLibre ? CSS_LIBRE : ""}${sinMusica ? "#musica{display:none!important}\n" : ""}${BASE.ALBUM_CSS}</style>
 
 ${im.fondo ? `<div id="fondoImg" aria-hidden="true" style="background-image:url('${im.fondo}');opacity:${im.fondoOp / 100}"></div>\n` : ""}<canvas id="deco" aria-hidden="true"></canvas>
 
@@ -922,7 +966,12 @@ function editorSeccion(s, i){
   const fondo = s.tipo === "portada" || s.tipo === "pie" ? "" : elegir(p("fondo"), "Fondo de esta parte", { "": "Automático (va alternando)", banda: "Con banda", sin: "Sin banda" });
   const cab = (s.tipo !== "pie" && s.tipo !== "portada") ? `<div class="fila">${campo(p("lab"), "Título chiquito")}${campo(p("titulo"), "Título")}</div>` : "";
   switch(s.tipo){
-    case "portada": return tilde(p("marco"), "Con marco doble (estilo Gala)") + campo(p("arriba"), "Frase de arriba (ej: Nos casamos)")
+    case "portada": if(s.libre) return elegir(p("libre"), "Tipo de portada", { "": "Armada (como siempre)", si: "Libre (tipo Canva)" }, true)
+        + `<p class="ayuda">La diseñás a mano libre: movés y agrandás cada cosa como en Canva. Se adapta a cualquier celular (todo se agranda o achica junto). El resto de la invitación sigue igual.</p>`
+        + `<div class="botones"><button class="b oro chico" type="button" data-accion="abrirLibre">Abrir el editor libre</button></div>`
+        + `<p class="ayuda">Si volvés a "Armada", lo que dibujaste queda guardado por si lo querés retomar.</p>`;
+      return elegir(p("libre"), "Tipo de portada", { "": "Armada (como siempre)", si: "Libre (tipo Canva)" }, true)
+      + tilde(p("marco"), "Con marco doble (estilo Gala)") + campo(p("arriba"), "Frase de arriba (ej: Nos casamos)")
       + elegir(p("arribaEstilo"), "Estilo de esa frase", { chico: "Mayúsculas chiquitas", titulo: "Con la letra de los títulos" })
       + campo(p("nombre"), "Nombres (Enter = otra línea)", "area") + rango(p("nombreTam"), "Tamaño de los nombres", 2, 8, .1, " rem")
       + campo(p("abajo"), "Frase debajo de los nombres (opcional)") + campo(p("fecha"), "Fecha como se muestra") + campo(p("frase"), "Frase de invitación", "area")
@@ -1049,7 +1098,9 @@ function iniciar(){
     const el = e.target; if(!el.dataset.p) return;
     if(el.tagName === "SELECT" || el.type === "checkbox"){
       let v = leer(el); if(el.dataset.p.startsWith("letras.tituloPeso")) v = Number(v);
-      set(F, el.dataset.p, v); cambio("re" in el.dataset || el.dataset.p.endsWith(".activa"));
+      set(F, el.dataset.p, v);
+      if(el.dataset.p.endsWith(".libre") && v && !F.portadaLibre){ const por = F.secciones.find(x => x.tipo === "portada"); TXT_ACTUAL = textos(F); F.portadaLibre = portadaDesdeArmada(F, por); }
+      cambio("re" in el.dataset || el.dataset.p.endsWith(".activa"));
     }
   });
   $("#panel").addEventListener("click", async e => {
@@ -1077,6 +1128,7 @@ function iniciar(){
       case "guardarFicha": descargar(slug(F.nombre) + ".evocard.json", JSON.stringify(F, null, 1), "application/json"); toast("Se descargó la ficha. Guardala en una carpeta tuya."); break;
       case "abrirFicha": $("#abrirFicha").click(); break;
       case "descargar": descargarInvitacion(); break;
+      case "abrirLibre": abrirLibre(); break;
       case "cargarLetra": {
         const inp = document.createElement("input"); inp.type = "file"; inp.multiple = true; inp.accept = ".ttf,.otf,.woff,.woff2,.zip";
         inp.onchange = async () => { const r = await cargarLetras([...inp.files]); pintarLetrasEstudio(); cambio(true);
@@ -1103,10 +1155,250 @@ function iniciar(){
   });
   $("#verSobre").addEventListener("click", () => { conSobre = true; actualizarVista(); conSobre = false; });
   $("#descargarArriba").addEventListener("click", descargarInvitacion);
+  iniciarLibre();
 }
+/* ===================================================== PORTADA LIBRE (tipo Canva) =====================================================
+   La portada se dibuja sobre un lienzo de 360 de ancho. Todo se guarda en porcentajes y las letras se miden con el ancho del lienzo,
+   así en cualquier celular se ve igual, solo más grande o más chico. */
+const ANCHO_BASE = 360;
+const px = v => `calc(${+v || 0} * 100cqw / ${ANCHO_BASE})`;
+function estiloLibre(e, P){
+  const base = `left:${+e.x.toFixed(2)}%;top:${+e.y.toFixed(2)}%;width:${+e.w.toFixed(2)}%;opacity:${(e.op == null ? 100 : e.op) / 100};z-index:${e.z || 1};`;
+  const giro = e.giro ? `transform:rotate(${e.giro}deg);` : "";
+  if(e.t === "texto" || e.t === "saludo"){
+    return base + giro + `font-family:${fam(e.f).replace(/"/g, "'")};font-size:${px(e.fs)};color:${e.c};text-align:${e.al || "center"};font-weight:${e.peso || 400};font-style:${e.cursiva ? "italic" : "normal"};letter-spacing:${px(e.esp || 0)};text-transform:${e.mayus ? "uppercase" : "none"};line-height:${e.lh || 1.15};`;
+  }
+  const alto = e.t === "circulo" ? "aspect-ratio:1;height:auto;" : `height:${+e.h.toFixed(2)}%;`;
+  const borde = e.borde ? `border:${px(e.borde)} solid ${e.bc || e.c};` : "";
+  const radio = e.t === "circulo" ? "border-radius:50%;" : `border-radius:${px(e.radio || 0)};`;
+  if(e.t === "img") return base + giro + alto + radio + borde + `object-fit:${e.ajuste || "cover"};`;
+  return base + giro + alto + radio + borde + `background:${e.vacio ? "transparent" : e.c};`;
+}
+function htmlElementoLibre(e, P, conIds){
+  const st = estiloLibre(e, P);
+  if(e.t === "texto") return `<p class="pl-el" style="${st}">${br(e.txt)}</p>`;
+  if(e.t === "saludo") return `<p class="pl-el"${conIds ? ' id="saludo"' : ""} style="${st}">${esc(TXT_ACTUAL.saludo)} ${esc(F.evento.invitado)}</p>`;
+  if(e.t === "img") return e.src ? `<img class="pl-el" src="${e.src}" alt="" style="${st}">` : "";
+  return `<div class="pl-el" style="${st}"></div>`;
+}
+function htmlPortadaLibre(F){
+  const P = F.portadaLibre;
+  const items = P.elementos.map(e => "      " + htmlElementoLibre(e, P, true)).join("\n");
+  const tieneSaludo = P.elementos.some(e => e.t === "saludo");
+  return `  <section class="portada-libre">
+    <div class="pl" style="aspect-ratio:${ANCHO_BASE}/${P.alto};${P.transparente ? "" : `background:${P.fondo};`}">
+${items}
+    </div>${tieneSaludo ? "" : `\n    <p id="saludo" hidden></p>`}
+  </section>`;
+}
+const CSS_LIBRE = `
+/* Portada libre */
+.portada-libre{padding-block:0;text-align:left}
+.pl{position:relative;width:100%;max-width:560px;margin:0 auto;container-type:inline-size;overflow:hidden}
+.pl-el{position:absolute;margin:0;white-space:pre-wrap;overflow-wrap:break-word;box-sizing:border-box;transform-origin:center}
+img.pl-el{display:block}
+`;
+
+/* Arma una portada libre a partir de la portada armada, para no empezar de cero */
+function portadaDesdeArmada(F, s){
+  const l = F.letras, c = F.colores, im = F.imagenes, el = [], ALTO = 720;
+  let y = 6, z = 1;
+  /* Calcula cuánto ocupa un texto para ubicar el siguiente debajo, sin que se pisen */
+  const alto = (txt, fs, w, lh, f) => {
+    const ancho = ANCHO_BASE * w / 100, factor = (LETRAS[f] || [])[1] === "cursive" ? .5 : .55;
+    const lineas = String(txt).split("\n").reduce((n, ln) => n + Math.max(1, Math.ceil(ln.length * fs * factor / ancho)), 0);
+    return lineas * fs * lh / ALTO * 100;
+  };
+  const t = (txt, o, hueco = 2.2) => {
+    if(!txt) return;
+    const e = Object.assign({ t:"texto", txt, x:6, y, w:88, f:l.texto, fs:18, c:c.texto, al:"center", lh:1.15, op:100, z:z++ }, o);
+    e.y = y; el.push(e); y += alto(txt, e.fs, e.w, e.lh, e.f) + hueco;
+  };
+  if(im.logo && s.logo){ el.push({ t:"img", src:im.logo, x:35, y, w:30, h:10, ajuste:"contain", op:100, z:z++ }); y += 12; }
+  if(im.portada && s.foto === "arriba"){ el.push({ t:"img", src:im.portada, x:20, y, w:60, h:30, radio:16, ajuste:"cover", op:100, z:z++ }); y += 33; }
+  if(y < 10) y = 10;
+  el.push({ t:"saludo", x:6, y, w:88, f:l.detalle, fs:12, c:c.suave, al:"center", mayus:true, esp:2.5, lh:1.15, op:100, z:z++ }); y += 5;
+  const arribaTitulo = s.arribaEstilo === "titulo";
+  t(s.arriba, { f: arribaTitulo ? l.titulo : l.detalle, fs: arribaTitulo ? 28 : 14, c:c.detalle, mayus: !arribaTitulo, esp: arribaTitulo ? 0 : 4, peso:500 }, 1.5);
+  t(s.nombre, { f:l.titulo, fs: Math.round((s.nombreTam || 5.5) * 12), peso:l.tituloPeso, lh:1.05 }, 2.5);
+  t(s.abajo, { cursiva:true, c:c.suave, fs:20 });
+  if(im.portada && s.foto === "abajo"){ el.push({ t:"img", src:im.portada, x:20, y, w:60, h:30, radio:16, ajuste:"cover", op:100, z:z++ }); y += 33; }
+  if(s.fecha){
+    el.push({ t:"rect", x:15, y, w:70, h:.2, c:c.lineas, op:100, z:z++ }); y += 1.6;
+    t(s.fecha, { f:l.detalle, fs:14, mayus:true, esp:4 }, 1.2);
+    el.push({ t:"rect", x:15, y, w:70, h:.2, c:c.lineas, op:100, z:z++ }); y += 3;
+  }
+  t(s.frase, { cursiva:true, c:c.suave, fs:18, x:12, w:76, lh:1.4 });
+  return { alto: Math.max(480, Math.min(1400, Math.round((y + 8) / 100 * ALTO / 10) * 10)), fondo:c.fondo, transparente:true, elementos:el };
+}
+
+/* ----- Editor ----- */
+let libreSel = null, libreGuia = false;
+const L$ = id => document.getElementById(id);
+function cargarLetrasGoogle(nombres){
+  for(const n of nombres){
+    if(!n || propia(n) || !LETRAS[n]) continue;
+    const id = "gf-" + n.replace(/\W/g, "");
+    if(document.getElementById(id)) continue;
+    const l = document.createElement("link"); l.id = id; l.rel = "stylesheet";
+    l.href = `https://fonts.googleapis.com/css2?family=${LETRAS[n][0]}&display=swap`; document.head.appendChild(l);
+  }
+}
+function abrirLibre(){
+  const por = F.secciones.find(s => s.tipo === "portada");
+  if(!F.portadaLibre) F.portadaLibre = portadaDesdeArmada(F, por);
+  TXT_ACTUAL = textos(F);
+  L$("libre").hidden = false; document.body.style.overflow = "hidden";
+  libreSel = null; pintarLienzo(); pintarPropLibre();
+}
+function cerrarLibre(){ L$("libre").hidden = true; document.body.style.overflow = ""; libreSel = null; cambio(true); }
+function pintarLienzo(){
+  const P = F.portadaLibre, lz = L$("lienzo");
+  cargarLetrasGoogle(P.elementos.map(e => e.f));
+  lz.style.aspectRatio = `${ANCHO_BASE}/${P.alto}`;
+  lz.style.background = P.transparente ? F.colores.fondo : P.fondo;
+  lz.innerHTML = P.elementos.map((e, i) => htmlElementoLibre(e, P, false).replace('class="pl-el"', `class="pl-el${i === libreSel ? " sel" : ""}" data-i="${i}"`)).join("")
+    + (libreSel != null ? marcoSeleccion() : "") + (libreGuia ? `<div class="guia"></div>` : "");
+}
+function marcoSeleccion(){
+  const el = L$("lienzo").querySelector(`[data-i="${libreSel}"]`);
+  return `<div class="manijas" id="manijas"><span class="m m-esq" data-m="esq" title="Agrandar"></span><span class="m m-der" data-m="der" title="Ancho"></span></div>`;
+}
+function ubicarManijas(){
+  const m = L$("manijas"), el = L$("lienzo").querySelector(`[data-i="${libreSel}"]`);
+  if(!m || !el) return;
+  m.style.left = el.offsetLeft + "px"; m.style.top = el.offsetTop + "px"; m.style.width = el.offsetWidth + "px"; m.style.height = el.offsetHeight + "px";
+}
+const NOMBRE_ELEMENTO = { texto:"Texto", saludo:"Saludo al invitado", rect:"Rectángulo", circulo:"Círculo", img:"Imagen" };
+function normalizarLibre(e){
+  const d = { op:100, giro:0, borde:0, bc: e.c || "#000000", esp:0, lh:1.15, peso:400, radio:0, al:"center", ajuste:"cover", f: F.letras.texto, fs:18, c:"#2A2622" };
+  for(const k in d) if(e[k] == null) e[k] = d[k];
+  if(e.t !== "texto" && e.t !== "saludo"){ delete e.f; delete e.fs; }
+  return e;
+}
+function pintarPropLibre(){
+  const P = F.portadaLibre, i = libreSel, e = i == null ? null : normalizarLibre(P.elementos[i]), p = k => `portadaLibre.elementos.${i}.${k}`;
+  let h = "";
+  if(!e){
+    h = grupo("Portada", rango("portadaLibre.alto", "Largo de la portada", 400, 1400, 10, "")
+      + tilde("portadaLibre.transparente", "Fondo transparente (se ven el color y los adornos de la invitación)", true)
+      + (P.transparente ? "" : color("portadaLibre.fondo", "Color de fondo")),
+      "Tocá algo del lienzo para elegirlo. Arrastralo para moverlo. Con el punto azul de la esquina se agranda; con el de la derecha cambiás solo el ancho. Las flechas del teclado lo mueven de a poquito.");
+  } else {
+    let cont = `<p class="ayuda" style="margin:0"><b>${NOMBRE_ELEMENTO[e.t]}</b></p>`;
+    if(e.t === "texto") cont += campo(p("txt"), "Texto (Enter = otra línea)", "area");
+    if(e.t === "saludo") cont += `<p class="ayuda">Acá aparece el nombre de cada invitado (en la muestra: "${esc(TXT_ACTUAL.saludo)} ${esc(F.evento.invitado)}"). El saludo se cambia en la pestaña Datos.</p>`;
+    if(e.t === "texto" || e.t === "saludo"){
+      cont += elegir(p("f"), "Letra", listaLetras(), true) + rango(p("fs"), "Tamaño", 6, 120, 1, "") + color(p("c"), "Color")
+        + elegir(p("al"), "Alineación", { center:"Centrado", left:"A la izquierda", right:"A la derecha" })
+        + elegir(p("peso"), "Grosor", { 400:"Normal", 500:"Un poco más grueso", 600:"Grueso", 700:"Muy grueso" })
+        + `<div class="fila">${tilde(p("cursiva"), "Cursiva")}${tilde(p("mayus"), "Todo en mayúsculas")}</div>`
+        + rango(p("esp"), "Espacio entre letras", 0, 12, .5, "") + rango(p("lh"), "Espacio entre líneas", .8, 2, .05, "");
+    }
+    if(e.t === "rect" || e.t === "circulo"){
+      cont += color(p("c"), "Color") + tilde(p("vacio"), "Sin relleno (solo el borde)") + rango(p("borde"), "Grosor del borde", 0, 20, .5, "")
+        + color(p("bc"), "Color del borde") + (e.t === "rect" ? rango(p("radio"), "Puntas redondeadas", 0, 200, 1, "") : "");
+    }
+    if(e.t === "img"){
+      cont += imagen(p("src"), "Imagen", 1400, "auto") + elegir(p("ajuste"), "Cómo entra", { cover:"Llena el recuadro (recorta)", contain:"Entera (no recorta)" })
+        + rango(p("radio"), "Puntas redondeadas", 0, 200, 1, "") + rango(p("borde"), "Borde", 0, 20, .5, "") + color(p("bc"), "Color del borde");
+    }
+    cont += rango(p("op"), "Transparencia", 5, 100, 1, "%") + rango(p("giro"), "Girar", -180, 180, 1, "°");
+    h = grupo("Lo elegido", cont);
+  }
+  L$("libreProp").innerHTML = h;
+}
+function agregarLibre(t){
+  const P = F.portadaLibre, z = Math.max(0, ...P.elementos.map(e => e.z || 0)) + 1, c = F.colores, l = F.letras;
+  const nuevos = {
+    texto: { t, txt:"Texto nuevo", x:15, y:45, w:70, f:l.texto, fs:24, c:c.texto, al:"center" },
+    saludo: { t, x:6, y:4, w:88, f:l.detalle, fs:12, c:c.suave, al:"center", mayus:true, esp:2.5 },
+    rect: { t, x:30, y:45, w:40, h:8, c:c.principal, radio:0 },
+    circulo: { t, x:35, y:42, w:30, c:c.principal },
+    linea: { t:"rect", x:20, y:50, w:60, h:.25, c:c.lineas, radio:0 },
+    img: { t:"img", src:"", x:20, y:30, w:60, h:30, ajuste:"cover", radio:12 }
+  };
+  if(t === "saludo" && P.elementos.some(e => e.t === "saludo")){ toast("Ya hay un saludo al invitado: hay uno solo por portada."); return; }
+  const e = Object.assign({ op:100, z }, nuevos[t]);
+  P.elementos.push(e); libreSel = P.elementos.length - 1; pintarLienzo(); ubicarManijas(); pintarPropLibre(); cambio(false);
+  if(t === "img") pedirArchivos(false, async ([a]) => { if(!a) return; try{ e.src = await achicar(a, 1400, /png|webp|gif/.test(a.type) ? "png" : "jpeg"); pintarLienzo(); ubicarManijas(); pintarPropLibre(); cambio(false); }catch(err){ toast(err.message); } });
+}
+function accionLibre(a){
+  const P = F.portadaLibre, e = P.elementos[libreSel];
+  if(a === "listo"){ cerrarLibre(); return; }
+  if(a === "rearmar"){ if(confirm("¿Volver a armar la portada libre desde la portada armada? Se pierde lo que dibujaste acá.")){ F.portadaLibre = portadaDesdeArmada(F, F.secciones.find(s => s.tipo === "portada")); libreSel = null; pintarLienzo(); pintarPropLibre(); cambio(false); } return; }
+  if(a.startsWith("+")){ agregarLibre(a.slice(1)); return; }
+  if(!e){ toast("Primero tocá algo del lienzo."); return; }
+  if(a === "borrar"){ P.elementos.splice(libreSel, 1); libreSel = null; }
+  if(a === "duplicar"){ const c = JSON.parse(JSON.stringify(e)); c.x += 3; c.y += 2; c.z = Math.max(...P.elementos.map(x => x.z || 0)) + 1; if(c.t === "saludo"){ toast("El saludo al invitado no se puede duplicar."); return; } P.elementos.push(c); libreSel = P.elementos.length - 1; }
+  if(a === "frente") e.z = Math.max(...P.elementos.map(x => x.z || 0)) + 1;
+  if(a === "fondo"){ P.elementos.forEach(x => x.z = (x.z || 1) + 1); e.z = 1; }
+  if(a === "centrar") e.x = (100 - e.w) / 2;
+  pintarLienzo(); ubicarManijas(); pintarPropLibre(); cambio(false);
+}
+function iniciarLibre(){
+  const lz = L$("lienzo");
+  L$("libreBarra").addEventListener("click", ev => { const b = ev.target.closest("[data-l]"); if(b) accionLibre(b.dataset.l); });
+  lz.addEventListener("pointerdown", ev => {
+    const P = F.portadaLibre, man = ev.target.closest("[data-m]"), elx = ev.target.closest("[data-i]");
+    if(!man && !elx){ libreSel = null; pintarLienzo(); pintarPropLibre(); return; }
+    ev.preventDefault();
+    if(elx && !man){ libreSel = +elx.dataset.i; pintarLienzo(); ubicarManijas(); pintarPropLibre(); }
+    const e = P.elementos[libreSel]; if(!e) return;
+    const W = lz.clientWidth, H = lz.clientHeight, x0 = ev.clientX, y0 = ev.clientY, a = { x:e.x, y:e.y, w:e.w, h:e.h, fs:e.fs }, modo = man ? man.dataset.m : "mover";
+    const nodo = () => lz.querySelector(`[data-i="${libreSel}"]`);
+    const mover = mv => {
+      const dx = (mv.clientX - x0) / W * 100, dy = (mv.clientY - y0) / H * 100;
+      if(modo === "mover"){
+        e.x = a.x + dx; e.y = a.y + dy;
+        const centro = e.x + e.w / 2; libreGuia = Math.abs(centro - 50) < 1.2; if(libreGuia) e.x = 50 - e.w / 2;
+      } else if(modo === "der"){ e.w = Math.max(4, a.w + dx); }
+      else {
+        const k = Math.max(.1, (a.w + dx) / a.w); e.w = Math.max(4, a.w * k);
+        if(e.t === "texto" || e.t === "saludo") e.fs = Math.max(6, Math.round(a.fs * k));
+        else if(e.t !== "circulo") e.h = Math.max(.2, a.h + dy);
+      }
+      const n = nodo(); if(n){ n.setAttribute("style", estiloLibre(e, P)); }
+      let g = lz.querySelector(".guia"); if(libreGuia && !g){ g = document.createElement("div"); g.className = "guia"; lz.appendChild(g); } else if(!libreGuia && g) g.remove();
+      ubicarManijas();
+    };
+    const soltar = () => { removeEventListener("pointermove", mover); removeEventListener("pointerup", soltar); libreGuia = false; pintarLienzo(); ubicarManijas(); pintarPropLibre(); cambio(false); };
+    addEventListener("pointermove", mover); addEventListener("pointerup", soltar);
+  });
+  document.addEventListener("keydown", ev => {
+    if(L$("libre").hidden || libreSel == null || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    const e = F.portadaLibre.elementos[libreSel], paso = ev.shiftKey ? 2 : .4;
+    const mov = { ArrowLeft:[-paso, 0], ArrowRight:[paso, 0], ArrowUp:[0, -paso], ArrowDown:[0, paso] }[ev.key];
+    if(mov){ ev.preventDefault(); e.x += mov[0]; e.y += mov[1]; pintarLienzo(); ubicarManijas(); cambio(false); }
+    if(ev.key === "Delete" || ev.key === "Backspace"){ ev.preventDefault(); accionLibre("borrar"); }
+    if(ev.key === "Escape"){ libreSel = null; pintarLienzo(); pintarPropLibre(); }
+  });
+  /* Las propiedades usan las mismas piezas que el resto del Estudio */
+  const prop = L$("libreProp");
+  const leer = el => el.type === "checkbox" ? el.checked : ("num" in el.dataset ? Number(el.value) : el.value);
+  prop.addEventListener("input", ev => {
+    const el = ev.target; if(!el.dataset.p || el.tagName === "SELECT" || el.type === "checkbox") return;
+    set(F, el.dataset.p, leer(el));
+    if(el.type === "range") el.nextElementSibling.textContent = el.value + (el.dataset.u || "");
+    if(el.type === "color" && el.previousElementSibling) el.previousElementSibling.textContent = el.value.toUpperCase();
+    pintarLienzo(); ubicarManijas(); cambio(false);
+  });
+  prop.addEventListener("change", ev => {
+    const el = ev.target; if(!el.dataset.p || !(el.tagName === "SELECT" || el.type === "checkbox")) return;
+    let v = leer(el); if(/\.peso$/.test(el.dataset.p)) v = Number(v);
+    set(F, el.dataset.p, v); pintarLienzo(); ubicarManijas(); if("re" in el.dataset) pintarPropLibre(); cambio(false);
+  });
+  prop.addEventListener("click", ev => {
+    const d = ev.target.closest("button") && ev.target.closest("button").dataset; if(!d) return;
+    if(d.sacar){ set(F, d.sacar, ""); pintarLienzo(); pintarPropLibre(); cambio(false); }
+    if(d.subir) pedirArchivos(false, async ([a]) => { if(!a) return; try{ set(F, d.subir, await achicar(a, +d.max, /png|webp|gif/.test(a.type) ? "png" : "jpeg")); pintarLienzo(); ubicarManijas(); pintarPropLibre(); cambio(false); }catch(err){ toast(err.message); } });
+  });
+  addEventListener("resize", () => { if(!L$("libre").hidden) ubicarManijas(); });
+}
+
+function confirmarBorrado(s){ return confirm(`¿Borrar la parte "${TIPOS_SECCION[s.tipo]}"${s.titulo ? ` (${s.titulo})` : ""}?`); }
 let yaEntro = false; try{ yaEntro = sessionStorage.getItem("evoEstudio") === "1"; }catch(e){}
 if(yaEntro) entrar();
-function confirmarBorrado(s){ return confirm(`¿Borrar la parte "${TIPOS_SECCION[s.tipo]}"${s.titulo ? ` (${s.titulo})` : ""}?`); }
 </script>
 </body>
 </html>
