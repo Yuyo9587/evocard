@@ -148,6 +148,14 @@ nav.menu a:hover{color:var(--wax)}
 .m-corp .k{color:#0F7B6C;font-weight:600}
 .m-corp .n{font-family:var(--f-body);font-style:normal;font-weight:800;font-size:1.3rem;letter-spacing:-.01em}
 .m-corp .b{background:#0F7B6C;color:#fff}
+.m-rev{background:linear-gradient(90deg,#FFE3EE 50%,#E2F0FD 50%);color:#3B3350}
+.m-rev .k{color:#8C6BD9;font-weight:600}
+.m-rev .n{font-family:var(--f-body);font-style:normal;font-weight:800;background:linear-gradient(90deg,#D9568A,#3E86C9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.m-rev .b{background:#8C6BD9;color:#fff}
+.m-fin{background:radial-gradient(circle at 70% 18%,rgba(227,194,122,.35) 0 2px,transparent 3px) 0 0/38px 38px,#0C1120;color:#F5EFE2}
+.m-fin .k{color:#E3C27A}
+.m-fin .n{font-size:1.9rem;color:#E3C27A}
+.m-fin .b{background:#E3C27A;color:#141414}
 .m-comu{background:#FFFDF8;color:#4B3F2A}
 .m-comu .b{background:#B8995A;color:#fff}
 .m-comu::before{content:"";position:absolute;top:13%;width:2px;height:26px;background:#B8995A;box-shadow:0 9px 0 0 transparent}
@@ -333,9 +341,9 @@ h1,h2,h3{letter-spacing:.005em}
         <div class="ev"><span class="ic">Bodas</span><p>Civil, iglesia y fiesta en una sola invitación, con cronograma y mapa de cada lugar.</p></div>
         <div class="ev"><span class="ic">XV años</span><p>Portada con la quinceañera, color reservado, playlist y fotos de la noche.</p></div>
         <div class="ev"><span class="ic">Cumpleaños</span><p>Infantiles, 18, 40 o 50: desde lo divertido hasta lo elegante.</p></div>
-        <div class="ev"><span class="ic">Baby shower</span><p>Cronograma por momentos, regalos para el bebé y confirmación simple.</p></div>
+        <div class="ev"><span class="ic">Baby shower y revelación</span><p>Cronograma por momentos, regalos para el bebé y, en la revelación, votación nena o nene.</p></div>
         <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Institucionales</span><p>Aniversarios, cenas de gala y actos de clubes, escuelas, empresas y entidades.</p></div>
-        <div class="ev new"><span class="tag">Nuevo</span><span class="ic">Corporativos</span><p>Jornadas, congresos, presentaciones y reuniones de empresa sin costo para el invitado: agenda, disertantes e inscripción.</p></div>
+        <div class="ev new"><span class="tag">Nuevo</span><span class="ic">Corporativos</span><p>Jornadas, congresos y fiestas de fin de año, con el logo y los colores de la empresa: agenda, disertantes e inscripción.</p></div>
         <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Egresados</span><p>Fiestas de egresados y cenas de fin de curso con lista por familia.</p></div>
         <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Comuniones</span><p>Primera comunión y confirmación, con la celebración en la parroquia y la reunión.</p></div>
         <div class="ev new"><span class="tag">Exclusivo</span><span class="ic">Bautismos</span><p>Padrinos, ceremonia y almuerzo familiar en un diseño suave.</p></div>
@@ -378,6 +386,14 @@ h1,h2,h3{letter-spacing:.005em}
         <div class="model">
           <div class="phone m-corp"><span class="k">Jornada 2027</span><span class="n">Innovación<br>Pyme</span><span class="d">JUE 16.09 · 8:30 h</span><span class="b">Inscribirme</span></div>
           <h3>Agenda</h3><p>Jornadas, congresos y reuniones de empresa: agenda, disertantes e inscripción, sin valor de tarjeta.</p><a class="btn ghost small" href="agenda.html">Ver demo</a>
+        </div>
+        <div class="model">
+          <div class="phone m-rev"><span class="k">¿Nena o nene?</span><span class="n">Lucía<br>y Martín</span><span class="d">20.06.2027 · 16 h</span><span class="b">Votar</span></div>
+          <h3>Revelación</h3><p>Revelación de sexo con votación: cada invitado elige nena o nene al confirmar.</p><a class="btn ghost small" href="revelacion.html" target="_blank" rel="noopener">Ver demo</a>
+        </div>
+        <div class="model">
+          <div class="phone m-fin"><span class="k">Fin de año 2026</span><span class="n">Brindemos</span><span class="d">TU EMPRESA · 11.12</span><span class="b">Confirmar</span></div>
+          <h3>Brindis</h3><p>Fiesta de fin de año para empresas, con el logo y los colores de tu marca.</p><a class="btn ghost small" href="brindis.html" target="_blank" rel="noopener">Ver demo</a>
         </div>
       </div>
       <p class="note">Nombres y datos de ejemplo</p>
@@ -610,8 +626,8 @@ const CONFIG = {
     { id:"urgente",  nombre:"Entrega en 24 horas",     det:"Prioridad máxima",                    precio:20000 },
     { id:"dominio",  nombre:"Dominio propio",          det:"Ej: luciaytomas.com.ar",              precio:50000 }
   ],
-  eventos: ["Boda","XV años","Cumpleaños","Baby shower","Institucional","Corporativo / congreso","Egresados","Comunión","Bautismo","Otro"],
-  estilos: ["Jardín","Noche estrellada","Confeti","Nube","Gala","Luz","Agenda","Ninguno, tengo otra idea"],
+  eventos: ["Boda","XV años","Cumpleaños","Baby shower","Revelación de sexo","Institucional","Corporativo / congreso","Fin de año de empresa","Egresados","Comunión","Bautismo","Otro"],
+  estilos: ["Jardín","Noche estrellada","Confeti","Nube","Gala","Luz","Agenda","Revelación","Brindis","Ninguno, tengo otra idea"],
   secciones: ["Ubicación y mapa","Cuenta regresiva","Cronograma","Dress code","Regalos y alias","Confirmación con menú","Valor de tarjeta","Galería de fotos","Nuestra historia","Padrinos y familia","Playlist colaborativa","Hospedaje sugerido","Trivia divertida","Preguntas frecuentes"]
 };
 /* ================================================================ */
