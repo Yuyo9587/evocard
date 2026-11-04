@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Estudio Evocard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--negro:#0B0B0C;--marfil:#F8F5EF;--dorado:#C9A45C;--gris:#6B6660;--linea:#E4DDD0;--panel:#FFFFFF;--suave:#F2EDE4;--rojo:#A0453C}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:"DM Sans",system-ui,sans-serif;font-size:15px;color:var(--negro);background:var(--marfil)}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+h1,h2,h3,p{margin:0}
+
+/* Entrada con contraseña */
+#puerta{position:fixed;inset:0;display:grid;place-items:center;background:var(--negro);z-index:100;padding:20px}
+#puerta form{background:var(--marfil);border-radius:14px;padding:32px 28px;width:min(360px,100%);display:grid;gap:14px;text-align:center}
+#puerta h1{font-family:"Cormorant Garamond",serif;font-size:2.2rem;font-weight:600}
+#puerta h1 span{color:var(--dorado)}
+#puerta input{border:1px solid var(--linea);border-radius:8px;padding:11px 12px;width:100%;background:#fff;text-align:center}
+#puertaErr{color:var(--rojo);font-size:.85rem;min-height:1.2em}
+
+/* Armado general */
+.app{display:grid;grid-template-columns:minmax(360px,460px) 1fr;height:100vh}
+.lado{display:flex;flex-direction:column;border-right:1px solid var(--linea);background:var(--panel);min-height:0}
+.cabeza{padding:14px 18px 10px;border-bottom:1px solid var(--linea);display:flex;align-items:center;gap:10px;justify-content:space-between}
+.marca{font-family:"Cormorant Garamond",serif;font-size:1.5rem;font-weight:600;line-height:1}
+.marca span{color:var(--dorado)}
+.guardado{font-size:.75rem;color:var(--gris)}
+.pestanas{display:flex;flex-wrap:wrap;gap:4px;padding:10px 14px;border-bottom:1px solid var(--linea);background:var(--suave)}
+.pestanas button{border:0;background:transparent;padding:7px 10px;border-radius:999px;cursor:pointer;font-size:.85rem;color:var(--gris)}
+.pestanas button[aria-selected="true"]{background:var(--negro);color:var(--marfil)}
+#panel{overflow:auto;padding:18px 18px 60px;flex:1}
+.grupo{border:1px solid var(--linea);border-radius:12px;padding:14px;margin-bottom:14px;display:grid;gap:12px}
+.grupo > h3{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dorado);font-weight:600}
+.ayuda{font-size:.82rem;color:var(--gris);line-height:1.45}
+.f{display:grid;gap:5px}
+.f > label,.f > span{font-size:.82rem;font-weight:500}
+.f input[type=text],.f input[type=number],.f input[type=date],.f input[type=time],.f input[type=url],.f select,.f textarea{border:1px solid var(--linea);border-radius:8px;padding:8px 10px;width:100%;background:#fff}
+.f textarea{resize:vertical;min-height:60px}
+.fila{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.color{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.color label{font-size:.85rem}
+.color input[type=color]{width:46px;height:32px;border:1px solid var(--linea);border-radius:8px;padding:2px;background:#fff;cursor:pointer;flex:none}
+.color .der{display:flex;align-items:center;gap:8px}
+.color small{font-size:.72rem;color:var(--gris);font-variant-numeric:tabular-nums;width:58px;text-align:right}
+.rango{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.rango > span{grid-column:1/-1;font-size:.82rem;font-weight:500}
+.rango output{font-size:.78rem;color:var(--gris);min-width:44px;text-align:right}
+.check{display:flex;gap:8px;align-items:center;font-size:.88rem;cursor:pointer}
+.check input{width:17px;height:17px;accent-color:var(--negro)}
+.b{border:1px solid var(--negro);background:var(--negro);color:var(--marfil);border-radius:999px;padding:9px 16px;cursor:pointer;font-size:.85rem;font-weight:500}
+.b.out{background:transparent;color:var(--negro)}
+.b.oro{background:var(--dorado);border-color:var(--dorado);color:var(--negro)}
+.b.chico{padding:6px 12px;font-size:.8rem}
+.b:disabled{opacity:.5;cursor:default}
+.botones{display:flex;flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:flex;align-items:center;gap:6px;border:1px solid var(--linea);background:#fff;border-radius:999px;padding:4px 10px 4px 4px;cursor:pointer;font-size:.8rem}
+.chip i{display:flex;width:34px;height:20px;border-radius:999px;overflow:hidden;border:1px solid rgba(0,0,0,.1)}
+.chip i b{flex:1}
+.miniatura{display:flex;gap:10px;align-items:center}
+.miniatura img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--linea);background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/12px 12px}
+.miniatura .vacia{width:64px;height:64px;border-radius:8px;border:1px dashed var(--linea);display:grid;place-items:center;font-size:.7rem;color:var(--gris);text-align:center}
+.aviso{background:#FFF6E0;border:1px solid #EBD9A6;border-radius:10px;padding:10px 12px;font-size:.82rem;line-height:1.45}
+.aviso.mal{background:#FBEAE7;border-color:#E9C0B9}
+
+/* Secciones */
+.sec{border:1px solid var(--linea);border-radius:12px;margin-bottom:10px;background:#fff}
+.sec.apagada{opacity:.55}
+.sec-cab{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer}
+.sec-cab .nom{flex:1;font-weight:500;font-size:.92rem}
+.sec-cab .tipo{font-size:.72rem;color:var(--gris)}
+.sec-cab button{border:1px solid var(--linea);background:#fff;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:.85rem;line-height:1;flex:none}
+.sec-cab button:disabled{opacity:.3;cursor:default}
+.sec-cuerpo{padding:4px 12px 14px;display:grid;gap:12px;border-top:1px solid var(--linea)}
+.item{border:1px dashed var(--linea);border-radius:10px;padding:10px;display:grid;gap:8px;position:relative}
+.item .quitar{position:absolute;top:6px;right:6px;border:0;background:transparent;cursor:pointer;color:var(--rojo);font-size:.78rem}
+.galeria-ed{display:flex;flex-wrap:wrap;gap:8px}
+.galeria-ed div{position:relative}
+.galeria-ed img{width:72px;height:72px;object-fit:cover;border-radius:8px}
+.galeria-ed button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:0;background:var(--rojo);color:#fff;cursor:pointer;font-size:.75rem}
+
+/* Vista previa */
+.vista{display:flex;flex-direction:column;align-items:center;min-height:0;padding:14px 20px 20px;overflow:auto;background:radial-gradient(circle at 50% 0,#fff,#EFE9DE 70%)}
+.vista-barra{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.vista-barra .peso{font-size:.78rem;color:var(--gris)}
+.celular{width:390px;height:min(800px,calc(100vh - 90px));min-height:520px;border-radius:44px;background:#111;padding:12px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5);flex:none}
+.celular iframe{width:100%;height:100%;border:0;border-radius:34px;background:#fff;display:block}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--negro);color:var(--marfil);padding:10px 18px;border-radius:999px;font-size:.88rem;z-index:90;max-width:90vw;text-align:center}
+@media (max-width:900px){.app{grid-template-columns:1fr;height:auto}.lado{height:auto;border-right:0}#panel{max-height:none}.celular{width:min(390px,100%);height:720px}}
+</style>
+</head>
+<body>
+
+<div id="puerta">
+  <form id="puertaForm">
+    <h1>Estudio <span>Evocard</span></h1>
+    <p class="ayuda">Esta parte es solo para vos.</p>
+    <input type="password" id="clave" placeholder="Contraseña" autocomplete="current-password" autofocus>
+    <button class="b" type="submit">Entrar</button>
+    <p id="puertaErr" role="alert"></p>
+  </form>
+</div>
+
+<div class="app" id="app" hidden>
+  <aside class="lado">
+    <div class="cabeza">
+      <p class="marca">Estudio <span>Evocard</span></p>
+      <span class="guardado" id="guardado"></span>
+    </div>
+    <nav class="pestanas" id="pestanas" role="tablist"></nav>
+    <div id="panel"></div>
+  </aside>
+  <main class="vista">
+    <div class="vista-barra">
+      <button class="b out chico" type="button" id="verSobre">Ver cómo se abre el sobre</button>
+      <button class="b chico" type="button" id="descargarArriba">Descargar invitación</button>
+      <span class="peso" id="peso"></span>
+    </div>
+    <div class="celular"><iframe id="previa" title="Vista previa de la invitación"></iframe></div>
+  </main>
+</div>
+<input type="file" id="abrirFicha" accept=".json,application/json" hidden>
+<div id="toast" hidden role="status"></div>
+
+<script>
+/* ===== Piezas compartidas con todos los modelos (vienen de base.py y album.py; no se tocan acá) ===== */
+const BASE = {"CSS_BASE": "\n*{box-sizing:border-box}\nhtml,body{background:var(--bg);color:var(--ink)}\nbody{margin:0;font-family:var(--f-body);font-size:var(--fs,19px);line-height:1.55}\nbody::before{content:\"\";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}\n#deco{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}\nmain,footer{position:relative;z-index:1}\nbutton,input,select,textarea{font:inherit;color:inherit}\n:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:6px}\nh1,h2,h3,p{margin:0}\n.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}\nsection{padding-block:56px;text-align:center}\n.banda{background:var(--banda)}\n.lab{font-family:var(--f-sans);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--hl)}\nh2{font-family:var(--f-title);font-weight:var(--title-w,400);font-size:var(--h2,2.9rem);line-height:1.1;margin-top:6px;color:var(--ink)}\n.sub{color:var(--muted);font-style:var(--sub-style,italic);margin-top:10px}\n.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--f-sans);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;padding:12px 22px;border-radius:var(--r-btn,999px);border:1px solid var(--acc);background:var(--acc);color:var(--acc-ink);cursor:pointer;text-decoration:none;font-weight:500}\n.btn.out{background:transparent;color:var(--acc)}\n.ribbon{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ribbon-bg);color:var(--ribbon-ink);font-family:var(--f-sans);font-size:.72rem;letter-spacing:.06em;text-align:center;padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}\n.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card,18px);padding:28px 22px;margin-top:26px}\n\n/* Sobre */\n#sobre{position:fixed;inset:0;z-index:50;background:var(--sobre-bg);display:grid;place-items:center;padding:24px;cursor:pointer;transition:opacity .8s ease, visibility .8s}\n#sobre.abierto{opacity:0;visibility:hidden}\n.env{position:relative;width:min(360px,88vw);aspect-ratio:1.5;max-width:100%}\n.env .back{position:absolute;inset:0;background:var(--env-back);border-radius:8px;box-shadow:0 30px 60px -26px rgba(0,0,0,.45)}\n.env .front{position:absolute;inset:0;border-radius:8px;overflow:hidden}\n.env .front::before,.env .front::after{content:\"\";position:absolute;bottom:0;width:60%;height:100%;background:var(--env-front)}\n.env .front::before{left:0;clip-path:polygon(0 0,100% 62%,100% 100%,0 100%)}\n.env .front::after{right:0;clip-path:polygon(100% 0,0 62%,0 100%,100% 100%)}\n.env .flap{position:absolute;left:0;right:0;top:0;height:62%;background:var(--env-flap);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s ease}\n#sobre.abriendo .flap{transform:rotateX(180deg)}\n.env .seal{position:absolute;left:50%;top:58%;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:var(--seal-bg);display:grid;place-items:center;color:var(--seal-ink);font-family:var(--seal-font);font-size:var(--seal-fs,1.9rem);line-height:1;white-space:nowrap;box-shadow:0 6px 14px -6px rgba(0,0,0,.45);transition:transform .4s ease, opacity .4s}\n#sobre.abriendo .seal{transform:scale(.4);opacity:0}\n.env .to{position:absolute;left:0;right:0;bottom:11%;text-align:center;font-family:var(--f-body);font-style:italic;color:var(--env-ink);font-size:1.05rem}\n.tap{margin-top:28px;font-family:var(--f-sans);font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:var(--tap);text-align:center;animation:pulse 2s infinite}\n@keyframes pulse{50%{opacity:.4}}\n@media (prefers-reduced-motion: reduce){.tap{animation:none}.env .flap,.env .seal,#sobre{transition:none}}\n\n/* Música */\n#musica{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:45;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card-solid);display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 16px -8px rgba(0,0,0,.4)}\n#musica svg{width:20px;height:20px;fill:none;stroke:var(--acc);stroke-width:1.6}\n\n/* Portada */\n.portada{padding-block:92px 60px}\n.saludo{font-family:var(--f-sans);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}\n.fecha-grande{font-family:var(--f-sans);letter-spacing:.3em;font-size:.95rem;text-transform:uppercase;border-block:1px solid var(--line);display:inline-block;padding:10px 4px}\n.invita{max-width:32ch;margin:22px auto 0;font-style:var(--sub-style,italic);color:var(--muted)}\n\n/* Cuenta regresiva */\n.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:420px;margin:26px auto 24px}\n.cd div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 4px;display:grid;gap:2px}\n.cd b{font-family:var(--f-num);font-weight:var(--num-w,500);font-size:2rem;font-variant-numeric:tabular-nums;line-height:1}\n.cd small{font-family:var(--f-sans);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}\n\n/* Cronograma */\n.timeline{list-style:none;margin:30px auto 0;padding:0;display:grid;text-align:left;max-width:440px}\n.timeline li{display:grid;grid-template-columns:72px 1fr;gap:16px;padding-bottom:24px;position:relative}\n.timeline li::before{content:\"\";position:absolute;left:83px;top:10px;bottom:-4px;width:1px;background:var(--line)}\n.timeline li:last-child::before{display:none}\n.timeline .h{font-family:var(--f-sans);font-size:.9rem;letter-spacing:.06em;color:var(--hl);text-align:right;padding-top:2px;font-variant-numeric:tabular-nums}\n.timeline .t{padding-left:16px;position:relative}\n.timeline .t::before{content:\"\";position:absolute;left:-7px;top:9px;width:9px;height:9px;border-radius:var(--dot-r,50%);background:var(--bg);border:1.5px solid var(--hl)}\n.timeline h3{font-family:var(--f-body);font-weight:600;font-size:1.2rem}\n.timeline p{color:var(--muted);font-size:1rem}\n.timeline a,.lugar a{font-family:var(--f-sans);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);display:inline-block;margin-top:6px}\n\n/* Datos para copiar */\n.datos{display:grid;gap:10px;text-align:left;margin-top:16px}\n.dato{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px dashed var(--line);padding-block:8px;min-width:0}\n.dato span:first-child{font-family:var(--f-sans);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}\n.dato b{font-weight:500;word-break:break-all}\n.copiar{font-family:var(--f-sans);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;background:var(--acc-soft);border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer;color:var(--acc);flex-shrink:0}\n.lista{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:10px;text-align:left}\n.lista li{display:flex;gap:12px;align-items:baseline}\n.lista li::before{content:var(--bullet,\"•\");color:var(--hl);flex:none}\n\n/* Confirmación */\nform{display:grid;gap:18px;text-align:left;margin-top:8px}\n.campo{display:grid;gap:6px}\n.campo > label,fieldset legend{font-family:var(--f-sans);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding:0}\nfieldset{border:0;margin:0;padding:0;display:grid;gap:6px}\n.choices{display:flex;gap:8px;flex-wrap:wrap}\n.choice{position:relative}\n.choice input{position:absolute;opacity:0}\n.choice span{display:inline-block;padding:9px 16px;border-radius:var(--r-btn,999px);border:1px solid var(--line);background:var(--field);cursor:pointer;font-size:1rem}\n.choice input:checked + span{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}\n.choice input:focus-visible + span{outline:2px solid var(--acc);outline-offset:2px}\nselect,textarea,input[type=text]{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--field);width:100%}\n.err{color:var(--err,#A0453C);font-family:var(--f-sans);font-size:.85rem;min-height:1.2em}\n.gracias{display:grid;gap:10px;justify-items:center}\n.gracias h3{font-family:var(--f-title);font-weight:var(--title-w,400);font-size:2.6rem;line-height:1.15}\n.gracias p{color:var(--muted)}\n.fine{font-family:var(--f-sans);font-size:.75rem;color:var(--muted);margin-top:14px}\nfooter{padding-block:40px 90px;text-align:center}\n", "JS_BASE": "\nconst $ = s => document.querySelector(s);\nconst reduce = window.matchMedia(\"(prefers-reduced-motion: reduce)\").matches;\n\n/* ===== PIEZA DE CONEXIÓN (igual en todos los modelos; para Firebase se cambia solo esto) ===== */\nconst Conexion = {\n  activa: () => !!INV.planilla,\n  async invitado(codigo){\n    let r;\n    try{ r = await fetch(INV.planilla + \"?accion=invitado&codigo=\" + encodeURIComponent(codigo)); }\n    catch(e){ throw new Error(\"No pudimos cargar tu invitación. Revisá tu conexión y volvé a abrir el link.\"); }\n    const j = await r.json();\n    if(!j.ok) throw new Error(j.error || \"No encontramos tu invitación.\");\n    return j.invitado;\n  },\n  async confirmar(datos){\n    let r;\n    try{ r = await fetch(INV.planilla, { method:\"POST\", headers:{ \"Content-Type\":\"text/plain;charset=utf-8\" }, body: JSON.stringify(Object.assign({ accion:\"confirmar\" }, datos)) }); }\n    catch(e){ throw new Error(\"No se pudo enviar. Revisá tu conexión e intentá de nuevo.\"); }\n    const j = await r.json();\n    if(!j.ok) throw new Error(j.error || \"No se pudo guardar tu respuesta.\");\n    return j.invitado;\n  }\n};\n/* ============================================================================================ */\n\n/* El código del invitado viene en el link: modelo.html?i=K7PQ2M (o #K7PQ2M) */\nconst CODIGO = (new URLSearchParams(location.search).get(\"i\") || location.hash.slice(1) || \"\").toUpperCase().replace(/[^A-Z0-9]/g, \"\");\nlet respuestaPrevia = null;\n/* Tres modos: \"planilla\" (con panel), \"whatsapp\" (plan Básico: la respuesta se manda por WhatsApp al cliente) y \"muestra\" (demo) */\nconst MODO = INV.planilla ? \"planilla\" : (INV.whatsapp ? \"whatsapp\" : \"muestra\");\nconst plural = (n, a, b) => n + \" \" + (n === 1 ? a : b);\n\nfunction aplicarInvitado(){\n  const generico = !INV.invitado;\n  $(\"#sobreNombre\").textContent = generico ? \"Para vos\" : \"Para \" + INV.invitado;\n  $(\"#saludo\").textContent = generico ? TXT.saludoGenerico : TXT.saludo + \" \" + INV.invitado;\n  $(\"#lugares\").textContent = generico ? TXT.usaLink\n    : `${TXT.reservamos} ${plural(INV.lugares, \"lugar\", \"lugares\")} para ${INV.invitado}.`;\n  $(\"#cant\").innerHTML = Array.from({length: INV.lugares}, (_, i) => `<option value=\"${i+1}\">${plural(i+1, \"persona\", \"personas\")}<\/option>`).join(\"\");\n  $(\"#cant\").value = String(INV.lugares);\n  if($(\"#chicos\")){\n    $(\"#chicos\").innerHTML = Array.from({length: INV.lugares + 1}, (_, i) => `<option value=\"${i}\">${i}<\/option>`).join(\"\");\n    $(\"#chicos\").value = String(Math.min(1, INV.lugares));\n  }\n  const soloFiesta = INV.tipo === \"solo_fiesta\";\n  document.querySelectorAll('[data-parte=\"cena\"]').forEach(li => li.hidden = soloFiesta);\n  if(soloFiesta && $(\"#diaLab\")) $(\"#diaLab\").textContent = TXT.desdeLas + \" \" + INV.horaFiesta;\n  if(generico) $(\"#rsvp\").hidden = true;\n  if(respuestaPrevia && respuestaPrevia.estado !== \"pendiente\"){\n    const r = respuestaPrevia;\n    (r.estado === \"confirmado\" ? $(\"#asisteSi\") : $(\"#asisteNo\")).checked = true;\n    if(r.cantidad) $(\"#cant\").value = String(Math.min(r.cantidad, INV.lugares));\n    if(r.menu && $(\"#menu\")) $(\"#menu\").value = r.menu;\n    $(\"#lugares\").textContent = r.estado === \"confirmado\"\n      ? `${TXT.yaConfirmaste} ${plural(r.cantidad, \"lugar\", \"lugares\")}. ${TXT.siCambio}`\n      : `${TXT.yaNoVienen} ${TXT.siCambio}`;\n  }\n  mostrarCampos();\n}\n\nasync function iniciarInvitado(){\n  if(MODO === \"whatsapp\"){\n    $(\"#ribbon\").hidden = true;\n    INV.invitado = \"\"; INV.lugares = INV.maxLugares || 6;\n    aplicarInvitado();\n    $(\"#rsvp\").hidden = false; $(\"#campoNombre\").hidden = false; $(\"#finePersonal\").hidden = true;\n    $(\"#cant\").value = \"1\";\n    $(\"#lugares\").textContent = TXT.porWhatsapp;\n    return;\n  }\n  if(!Conexion.activa()){ aplicarInvitado(); return; }   /* muestra con datos de ejemplo */\n  $(\"#ribbon\").hidden = true;\n  if(!CODIGO){ INV.invitado = \"\"; INV.lugares = 1; aplicarInvitado(); return; }\n  INV.invitado = \"\"; aplicarInvitado();\n  try{\n    const g = await Conexion.invitado(CODIGO);\n    INV.invitado = g.nombre; INV.lugares = Number(g.lugares) || 1; INV.tipo = g.tipo;\n    respuestaPrevia = g;\n    $(\"#rsvp\").hidden = false;\n    aplicarInvitado();\n  }catch(e){\n    $(\"#sobreNombre\").textContent = \"Invitación no encontrada\";\n    $(\"#lugares\").textContent = e.message;\n  }\n}\n\n/* Agendar en Google Calendar */\n(function(){\n  const f = d => new Date(d).toISOString().replace(/[-:]/g, \"\").replace(/\\.\\d{3}/, \"\");\n  $(\"#agendar\").href = \"https://calendar.google.com/calendar/render?action=TEMPLATE\"\n    + \"&text=\" + encodeURIComponent(INV.titulo)\n    + \"&dates=\" + f(INV.fechaEvento) + \"/\" + f(INV.fechaFin)\n    + \"&location=\" + encodeURIComponent(INV.lugarAgenda);\n})();\n\n/* Cuenta regresiva */\nconst meta = new Date(INV.fechaEvento).getTime();\nfunction tick(){\n  let ms = Math.max(0, meta - Date.now());\n  const d = Math.floor(ms / 864e5); ms -= d * 864e5;\n  const h = Math.floor(ms / 36e5); ms -= h * 36e5;\n  const m = Math.floor(ms / 6e4); ms -= m * 6e4;\n  const s = Math.floor(ms / 1e3);\n  $(\"#cdD\").textContent = d; $(\"#cdH\").textContent = String(h).padStart(2, \"0\");\n  $(\"#cdM\").textContent = String(m).padStart(2, \"0\"); $(\"#cdS\").textContent = String(s).padStart(2, \"0\");\n}\ntick(); setInterval(tick, 1000);\n\n/* Música generada en el navegador */\nlet audio = null, sonando = false, timer = null;\nfunction iniciarMusica(){\n  try{\n    audio = audio || new (window.AudioContext || window.webkitAudioContext)();\n    if(audio.state === \"suspended\") audio.resume();\n    let i = 0;\n    const tocar = () => {\n      if(!sonando) return;\n      const t = audio.currentTime, o = audio.createOscillator(), g = audio.createGain();\n      o.type = MUSICA.onda; o.frequency.value = MUSICA.notas[i % MUSICA.notas.length];\n      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(MUSICA.volumen, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0006, t + MUSICA.cola);\n      o.connect(g).connect(audio.destination); o.start(t); o.stop(t + MUSICA.cola + 0.1); i++;\n    };\n    sonando = true; tocar(); timer = setInterval(tocar, MUSICA.paso);\n  }catch(e){ sonando = false; }\n  pintarBoton();\n}\nfunction pararMusica(){ sonando = false; clearInterval(timer); pintarBoton(); }\nfunction pintarBoton(){\n  $(\"#musica\").setAttribute(\"aria-label\", sonando ? \"Silenciar música\" : \"Activar música\");\n  $(\"#musIcon\").innerHTML = sonando\n    ? '<path d=\"M9 18V6l10-2v12\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><circle cx=\"16\" cy=\"16\" r=\"3\"/>'\n    : '<path d=\"M9 18V6l10-2v12\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><circle cx=\"16\" cy=\"16\" r=\"3\"/><path d=\"M3 3l18 18\"/>';\n}\n$(\"#musica\").addEventListener(\"click\", () => sonando ? pararMusica() : iniciarMusica());\n\n/* Abrir el sobre */\nfunction abrir(){\n  const s = $(\"#sobre\"); if(s.classList.contains(\"abriendo\")) return;\n  s.classList.add(\"abriendo\");\n  $(\"#musica\").hidden = false;\n  iniciarMusica();\n  setTimeout(() => s.classList.add(\"abierto\"), reduce ? 0 : 750);\n}\n$(\"#sobre\").addEventListener(\"click\", abrir);\n$(\"#sobre\").addEventListener(\"keydown\", e => { if(e.key === \"Enter\" || e.key === \" \"){ e.preventDefault(); abrir(); } });\n\n/* Copiar datos */\ndocument.querySelectorAll(\"[data-copy]\").forEach(b => b.addEventListener(\"click\", () => {\n  const el = $(\"#\" + b.dataset.copy), txt = el.textContent, msg = $(\"#copyMsg\");\n  const ok = () => { msg.style.color = \"var(--acc)\"; msg.textContent = \"Copiado: \" + txt; };\n  const manual = () => { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); msg.style.color = \"var(--muted)\"; msg.textContent = \"Quedó seleccionado. Copialo desde el menú del celular.\"; };\n  try{ navigator.clipboard.writeText(txt).then(ok, manual); }catch(e){ manual(); }\n}));\n\n/* Confirmación */\nfunction mostrarCampos(){\n  const no = $(\"#asisteNo\").checked;\n  document.querySelectorAll(\"[data-si]\").forEach(el => el.hidden = no);\n}\ndocument.querySelectorAll('input[name=\"asiste\"]').forEach(r => r.addEventListener(\"change\", mostrarCampos));\n$(\"#rsvp\").addEventListener(\"submit\", async e => {\n  e.preventDefault();\n  const asiste = (document.querySelector('input[name=\"asiste\"]:checked') || {}).value;\n  if(!asiste){ $(\"#rsvpErr\").textContent = TXT.elegi; return; }\n  $(\"#rsvpErr\").textContent = \"\";\n  const cant = $(\"#cant\").value;\n  /* Campos propios del modelo: se suman al mensaje para que se vean en el panel */\n  const extras = asiste === \"si\" ? [...document.querySelectorAll(\"[data-extra]\")].map(el => {\n    const v = (el.value || \"\").trim(); return v ? el.dataset.extra + \": \" + v : \"\";\n  }).filter(Boolean) : [];\n  const mensaje = [$(\"#mensaje\").value.trim(), ...extras].filter(Boolean).join(\"\\n\");\n  const boton = $(\"#rsvp\").querySelector('button[type=\"submit\"]');\n  if(MODO === \"whatsapp\"){\n    const quien = $(\"#nombreInv\").value.trim();\n    if(!quien){ $(\"#rsvpErr\").textContent = TXT.faltaNombre; $(\"#nombreInv\").focus(); return; }\n    const lineas = asiste === \"si\"\n      ? [`¡Hola! Confirmo asistencia a ${INV.titulo}.`, `Nombre: ${quien}`, `Vamos: ${cant === \"1\" ? \"1 persona\" : cant + \" personas\"}`,\n         $(\"#menu\") && $(\"#menu\").value !== \"Ninguno\" ? `Menú especial: ${$(\"#menu\").value}` : \"\", ...extras]\n      : [`¡Hola! Lamentablemente no vamos a poder ir a ${INV.titulo}.`, `Nombre: ${quien}`];\n    if($(\"#mensaje\").value.trim()) lineas.push(`Mensaje: ${$(\"#mensaje\").value.trim()}`);\n    const url = `https://wa.me/${INV.whatsapp}?text=${encodeURIComponent(lineas.filter(Boolean).join(\"\\n\"))}`;\n    window.open(url, \"_blank\", \"noopener\");\n    $(\"#rsvpCard\").innerHTML = `<div class=\"gracias\"><h3>${asiste === \"si\" ? TXT.graciasSi : TXT.graciasNo}<\/h3><p>${TXT.abrioWhatsapp}<\/p><a class=\"btn out\" target=\"_blank\" rel=\"noopener\" href=\"${url}\">Abrir WhatsApp<\/a><\/div>`;\n    return;\n  }\n  const real = Conexion.activa();\n  if(real){\n    boton.disabled = true; boton.textContent = \"Enviando…\";\n    try{\n      await Conexion.confirmar({ codigo: CODIGO, asiste, cantidad: cant, menu: $(\"#menu\") && asiste === \"si\" ? $(\"#menu\").value : \"\", traslado: \"no\", mensaje });\n    }catch(err){\n      $(\"#rsvpErr\").textContent = err.message; boton.disabled = false; boton.textContent = \"Enviar confirmación\"; return;\n    }\n  }\n  const nota = real ? \"\" : `<p class=\"fine\">En la invitación real, esta respuesta ${TXT.nota} al instante en el panel.<\/p>`;\n  const nombre = document.createElement(\"span\"); nombre.textContent = INV.invitado;\n  $(\"#rsvpCard\").innerHTML = asiste === \"si\"\n    ? `<div class=\"gracias\"><h3>${TXT.graciasSi}<\/h3><p>${TXT.confirmaste} ${cant === \"1\" ? \"1 lugar\" : cant + \" lugares\"} para ${nombre.innerHTML}. ${TXT.siCambio}<\/p>${nota}<\/div>`\n    : `<div class=\"gracias\"><h3>${TXT.graciasNo}<\/h3><p>${TXT.graciasNoP}<\/p>${nota}<\/div>`;\n});\n", "ESQUELETO": "<!doctype html>\n<html lang=\"es\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}<\/style>\n<\/head>\n<body>\n", "ALBUM_CSS": "\n/* Álbum de fotos */\n.album-card{text-align:center}\n.album-card .campo{text-align:left;margin-bottom:16px}\n.album-card input[type=text]{border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;background:transparent}\n.album-barra{height:6px;border-radius:9px;background:var(--line);overflow:hidden;margin:16px auto 0;max-width:320px}\n.album-barra i{display:block;height:100%;width:0;background:var(--acc,var(--leaf,var(--lila)));transition:width .3s}\n", "ALBUM_JS": "\n/* ===== Álbum de fotos: los invitados suben sus fotos a la carpeta del evento ===== */\n(function(){\n  const sec = $(\"#album\"); if(!sec) return;\n  if(INV.albumActivo === false){ sec.hidden = true; return; }\n  const btn = $(\"#albumBtn\"), input = $(\"#albumArchivos\"), msg = $(\"#albumMsg\"), barra = $(\"#albumBarra\"), prog = $(\"#albumProg\");\n  const real = !!INV.planilla;\n  if(!real && INV.album){   /* sin planilla, pero con un álbum externo (por ejemplo Google Fotos) */\n    $(\"#albumAutorCampo\").hidden = true; btn.textContent = \"Abrir el álbum\";\n    btn.addEventListener(\"click\", () => window.open(INV.album, \"_blank\", \"noopener\")); return;\n  }\n  btn.addEventListener(\"click\", () => input.click());\n  async function achicar(archivo){\n    const url = URL.createObjectURL(archivo);\n    try{\n      const img = await new Promise((ok, mal) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => mal(new Error(\"No se pudo leer la foto.\")); im.src = url; });\n      const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));\n      const c = document.createElement(\"canvas\"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);\n      c.getContext(\"2d\").drawImage(img, 0, 0, c.width, c.height);\n      return c.toDataURL(\"image/jpeg\", 0.82).split(\",\")[1];\n    } finally { URL.revokeObjectURL(url); }\n  }\n  input.addEventListener(\"change\", async () => {\n    const archivos = [...input.files].filter(f => /^image\\//.test(f.type) || /\\.(jpe?g|png|heic|heif|webp)$/i.test(f.name)); input.value = \"\";\n    if(!archivos.length) return;\n    if(!real){ msg.textContent = `Elegiste ${archivos.length === 1 ? \"1 foto\" : archivos.length + \" fotos\"}. En la invitación real se suben al álbum del evento y se ven en el panel.`; return; }\n    btn.disabled = true; barra.hidden = false; let subidas = 0, fallas = 0, aviso = \"\";\n    for(let i = 0; i < archivos.length; i++){\n      msg.textContent = `Subiendo ${i + 1} de ${archivos.length}…`; prog.style.width = (i / archivos.length * 100) + \"%\";\n      try{\n        const datos = await achicar(archivos[i]);\n        await Conexion.subirFoto({ tipo:\"image/jpeg\", datos, autor: $(\"#albumAutor\").value.trim() || INV.invitado || \"\" });\n        subidas++;\n      }catch(e){ fallas++; if(/cerrado|lleno/.test(e.message)){ aviso = e.message; break; } }\n    }\n    prog.style.width = \"100%\"; btn.disabled = false; setTimeout(() => barra.hidden = true, 1500);\n    msg.textContent = aviso || (subidas\n      ? `¡Gracias! ${subidas === 1 ? \"Se subió 1 foto\" : \"Se subieron \" + subidas + \" fotos\"} al álbum.` + (fallas ? ` ${fallas === 1 ? \"Una no se pudo subir\" : fallas + \" no se pudieron subir\"}: probá de nuevo con esas.` : \"\")\n      : \"No se pudo subir. Revisá tu conexión e intentá de nuevo.\");\n  });\n  /* El QR de las mesas abre la invitación con ?album: saltea el sobre y va directo a esta sección */\n  if(new URLSearchParams(location.search).has(\"album\")){\n    const s = $(\"#sobre\"); s.classList.add(\"abriendo\", \"abierto\"); $(\"#musica\").hidden = false;\n    setTimeout(() => sec.scrollIntoView({ block:\"start\" }), 150);\n  }\n})();\n", "CONEXION_FOTO": ",\n  async subirFoto(datos){\n    let r;\n    try{ r = await fetch(INV.planilla, { method:\"POST\", headers:{ \"Content-Type\":\"text/plain;charset=utf-8\" }, body: JSON.stringify(Object.assign({ accion:\"subirFoto\" }, datos)) }); }\n    catch(e){ throw new Error(\"No se pudo subir. Revisá tu conexión e intentá de nuevo.\"); }\n    const j = await r.json();\n    if(!j.ok) throw new Error(j.error || \"No se pudo subir la foto.\");\n    return j.foto;\n  }\n};", "ALBUM_HTML": "  <section id=\"album\">\n    <div class=\"wrap\">\n      <span class=\"lab\">Álbum de la fiesta<\/span>\n      <h2>Compartí tus fotos<\/h2>\n      <p class=\"sub\">Durante la fiesta, subí acá tus fotos. Todas van a un mismo álbum para que nadie se pierda nada.<\/p>\n      <div class=\"card album-card\">\n        <input type=\"file\" id=\"albumArchivos\" accept=\"image/*\" multiple hidden>\n        <div class=\"campo\" id=\"albumAutorCampo\">\n          <label for=\"albumAutor\">Tu nombre (opcional)<\/label>\n          <input type=\"text\" id=\"albumAutor\" maxlength=\"60\" autocomplete=\"name\">\n        <\/div>\n        <button class=\"btn\" type=\"button\" id=\"albumBtn\">Subir mis fotos<\/button>\n        <div class=\"album-barra\" id=\"albumBarra\" hidden><i id=\"albumProg\"><\/i><\/div>\n        <p class=\"fine\" id=\"albumMsg\" role=\"status\"><\/p>\n      <\/div>\n    <\/div>\n  <\/section>\n\n"};
+
+/* ===== Contraseña (es un "no pasar", no una cerradura: alcanza para que nadie entre por curiosidad) =====
+   Para cambiarla, pedile a Claude que actualice CLAVE_HUELLA. */
+const CLAVE_HUELLA = "b27a0ff1";
+function huella(t){ let h = 0x811c9dc5; for(const ch of "evocard|" + t){ h ^= ch.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, "0"); }
+const guardar = { leer(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, poner(k, v){ try{ localStorage.setItem(k, v); return true; }catch(e){ return false; } } };
+function entrar(){ document.getElementById("puerta").remove(); document.getElementById("app").hidden = false; iniciar(); }
+document.getElementById("puertaForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if(huella(document.getElementById("clave").value.trim()) === CLAVE_HUELLA){ try{ sessionStorage.setItem("evoEstudio", "1"); }catch(err){} entrar(); }
+  else document.getElementById("puertaErr").textContent = "Esa no es la contraseña.";
+});
+
+/* ===================================================== CATÁLOGOS ===================================================== */
+const LETRAS = {
+  "Pinyon Script": ["Pinyon+Script", "cursive"], "Great Vibes": ["Great+Vibes", "cursive"], "Parisienne": ["Parisienne", "cursive"],
+  "Allura": ["Allura", "cursive"], "Alex Brush": ["Alex+Brush", "cursive"], "Dancing Script": ["Dancing+Script:wght@400;600;700", "cursive"],
+  "Sacramento": ["Sacramento", "cursive"], "Tangerine": ["Tangerine:wght@400;700", "cursive"], "Pacifico": ["Pacifico", "cursive"], "Lobster": ["Lobster", "cursive"],
+  "Playfair Display": ["Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600", "serif"], "Cormorant Garamond": ["Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400", "serif"],
+  "EB Garamond": ["EB+Garamond:ital,wght@0,400;0,500;0,600;1,400", "serif"], "Cinzel": ["Cinzel:wght@400;500;600;700", "serif"],
+  "Bodoni Moda": ["Bodoni+Moda:ital,wght@0,400;0,600;0,700;1,400", "serif"], "Italiana": ["Italiana", "serif"], "Marcellus": ["Marcellus", "serif"],
+  "Abril Fatface": ["Abril+Fatface", "serif"], "Libre Baskerville": ["Libre+Baskerville:ital,wght@0,400;0,700;1,400", "serif"], "Lora": ["Lora:ital,wght@0,400;0,500;0,600;0,700;1,400", "serif"],
+  "Baloo 2": ["Baloo+2:wght@500;600;700;800", "sans"], "Fredoka": ["Fredoka:wght@400;500;600;700", "sans"], "Quicksand": ["Quicksand:wght@400;500;600;700", "sans"],
+  "Nunito": ["Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400", "sans"], "Montserrat": ["Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400", "sans"],
+  "DM Sans": ["DM+Sans:ital,wght@0,400;0,500;0,700;1,400", "sans"], "Jost": ["Jost:ital,wght@0,400;0,500;0,600;1,400", "sans"],
+  "Raleway": ["Raleway:ital,wght@0,400;0,500;0,600;0,700;1,400", "sans"], "Poppins": ["Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400", "sans"],
+  "Lato": ["Lato:ital,wght@0,400;0,700;1,400", "sans"], "Plus Jakarta Sans": ["Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400", "sans"],
+  "Josefin Sans": ["Josefin+Sans:ital,wght@0,400;0,600;0,700;1,400", "sans"], "Open Sans": ["Open+Sans:ital,wght@0,400;0,600;0,700;1,400", "sans"]
+};
+const RESPALDO = { cursive: '"Snell Roundhand", cursive', serif: 'Georgia, serif', sans: '"Segoe UI", system-ui, sans-serif' };
+const propia = n => (F && F.letrasPropias || []).find(l => l.nombre === n);
+const fam = n => { const pr = propia(n); return `"${n}", ${RESPALDO[pr ? pr.parecida : (LETRAS[n] || ["", "serif"])[1]]}`; };
+const FORMATOS_LETRA = { woff2: "woff2", woff: "woff", ttf: "truetype", otf: "opentype" };
+function cssLetrasPropias(F, todas){
+  const usadas = [F.letras.titulo, F.letras.texto, F.letras.detalle];
+  return (F.letrasPropias || []).filter(l => todas || usadas.includes(l.nombre)).map(l => `@font-face{font-family:"${l.nombre}";src:url("${l.datos}") format("${l.formato}");font-display:swap}`).join("\n");
+}
+/* Lee un .zip (como los que se bajan de DaFont) y saca las letras que tenga adentro */
+async function letrasDelZip(buf){
+  const v = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder();
+  let fin = -1; for(let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 66000); i--){ if(v.getUint32(i, true) === 0x06054b50){ fin = i; break; } }
+  if(fin < 0) throw new Error("No pude abrir ese .zip.");
+  const total = v.getUint16(fin + 10, true); let pos = v.getUint32(fin + 16, true); const salida = [];
+  for(let k = 0; k < total; k++){
+    if(v.getUint32(pos, true) !== 0x02014b50) break;
+    const metodo = v.getUint16(pos + 10, true), tam = v.getUint32(pos + 20, true), largoNom = v.getUint16(pos + 28, true),
+          largoExtra = v.getUint16(pos + 30, true), largoCom = v.getUint16(pos + 32, true), local = v.getUint32(pos + 42, true);
+    const nombre = dec.decode(u8.subarray(pos + 46, pos + 46 + largoNom));
+    pos += 46 + largoNom + largoExtra + largoCom;
+    const ext = (nombre.split(".").pop() || "").toLowerCase();
+    if(!FORMATOS_LETRA[ext] || /(^|\/)(__MACOSX|\._)/.test(nombre)) continue;
+    const ini = local + 30 + v.getUint16(local + 26, true) + v.getUint16(local + 28, true);
+    let datos = u8.slice(ini, ini + tam);
+    if(metodo === 8){ datos = new Uint8Array(await new Response(new Blob([datos]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer()); }
+    else if(metodo !== 0) continue;
+    salida.push({ archivo: nombre.split("/").pop(), ext, datos });
+  }
+  return salida;
+}
+const aDataURL = (bytes, tipo) => new Promise(ok => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(new Blob([bytes], { type: tipo })); });
+async function cargarLetras(archivos){
+  let agregadas = 0, avisos = [];
+  for(const a of archivos){
+    const ext = (a.name.split(".").pop() || "").toLowerCase();
+    let piezas = [];
+    try{
+      if(ext === "zip") piezas = await letrasDelZip(await a.arrayBuffer());
+      else if(FORMATOS_LETRA[ext]) piezas = [{ archivo: a.name, ext, datos: new Uint8Array(await a.arrayBuffer()) }];
+      else { avisos.push(a.name + " no es una letra (tiene que ser .ttf, .otf, .woff, .woff2 o un .zip)."); continue; }
+    }catch(e){ avisos.push(e.message); continue; }
+    if(!piezas.length) avisos.push("En " + a.name + " no encontré letras.");
+    for(const pz of piezas){
+      if(pz.datos.length > 1.5 * 1024 * 1024){ avisos.push(pz.archivo + " pesa demasiado (más de 1,5 MB)."); continue; }
+      let nombre = pz.archivo.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").replace(/["\\]/g, "").trim() || "Mi letra";
+      if(LETRAS[nombre]) nombre += " (tuya)";
+      const datos = await aDataURL(pz.datos, "font/" + pz.ext);
+      F.letrasPropias = (F.letrasPropias || []).filter(l => l.nombre !== nombre);
+      F.letrasPropias.push({ nombre, formato: FORMATOS_LETRA[pz.ext], datos, parecida: "serif" });
+      agregadas++;
+    }
+  }
+  return { agregadas, avisos };
+}
+
+const MUSICAS = {
+  jardin: ["Romántica suave (Jardín)", '{ onda:"sine", notas:[523.25,659.25,783.99,659.25,587.33,698.46,880,698.46,523.25,659.25,783.99,1046.5,987.77,783.99,659.25,587.33], paso:600, volumen:0.045, cola:2 }'],
+  noche: ["Noche mágica (Noche estrellada)", '{ onda:"triangle", notas:[783.99,987.77,1174.66,987.77,880,1046.5,1318.5,1046.5,783.99,987.77,1174.66,1567.98,1479.98,1174.66,987.77,880], paso:420, volumen:0.035, cola:1.3 }'],
+  confeti: ["Alegre, para chicos (Confeti)", '{ onda:"triangle", notas:[523.25,659.25,783.99,1046.5,783.99,659.25,587.33,698.46,880,1174.66,880,698.46,523.25,783.99,659.25,523.25], paso:240, volumen:0.04, cola:0.45 }'],
+  nube: ["Canción de cuna (Nube)", '{ onda:"sine", notas:[783.99,659.25,587.33,523.25,587.33,659.25,587.33,392,523.25,587.33,659.25,783.99,659.25,587.33,523.25,523.25], paso:620, volumen:0.05, cola:2.2 }'],
+  gala: ["Elegante (Gala)", '{ onda:"sine", notas:[392,493.88,587.33,783.99,739.99,587.33,493.88,440,523.25,659.25,783.99,659.25,587.33,493.88,440,392], paso:520, volumen:0.045, cola:1.8 }'],
+  luz: ["Serena (Luz)", '{ onda:"sine", notas:[523.25,587.33,659.25,523.25,698.46,659.25,587.33,523.25,659.25,698.46,783.99,659.25,587.33,523.25,493.88,523.25], paso:700, volumen:0.045, cola:2.4 }'],
+  agenda: ["Tranquila, de empresa (Agenda)", '{ onda:"sine", notas:[523.25,659.25,783.99,659.25,587.33,739.99,880,739.99], paso:900, volumen:0.03, cola:1.6 }'],
+  revelacion: ["Juguetona (Revelación)", '{ onda:"triangle", notas:[783.99,987.77,1174.66,987.77,880,1046.5,1318.51,1046.5,783.99,987.77,1174.66,1567.98,1318.51,1174.66,987.77,880], paso:380, volumen:0.035, cola:1.1 }'],
+  brindis: ["Festiva (Brindis)", '{ onda:"triangle", notas:[659.25,783.99,987.77,1318.51,1174.66,987.77,880,987.77,659.25,783.99,1046.5,1318.51,1567.98,1318.51,1174.66,987.77], paso:260, volumen:0.035, cola:0.9 }'],
+  ninguna: ["Sin música", ""]
+};
+const ADORNOS = { ninguna: "Sin adornos", confeti: "Papelitos de colores que caen", estrellas: "Estrellitas que titilan", destellos: "Destellos brillantes",
+  petalos: "Pétalos que caen", corazones: "Corazoncitos que caen", burbujas: "Burbujas que suben", abanicos: "Líneas elegantes en las esquinas (fijas)" };
+const TEXTURAS = { liso: "Color liso", degrade: "Degradé de arriba a abajo", luz: "Con luz en el centro", lunares: "Lunares", rayas: "Rayas en diagonal", mitad: "Mitad y mitad", imagen: "Una imagen" };
+
+const TONOS = {
+  vos: { saludo:"Querida", saludoGenerico:"Querido invitado", reservamos:"Reservamos", desdeLas:"Te esperamos desde las", yaConfirmaste:"Ya confirmaste",
+    yaNoVienen:"Nos avisaste que no pueden venir.", siCambio:"Si algo cambia, podés modificar tu respuesta.", elegi:"Elegí si vienen o no para poder enviar.",
+    usaLink:"Para confirmar, usá el link personal que te enviaron.", confirmaste:"Confirmaste", nota:"le llega a la familia", graciasSi:"¡Te esperamos!",
+    graciasNo:"Te vamos a extrañar", graciasNoP:"Gracias por avisarnos con tiempo.", porWhatsapp:"Completá tus datos y tu respuesta nos llega por WhatsApp.",
+    faltaNombre:"Escribí tu nombre para que sepamos quién confirma.", abrioWhatsapp:"Se abrió WhatsApp con tu respuesta. Tocá Enviar para que nos llegue." },
+  usted: { saludo:"Estimada", saludoGenerico:"Estimado invitado", reservamos:"Reservamos", desdeLas:"Los esperamos desde las", yaConfirmaste:"Ya confirmó",
+    yaNoVienen:"Nos avisó que no podrá asistir.", siCambio:"Si algo cambia, puede modificar su respuesta.", elegi:"Indique si asistirán para poder enviar.",
+    usaLink:"Para confirmar, use el link personal que recibió.", confirmaste:"Confirmó", nota:"le llega a los organizadores", graciasSi:"Muchas gracias",
+    graciasNo:"Lamentamos su ausencia", graciasNoP:"Gracias por avisarnos con anticipación.", porWhatsapp:"Complete sus datos y su respuesta nos llega por WhatsApp.",
+    faltaNombre:"Escriba su nombre para saber quién confirma.", abrioWhatsapp:"Se abrió WhatsApp con su respuesta. Toque Enviar para que nos llegue." }
+};
+
+const TIPOS_SECCION = {
+  portada: "Portada", cuenta: "Cuenta regresiva", cronograma: "Cronograma (horarios)", lugar: "Un lugar con mapa", texto: "Texto libre",
+  lista: "Lista de puntos", datos: "Regalos o valor de tarjeta", galeria: "Galería de fotos", album: "Álbum (los invitados suben fotos)",
+  confirmacion: "Confirmación", pie: "Cierre (pie de página)"
+};
+const UNICAS = ["portada", "cuenta", "album", "confirmacion", "pie"];
+const FIJAS = ["portada", "confirmacion", "pie"];   /* no se pueden borrar ni apagar */
+
+/* ===================================================== FICHA (todo lo que se elige) ===================================================== */
+let uid = 0; const nuevoId = () => "s" + Date.now().toString(36) + (uid++);
+const S = {
+  portada: o => Object.assign({ tipo:"portada", marco:false, arriba:"Nos casamos", arribaEstilo:"chico", nombre:"Nombre & Nombre", abajo:"", fecha:"Sáb 14 · 03 · 2027",
+    frase:"Queremos compartir este día con vos.", nombreTam:5.5, foto:"arriba", logo:true }, o),
+  cuenta: (lab = "Falta muy poco", titulo = "Cuenta regresiva") => ({ tipo:"cuenta", lab, titulo, boton:"Agendar la fecha" }),
+  crono: (lab, titulo, items, sub = "") => ({ tipo:"cronograma", lab, titulo, sub, items: items.map(([hora, t, detalle = "", mapa = "", parte = ""]) => ({ hora, titulo:t, detalle, mapa, parte })) }),
+  lugar: (lab, titulo, hora, nombre, direccion, mapa = "") => ({ tipo:"lugar", lab, titulo, hora, nombre, direccion, mapa: mapa || direccion }),
+  texto: (lab, titulo, texto, tarjeta = false) => ({ tipo:"texto", lab, titulo, texto, tarjeta }),
+  lista: (lab, titulo, items) => ({ tipo:"lista", lab, titulo, items: items.join("\n") }),
+  datos: (lab, titulo, texto, filas, o = {}) => Object.assign({ tipo:"datos", lab, titulo, texto, precio:"", precioDetalle:"", nota:"",
+    filas: filas.map(([etiqueta, valor, copiar = true]) => ({ etiqueta, valor, copiar })) }, o),
+  galeria: (lab = "Nuestros momentos", titulo = "Galería") => ({ tipo:"galeria", lab, titulo, fotos:[] }),
+  album: (lab = "Álbum de la fiesta", titulo = "Compartí tus fotos", sub = "Durante la fiesta, subí acá tus fotos. Todas van a un mismo álbum para que nadie se pierda nada.") => ({ tipo:"album", lab, titulo, sub }),
+  conf: o => Object.assign({ tipo:"confirmacion", lab:"Confirmá tu asistencia", titulo:"¿Venís?", si:"¡Sí, vamos!", no:"No podemos", pregunta:"¿Vienen?", cantLabel:"¿Cuántos van a ir?",
+    chicos:false, chicosLabel:"¿Cuántos son chicos?", menu:true, menuOpciones:"Ninguno\nVegetariano\nVegano\nSin TACC (celíaco)\nOtro (lo aclaramos en el mensaje)",
+    extra:false, extraLabel:"Institución o grupo", extraPanel:"Institución", extraEjemplo:"", mensajeLabel:"Un mensaje para nosotros",
+    fine:"Invitación personal.", nota:"", graciasSi:"", graciasNo:"", graciasNoP:"" }, o),
+  pie: (lab = "Te esperamos", texto = "Nombre & Nombre", logo = false) => ({ tipo:"pie", lab, texto, logo })
+};
+
+function fichaBase(){
+  return {
+    version: 1, nombre: "Modelo nuevo", desde: "en blanco",
+    colores: { fondo:"#F8F5EF", banda:"#EFE8DB", bandaEstilo:"degrade", bandaOp:100, tarjeta:"#FFFFFF", tarjetaOp:90, texto:"#2A2622", suave:"#6E665C",
+      principal:"#C9A45C", sobrePrincipal:"#0B0B0C", detalle:"#A8843E", lineas:"#E4DACA", lineasOp:100, campos:"#FFFDF9", error:"#A0453C", oscuro:false },
+    letras: { titulo:"Cormorant Garamond", texto:"Cormorant Garamond", detalle:"DM Sans", numeros:"titulo", tituloPeso:500, tamTitulo:2.8, tamTexto:19, cursiva:true },
+    forma: { botones:999, tarjetas:18, puntos:"circulo", vineta:"•" },
+    sobre: { textura:"luz", fondo1:"#EFE8DB", fondo2:"#FFFFFF", imagen:"", color:"#E9E1D2", frente:"#F2ECE1", solapa:"#DFD5C3", tinta:"#2A2622",
+      lacre:"#C9A45C", lacre2:"#8E7238", lacreEstilo:"brillo", lacreTinta:"#FFFFFF", lacreTipo:"letras", lacreTexto:"N&N", lacreLetra:"titulo", lacreTam:1.6,
+      tap:"#A8843E", tapTexto:"Tocá para abrir" },
+    imagenes: { portada:"", forma:"arco", ancho:70, borde:true, logo:"", logoTam:70, fondo:"", fondoOp:15 },
+    deco: { tipo:"destellos", colores:["#C9A45C", "#E4DACA", "#FFFFFF"], cant:1, op:55 },
+    musica: "jardin",
+    letrasPropias: [],
+    tono: "vos",
+    secciones: [
+      S.portada({ arriba:"Nos casamos", nombre:"Nombre & Nombre", fecha:"Sáb 14 · 03 · 2027", frase:"Queremos compartir este día tan especial con vos." }),
+      S.cuenta(),
+      S.crono("Sábado 14 de marzo", "Cronograma", [["19:00", "Ceremonia", "Lugar de la ceremonia", "Marcos Paz, Buenos Aires", "cena"], ["21:00", "Fiesta", "Salón de fiestas", "Marcos Paz, Buenos Aires"]]),
+      S.texto("Vestimenta", "Dress code", "Elegante sport."),
+      S.datos("Regalos", "Si querés hacernos un regalo", "Tu presencia es lo más importante. Si querés colaborar, te dejamos los datos.", [["Titular", "Nombre Apellido", false], ["Alias", "nombre.alias"]]),
+      S.album(),
+      S.conf({ lab:"Confirmá antes del 14 de febrero" }),
+      S.pie("Te esperamos", "Nombre & Nombre")
+    ],
+    evento: { fecha:"2027-03-14", hora:"19:00", fechaFin:"2027-03-15", horaFin:"04:00", titulo:"Casamiento", lugarAgenda:"Marcos Paz, Buenos Aires", horaFiesta:"21:00",
+      invitado:"Familia Gómez", lugares:3, modo:"muestra", planilla:"", whatsapp:"", maxLugares:6, cinta:"" }
+  };
+}
+function conIds(f){ f.secciones.forEach(s => { if(!s.id) s.id = nuevoId(); }); return f; }
+function mezclarFicha(base, cambios){
+  for(const k in cambios){
+    const v = cambios[k];
+    if(v && typeof v === "object" && !Array.isArray(v) && base[k] && typeof base[k] === "object" && !Array.isArray(base[k])) mezclarFicha(base[k], v);
+    else base[k] = v;
+  }
+  return base;
+}
+
+/* ----- Los 9 modelos de la página, pasados a ficha (para "copiar un modelo") ----- */
+const MODELOS = {
+  jardin: { nombre:"Jardín", f: {
+    colores:{ fondo:"#F7F6F0", banda:"#EEF2EC", bandaEstilo:"lisa", tarjeta:"#FFFFFF", tarjetaOp:100, texto:"#2F3B32", suave:"#6E7A70", principal:"#5E7A68", sobrePrincipal:"#FFFFFF", detalle:"#5E7A68", lineas:"#DCDFD5", campos:"#FFFFFF" },
+    letras:{ titulo:"Pinyon Script", texto:"Cormorant Garamond", detalle:"Jost", numeros:"texto", tituloPeso:400, tamTitulo:2.9 },
+    sobre:{ textura:"liso", fondo1:"#EEF2EC", color:"#E3EADF", frente:"#E9EFE5", solapa:"#D8E2D4", tinta:"#2F3B32", lacre:"#B5736B", lacreTinta:"#FFFFFF", lacreTexto:"L&T", lacreTam:1.4, tap:"#5E7A68" },
+    deco:{ tipo:"petalos", colores:["#9CB59F", "#C98E86", "#DCE6D9"], op:45 }, musica:"jardin",
+    secciones:[ S.portada({ arriba:"Nos casamos", nombre:"Lucía & Tomás", fecha:"Dom 14 · 03 · 2027", frase:"Queremos compartir con vos el día en que empezamos nuestra familia." }),
+      S.cuenta("Falta muy poco", "Cuenta regresiva"),
+      S.crono("Domingo 14 de marzo", "Cronograma", [["17:00", "Ceremonia civil", "Registro Civil de Luján", "Registro Civil, Luján, Buenos Aires", "cena"], ["18:30", "Ceremonia religiosa", "Basílica de Luján", "Basílica de Luján", "cena"], ["21:00", "Fiesta", "Quinta Los Aromos · Luján", "Luján, Buenos Aires"]]),
+      S.texto("Vestimenta", "Dress code", "Elegante sport. Te pedimos evitar el blanco."),
+      S.datos("Regalos", "Lista de regalos", "Tu presencia es nuestro mejor regalo. Si querés ayudarnos con la luna de miel:", [["Titular", "Lucía Fernández", false], ["Alias", "lucia.tomas.boda"], ["CBU", "0000003100012345678901"]]),
+      S.album(), S.conf({ lab:"Confirmá antes del 14 de febrero", titulo:"¿Nos acompañás?", mensajeLabel:"Un mensaje para los novios", fine:"Invitación personal. Los lugares no son transferibles.", nota:"les llega a los novios" }),
+      S.pie("Te esperamos", "Lucía & Tomás") ],
+    evento:{ fecha:"2027-03-14", hora:"17:00", fechaFin:"2027-03-15", horaFin:"04:00", titulo:"Casamiento de Lucía y Tomás", lugarAgenda:"Luján, Buenos Aires", horaFiesta:"21:00" } } },
+  noche: { nombre:"Noche estrellada", f: {
+    colores:{ fondo:"#120C1F", banda:"#3B2A5C", bandaEstilo:"degrade", bandaOp:45, tarjeta:"#FFFFFF", tarjetaOp:5, texto:"#F3E9FF", suave:"#B9ACCB", principal:"#D9B8FF", sobrePrincipal:"#160F24", detalle:"#E6C98A", lineas:"#F3E9FF", lineasOp:16, campos:"#1B1330", error:"#F2A99B", oscuro:true },
+    letras:{ titulo:"Great Vibes", texto:"Cormorant Garamond", detalle:"Jost", numeros:"texto", tituloPeso:400, tamTitulo:3 },
+    sobre:{ textura:"luz", fondo1:"#120C1F", fondo2:"#3B2A5C", color:"#261A3D", frente:"#2E2148", solapa:"#3A2A58", tinta:"#F3E9FF", lacre:"#E6C98A", lacreTinta:"#2A1C40", lacreTexto:"M", lacreTam:2.3, tap:"#E6C98A" },
+    deco:{ tipo:"estrellas", colores:["#FFFFFF", "#E6C98A", "#D9B8FF"], op:80 }, musica:"noche",
+    secciones:[ S.portada({ arriba:"Mis XV", arribaEstilo:"chico", nombre:"Martina", fecha:"Sáb 22 · 05 · 2027", frase:"Hay noches que se esperan toda la vida. Quiero que estés en la mía." }),
+      S.cuenta("Falta muy poco", "Cuenta regresiva"),
+      S.lugar("Sábado 22 de mayo", "La fiesta", "21:30 h", "Salón Lumière", "Av. San Martín 450 · Marcos Paz", "Marcos Paz, Buenos Aires"),
+      S.texto("Vestimenta", "Dress code", "Elegante. El lila está reservado para la quinceañera."),
+      S.datos("Regalos", "Mi regalo", "Si querés hacerme un regalo, me ayudás con mi viaje.", [["Titular", "Martina López", false], ["Alias", "martina.xv.2027"]]),
+      S.album("Álbum de la noche", "Compartí tus fotos"), S.conf({ lab:"Confirmá antes del 1 de mayo", titulo:"¿Venís a mis XV?", si:"¡Ahí voy!", no:"No puedo", mensajeLabel:"Un mensaje para Martina", nota:"le llega a la familia de Martina", fine:"Invitación personal." }),
+      S.pie("Te espero", "Martina") ],
+    evento:{ fecha:"2027-05-22", hora:"21:30", fechaFin:"2027-05-23", horaFin:"05:00", titulo:"XV de Martina", lugarAgenda:"Salón Lumière, Marcos Paz, Buenos Aires", horaFiesta:"23:30" } } },
+  confeti: { nombre:"Confeti", f: {
+    colores:{ fondo:"#FFF4E2", banda:"#FFE6C4", bandaEstilo:"lisa", tarjeta:"#FFFFFF", tarjetaOp:100, texto:"#3A2410", suave:"#7A5A3E", principal:"#E2572B", sobrePrincipal:"#FFFFFF", detalle:"#2E8B87", lineas:"#F0D2AC", campos:"#FFFAF2" },
+    letras:{ titulo:"Baloo 2", texto:"Nunito", detalle:"Nunito", numeros:"titulo", tituloPeso:800, tamTitulo:2.5, tamTexto:18, cursiva:false },
+    forma:{ botones:14, tarjetas:22, puntos:"cuadrado", vineta:"★" },
+    sobre:{ textura:"lunares", fondo1:"#FFE9C7", fondo2:"#FFD8A8", color:"#2E8B87", frente:"#3AA19C", solapa:"#257571", tinta:"#FFFFFF", lacre:"#E2572B", lacreTinta:"#FFFFFF", lacreTexto:"B", lacreTam:2.6, tap:"#E2572B" },
+    deco:{ tipo:"confeti", colores:["#E2572B", "#2E8B87", "#F2B134", "#7DC4BF"], op:55 }, musica:"confeti",
+    secciones:[ S.portada({ arriba:"¡Cumplo 6!", arribaEstilo:"titulo", nombre:"Benja", fecha:"Sáb 10 · 04 · 2027", frase:"Vení a saltar, jugar y comer torta conmigo. ¡Va a estar buenísimo!" }),
+      S.cuenta("Falta poquito", "¿Cuánto falta?"),
+      S.lugar("Sábado 10 de abril", "Dónde y cuándo", "16 a 19 h", "Peloteros Saltarín", "Av. Belgrano 1234 · Marcos Paz", "Marcos Paz, Buenos Aires"),
+      S.lista("Para tener en cuenta", "Qué traer", ["Ropa cómoda para saltar y correr.", "Medias antideslizantes: son obligatorias en el pelotero.", "Muchas ganas de jugar."]),
+      S.datos("Regalos", "Si querés regalarme algo", "Me encantan los dinosaurios y los autitos. Si preferís, también podés colaborar con este alias.", [["Titular", "Carla Ruiz (mamá)", false], ["Alias", "benja.cumple6"]]),
+      S.album(), S.conf({ lab:"Confirmá antes del 3 de abril", titulo:"¿Venís a mi cumple?", si:"¡Sí, vamos!", no:"No podemos", chicos:true, menuOpciones:"Ninguno\nSin TACC (celíaco)\nVegetariano\nAlergia (la aclaramos en el mensaje)",
+        mensajeLabel:"Un mensaje para Benja", fine:"Los adultos que acompañan también cuentan como lugar.", nota:"les llega a los papás de Benja", graciasSi:"¡Genial, te espero!", graciasNo:"¡Te vamos a extrañar!", graciasNoP:"Gracias por avisar. ¡Otra vez será!" }),
+      S.pie("¡Te espero!", "Benja") ],
+    tono:"vos",
+    evento:{ fecha:"2027-04-10", hora:"16:00", fechaFin:"2027-04-10", horaFin:"19:00", titulo:"Cumple de Benja", lugarAgenda:"Peloteros Saltarín, Marcos Paz, Buenos Aires", horaFiesta:"16:00" } } },
+  nube: { nombre:"Nube", f: {
+    colores:{ fondo:"#F3F7FB", banda:"#EAF2F9", bandaEstilo:"degrade", tarjeta:"#FFFFFF", tarjetaOp:88, texto:"#33475A", suave:"#687C8F", principal:"#6F98BA", sobrePrincipal:"#FFFFFF", detalle:"#D08A70", lineas:"#DCE6EF", campos:"#FAFCFE" },
+    letras:{ titulo:"Parisienne", texto:"Quicksand", detalle:"Quicksand", numeros:"texto", tituloPeso:400, tamTitulo:3, tamTexto:18, cursiva:false },
+    forma:{ vineta:"♡" },
+    sobre:{ textura:"degrade", fondo1:"#E6F0F8", fondo2:"#FDF6F0", color:"#D7E5F2", frente:"#E4EEF7", solapa:"#C9DAEA", tinta:"#33475A", lacre:"#E3A48E", lacreTinta:"#FFFFFF", lacreTexto:"E", lacreTam:2.6, tap:"#6F98BA" },
+    deco:{ tipo:"burbujas", colores:["#C9DAEA", "#F3C9B9"], op:60 }, musica:"nube",
+    secciones:[ S.portada({ arriba:"Baby shower", nombre:"Emma", abajo:"", fecha:"Dom 18 · 04 · 2027", frase:"Estamos contando los días para conocerla. ¿Nos acompañás a celebrar su llegada?" }),
+      S.cuenta("Llega pronto", "Cuenta regresiva"),
+      S.crono("Domingo 18 de abril", "La tarde", [["17:00", "Bienvenida", "Casa de la familia · Marcos Paz", "Marcos Paz, Buenos Aires"], ["17:30", "Merienda", "Con mesa dulce"], ["18:30", "Juegos", "Y muchas sorpresas"]]),
+      S.datos("Regalos", "Para Emma", "Si querés regalarle algo, nos vienen muy bien pañales (talle G) o ropita de 3 a 6 meses.", [["Titular", "Sofía Pérez", false], ["Alias", "esperando.emma"]]),
+      S.album("Álbum de la tarde", "Compartí tus fotos"), S.conf({ lab:"Confirmá antes del 10 de abril", titulo:"¿Venís?", mensajeLabel:"Un mensaje para Emma", nota:"les llega a los papás", fine:"Invitación personal." }),
+      S.pie("Con amor", "Emma") ],
+    evento:{ fecha:"2027-04-18", hora:"17:00", fechaFin:"2027-04-18", horaFin:"20:00", titulo:"Baby shower de Emma", lugarAgenda:"Marcos Paz, Buenos Aires", horaFiesta:"17:00" } } },
+  gala: { nombre:"Gala", f: {
+    colores:{ fondo:"#0F1A30", banda:"#C9A55C", bandaEstilo:"lisa", bandaOp:7, tarjeta:"#FFFFFF", tarjetaOp:4, texto:"#F2EBDD", suave:"#B9B2A4", principal:"#C9A55C", sobrePrincipal:"#14213D", detalle:"#C9A55C", lineas:"#C9A55C", lineasOp:30, campos:"#14213D", error:"#F2A99B", oscuro:true },
+    letras:{ titulo:"Cinzel", texto:"Cormorant Garamond", detalle:"Jost", numeros:"titulo", tituloPeso:500, tamTitulo:2.1 },
+    forma:{ botones:2, tarjetas:4, puntos:"rombo", vineta:"◆" },
+    sobre:{ textura:"luz", fondo1:"#0B1426", fondo2:"#1D2E52", color:"#14213D", frente:"#1A2A4A", solapa:"#22355A", tinta:"#F2EBDD", lacre:"#C9A55C", lacreTinta:"#14213D", lacreTexto:"80", lacreTam:1.7, tap:"#C9A55C", tapTexto:"Toque para abrir" },
+    deco:{ tipo:"abanicos", colores:["#C9A55C"], op:20 }, musica:"gala", tono:"usted",
+    secciones:[ S.portada({ marco:true, arriba:"80 aniversario", nombre:"Club Social Las Acacias", nombreTam:2.6, abajo:"Cena de gala", fecha:"Sáb 05 · 06 · 2027", frase:"Tenemos el honor de invitarlos a celebrar ochenta años de historia compartida." }),
+      S.cuenta("Faltan", "Cuenta regresiva"),
+      S.crono("Sábado 5 de junio", "Programa", [["21:00", "Recepción", "Salón principal del Club · Marcos Paz", "Marcos Paz, Buenos Aires", "cena"], ["22:00", "Palabras de la Comisión Directiva", "Ochenta años en primera persona", "", "cena"], ["22:30", "Cena", "Con mesas por institución", "", "cena"], ["23:45", "Reconocimientos", "A socios fundadores y entidades amigas"], ["00:30", "Brindis y baile", "Con orquesta en vivo"]]),
+      S.texto("Vestimenta", "Etiqueta", "Traje oscuro. Vestido largo o de cóctel."),
+      S.datos("Valor de la tarjeta", "Reservá tu lugar", "", [["Titular", "Club Social Las Acacias", false], ["Alias", "acacias.80.gala"], ["CBU", "0000003100098765432109"]], { precio:"$45.000", precioDetalle:"Por persona · incluye cena, bebidas y brindis", nota:"Abone antes del 20 de mayo y envíe el comprobante a la secretaría del Club." }),
+      S.album("Álbum de la fiesta", "Compartí tus fotos", "Durante la celebración, suba aquí sus fotos. Todas van a un mismo álbum del Club."),
+      S.conf({ lab:"Antes del 20 de mayo", titulo:"Confirmación", si:"Asistiremos", no:"No podremos asistir", extra:true, extraLabel:"Institución o grupo (para armar las mesas)", extraPanel:"Institución", extraEjemplo:"Ej: Bomberos Voluntarios",
+        mensajeLabel:"Un saludo para el Club", fine:"Invitación personal e intransferible.", nota:"le llega a la Comisión Directiva" }),
+      S.pie("Los esperamos", "Las Acacias · 1947 – 2027") ],
+    evento:{ fecha:"2027-06-05", hora:"21:00", fechaFin:"2027-06-06", horaFin:"03:00", titulo:"Cena de gala 80 aniversario · Club Social Las Acacias", lugarAgenda:"Club Social Las Acacias, Marcos Paz, Buenos Aires", horaFiesta:"23:45" } } },
+  luz: { nombre:"Luz", f: {
+    colores:{ fondo:"#FFFDF8", banda:"#F5F0E5", bandaEstilo:"degrade", tarjeta:"#FFFFFF", tarjetaOp:90, texto:"#4B3F2A", suave:"#7D7260", principal:"#A88848", sobrePrincipal:"#FFFFFF", detalle:"#A88848", lineas:"#E8DFCB", campos:"#FFFEFB" },
+    letras:{ titulo:"Pinyon Script", texto:"Cormorant Garamond", detalle:"Jost", numeros:"texto", tituloPeso:400, tamTitulo:2.9 },
+    forma:{ vineta:"✦" },
+    sobre:{ textura:"luz", fondo1:"#F1EBDD", fondo2:"#FFFFFF", color:"#EDE5D3", frente:"#F6F1E6", solapa:"#E6DCC6", tinta:"#4B3F2A", lacre:"#C9A962", lacreTinta:"#FFFFFF", lacreTexto:"J", lacreTam:2.6, tap:"#A88848" },
+    deco:{ tipo:"destellos", colores:["#C9A962", "#E8DFCB"], op:60 }, musica:"luz",
+    secciones:[ S.portada({ arriba:"Mi primera comunión", nombre:"Joaquín", fecha:"Dom 09 · 05 · 2027", frase:"Con alegría te invito a acompañarme en este día tan importante." }),
+      S.cuenta("Falta muy poco", "Cuenta regresiva"),
+      S.crono("Domingo 9 de mayo", "El día", [["10:00", "Misa", "Parroquia San José · Marcos Paz", "Parroquia San José, Marcos Paz", "cena"], ["13:00", "Almuerzo familiar", "Casa de la familia", "Marcos Paz, Buenos Aires"]]),
+      S.texto("Mis padrinos", "Padrinos", "Laura Gómez y Martín Ruiz"),
+      S.datos("Regalos", "Si querés hacerme un regalo", "Lo más lindo es que estés. Si querés, podés colaborar con este alias.", [["Titular", "Ana Díaz (mamá)", false], ["Alias", "joaquin.comunion"]]),
+      S.album("Álbum del día", "Compartí tus fotos"), S.conf({ lab:"Confirmá antes del 30 de abril", titulo:"¿Me acompañás?", mensajeLabel:"Un mensaje para Joaquín", nota:"les llega a los papás de Joaquín", fine:"Invitación personal." }),
+      S.pie("Te espero", "Joaquín") ],
+    evento:{ fecha:"2027-05-09", hora:"10:00", fechaFin:"2027-05-09", horaFin:"17:00", titulo:"Primera comunión de Joaquín", lugarAgenda:"Parroquia San José, Marcos Paz, Buenos Aires", horaFiesta:"13:00" } } },
+  agenda: { nombre:"Agenda", f: {
+    colores:{ fondo:"#F5F7FA", banda:"#EAF1F0", bandaEstilo:"lisa", tarjeta:"#FFFFFF", tarjetaOp:100, texto:"#16233A", suave:"#5B6678", principal:"#0F7B6C", sobrePrincipal:"#FFFFFF", detalle:"#0F7B6C", lineas:"#D9E0E7", campos:"#FFFFFF" },
+    letras:{ titulo:"Plus Jakarta Sans", texto:"Plus Jakarta Sans", detalle:"Plus Jakarta Sans", numeros:"titulo", tituloPeso:700, tamTitulo:2, tamTexto:17, cursiva:false },
+    forma:{ botones:10, tarjetas:14, puntos:"cuadrado", vineta:"→" },
+    sobre:{ textura:"degrade", fondo1:"#16233A", fondo2:"#0E3B42", color:"#E9EEF3", frente:"#F5F7FA", solapa:"#DDE5EC", tinta:"#16233A", lacre:"#0F7B6C", lacreEstilo:"plano", lacreTinta:"#FFFFFF", lacreTexto:"JI", lacreTam:1.5, tap:"#BFE3DC", tapTexto:"Toque para abrir" },
+    deco:{ tipo:"ninguna" }, musica:"agenda", tono:"usted",
+    secciones:[ S.portada({ arriba:"Jornada 2027", nombre:"Innovación Pyme", nombreTam:3.4, abajo:"Encuentro de empresas de la región", fecha:"Jue 16 · 09 · 2027", frase:"Lo invitamos a una jornada de charlas y talleres para pymes." }),
+      S.cuenta("Faltan", "Cuenta regresiva"),
+      S.crono("Jueves 16 de septiembre", "Agenda", [["08:30", "Acreditación", "Centro Cultural · Marcos Paz", "Marcos Paz, Buenos Aires"], ["09:30", "Apertura", "Palabras de bienvenida"], ["10:00", "Charla principal", "Cómo vender más en internet"], ["13:00", "Almuerzo", "Con networking"], ["14:30", "Talleres", "En grupos chicos"]]),
+      S.lista("Disertantes", "Quiénes hablan", ["María Torres · Marketing digital", "Jorge Paz · Finanzas para pymes", "Ana Ríos · Equipos de trabajo"]),
+      S.album("Álbum del evento", "Fotos de la jornada", "Durante la jornada, suba aquí sus fotos. Todas van a un mismo álbum del evento."),
+      S.conf({ lab:"Inscripción", titulo:"Confirme su lugar", si:"Asistiré", no:"No podré asistir", pregunta:"¿Asistirá?", cantLabel:"¿Cuántas personas asistirán?", menu:false, extra:true, extraLabel:"Empresa", extraPanel:"Empresa", extraEjemplo:"Nombre de su empresa",
+        mensajeLabel:"Consulta o comentario", fine:"Cupos limitados.", nota:"le llega a los organizadores" }),
+      S.pie("Lo esperamos", "Innovación Pyme 2027") ],
+    evento:{ fecha:"2027-09-16", hora:"08:30", fechaFin:"2027-09-16", horaFin:"18:00", titulo:"Jornada Innovación Pyme 2027", lugarAgenda:"Centro Cultural, Marcos Paz, Buenos Aires", horaFiesta:"08:30", invitado:"Laura Méndez", lugares:1 } } },
+  revelacion: { nombre:"Revelación", f: {
+    colores:{ fondo:"#FFF9F4", banda:"#FFF1F5", bandaEstilo:"lisa", tarjeta:"#FFFFFF", tarjetaOp:100, texto:"#3B3350", suave:"#7D7590", principal:"#8C6BD9", sobrePrincipal:"#FFFFFF", detalle:"#8C6BD9", lineas:"#EADFEF", campos:"#FFFDFB" },
+    letras:{ titulo:"Fredoka", texto:"Quicksand", detalle:"Quicksand", numeros:"titulo", tituloPeso:700, tamTitulo:2.4, tamTexto:18, cursiva:false },
+    forma:{ botones:999, tarjetas:24, vineta:"♥" },
+    sobre:{ textura:"mitad", fondo1:"#FFE3EE", fondo2:"#E2F0FD", color:"#E9DDF7", frente:"#F6F0FD", solapa:"#E2D3F5", tinta:"#3B3350", lacre:"#F28DB2", lacre2:"#7CB7EC", lacreEstilo:"mitad", lacreTinta:"#FFFFFF", lacreLetra:"titulo", lacreTexto:"?", lacreTam:2.8, tap:"#8C6BD9" },
+    deco:{ tipo:"corazones", colores:["#F28DB2", "#7CB7EC"], op:45 }, musica:"revelacion",
+    secciones:[ S.portada({ arriba:"¿Nena o nene?", arribaEstilo:"titulo", nombre:"Lucía y Martín", nombreTam:4, fecha:"Dom 20 · 06 · 2027", frase:"Llegó el momento de descubrirlo. ¡Te esperamos para la gran revelación!" }),
+      S.cuenta("Falta muy poco", "¿Cuánto falta?"),
+      S.lugar("Domingo 20 de junio", "Dónde y cuándo", "16 h", "Casa de la familia", "Marcos Paz", "Marcos Paz, Buenos Aires"),
+      S.datos("Regalos", "Si querés traer algo", "Nos vienen muy bien pañales de cualquier talle.", [["Titular", "Lucía Sosa", false], ["Alias", "revelacion.lym"]]),
+      S.album("Álbum de la tarde", "Compartí tus fotos"), S.conf({ lab:"Confirmá antes del 13 de junio", titulo:"¿Venís?", mensajeLabel:"Un mensaje para Lucía y Martín", nota:"les llega a Lucía y Martín", fine:"Invitación personal." }),
+      S.pie("¡Te esperamos!", "Lucía y Martín") ],
+    evento:{ fecha:"2027-06-20", hora:"16:00", fechaFin:"2027-06-20", horaFin:"20:00", titulo:"Revelación de Lucía y Martín", lugarAgenda:"Marcos Paz, Buenos Aires", horaFiesta:"16:00" } } },
+  brindis: { nombre:"Brindis", f: {
+    colores:{ fondo:"#0C1120", banda:"#FFFFFF", bandaEstilo:"lisa", bandaOp:4, tarjeta:"#FFFFFF", tarjetaOp:5, texto:"#F5EFE2", suave:"#B5B0A4", principal:"#E3C27A", sobrePrincipal:"#141414", detalle:"#E3C27A", lineas:"#E3C27A", lineasOp:26, campos:"#121933", error:"#F4A8A0", oscuro:true },
+    letras:{ titulo:"Playfair Display", texto:"Montserrat", detalle:"Montserrat", numeros:"titulo", tituloPeso:700, tamTitulo:2.3, tamTexto:17, cursiva:false },
+    forma:{ botones:999, tarjetas:16, vineta:"✦" },
+    sobre:{ textura:"luz", fondo1:"#080B16", fondo2:"#23305A", color:"#1A2340", frente:"#222D52", solapa:"#2B3866", tinta:"#F5EFE2", lacre:"#E3C27A", lacreTinta:"#141414", lacreTexto:"TL", lacreTam:1.9, tap:"#E3C27A" },
+    deco:{ tipo:"burbujas", colores:["#E3C27A"], op:40 }, musica:"brindis",
+    secciones:[ S.portada({ arriba:"Fin de año 2026", nombre:"Brindemos", abajo:"Tu empresa", fecha:"Vie 11 · 12 · 2026", frase:"Cerramos el año juntos. Te esperamos para brindar por todo lo que logramos." }),
+      S.cuenta("Falta muy poco", "Cuenta regresiva"),
+      S.crono("Viernes 11 de diciembre", "La noche", [["20:30", "Recepción", "Salón del evento · Marcos Paz", "Marcos Paz, Buenos Aires"], ["21:30", "Cena", "Con palabras de la dirección"], ["23:30", "Brindis", "Y reconocimientos al equipo"], ["00:00", "Baile", "Hasta que el cuerpo aguante"]]),
+      S.texto("Vestimenta", "Dress code", "Elegante sport."),
+      S.album("Álbum de la fiesta", "Compartí tus fotos", "Durante la fiesta, subí acá tus fotos. Todas van a un mismo álbum para el equipo."),
+      S.conf({ lab:"Confirmá antes del 1 de diciembre", titulo:"¿Venís?", menu:true, mensajeLabel:"Un mensaje para el equipo", nota:"le llega a la organización", fine:"Invitación personal." }),
+      S.pie("Te esperamos", "Tu empresa · 2026") ],
+    evento:{ fecha:"2026-12-11", hora:"20:30", fechaFin:"2026-12-12", horaFin:"03:00", titulo:"Fiesta de fin de año", lugarAgenda:"Marcos Paz, Buenos Aires", horaFiesta:"23:30", invitado:"Laura Méndez", lugares:1 } } }
+};
+function fichaDeModelo(clave){
+  const m = MODELOS[clave], f = fichaBase();
+  const cambios = JSON.parse(JSON.stringify(m.f));
+  f.secciones = []; mezclarFicha(f, cambios);
+  f.nombre = m.nombre + " (copia)"; f.desde = "copia de " + m.nombre;
+  return conIds(f);
+}
+
+/* ===================================================== COLORES ===================================================== */
+const hexRgb = h => { h = (h || "#000000").replace("#", ""); if(h.length === 3) h = h.split("").map(c => c + c).join(""); const n = parseInt(h, 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+const rgbHex = a => "#" + a.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("").toUpperCase();
+const rgba = (h, a) => { const [r, g, b] = hexRgb(h); return a >= 1 ? rgbHex([r, g, b]) : `rgba(${r},${g},${b},${+a.toFixed(3)})`; };
+const mezcla = (h1, h2, k) => { const a = hexRgb(h1), b = hexRgb(h2); return rgbHex(a.map((v, i) => v * k + b[i] * (1 - k))); };
+const aclarar = (h, k) => mezcla("#FFFFFF", h, k), oscurecer = (h, k) => mezcla("#000000", h, k);
+
+/* ===================================================== ARMADO DE LA INVITACIÓN ===================================================== */
+const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const br = s => esc(s).replace(/\n/g, "<br>");
+const mapa = q => "https://www.google.com/maps/search/?api=1&amp;query=" + encodeURIComponent(q);
+
+const CSS_EXTRA = `
+/* Piezas del Estudio */
+#fondoImg{position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;pointer-events:none}
+.pre{font-family:var(--f-sans);font-weight:500;font-size:.95rem;letter-spacing:.3em;text-transform:uppercase;color:var(--hl);margin-top:22px}
+.pre.t{font-family:var(--f-title);font-weight:var(--title-w,400);font-size:1.9rem;letter-spacing:0;text-transform:none;line-height:1.15}
+.nombre{font-family:var(--f-title);font-weight:var(--title-w,400);font-size:min(var(--nombre-fs,5.5rem),19vw);line-height:1.05;margin-block:8px 16px;color:var(--ink);overflow-wrap:anywhere}
+.post{font-style:italic;font-size:1.3rem;color:var(--muted);margin:-4px 0 18px}
+.foto-portada{display:block;margin:22px auto;width:var(--foto-w,70%);object-fit:cover}
+.foto-portada.circulo{aspect-ratio:1;border-radius:50%}
+.foto-portada.arco{aspect-ratio:3/4;border-radius:999px 999px 14px 14px}
+.foto-portada.rect{aspect-ratio:4/5;border-radius:var(--r-card,18px)}
+.foto-portada.libre{height:auto;border-radius:var(--r-card,18px)}
+.foto-portada.borde{border:5px solid var(--card-solid);box-shadow:0 0 0 1px var(--line),0 18px 40px -24px rgba(0,0,0,.45)}
+.logo-portada{display:block;margin:0 auto 18px;height:var(--logo-h,70px);width:auto;max-width:80%;object-fit:contain}
+.marco{border:1px solid var(--line);outline:1px solid var(--line);outline-offset:7px;padding:44px 18px 40px;margin-inline:8px}
+.lugar{display:grid;gap:4px}
+.lugar h3{font-family:var(--f-title);font-weight:var(--title-w,400);font-size:1.7rem;line-height:1.2}
+.lugar .hora{font-family:var(--f-num);font-weight:var(--num-w,500);font-size:1.7rem;color:var(--acc)}
+.valor{font-family:var(--f-title);font-size:2.4rem;color:var(--acc);line-height:1.1}
+.valor small{display:block;font-family:var(--f-sans);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.texto-libre p+p{margin-top:12px}
+.galeria{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
+.galeria img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:calc(var(--r-card,18px) * .6);display:block}
+.galeria img.ancha{grid-column:span 2;aspect-ratio:16/10}
+.pie{font-family:var(--f-title);font-weight:var(--title-w,400);font-size:2.6rem;line-height:1.1;margin-top:6px;overflow-wrap:anywhere}
+.pie-logo{display:block;margin:18px auto 0;height:54px;width:auto;max-width:60%;object-fit:contain}
+.seal img{width:74%;height:74%;object-fit:contain;border-radius:50%}
+.timeline h3{font-weight:600}
+`;
+
+/* Adornos del fondo: un solo motor para todos los tipos */
+const DECO_JS = String.raw`(function(){
+  const D = DECO; if(!D || D.tipo === "ninguna") return;
+  const c = $("#deco"), x = c.getContext("2d"), col = i => D.colores[i % D.colores.length];
+  let W, H, P = [];
+  const quietos = D.tipo === "abanicos";
+  function armar(){
+    const dpr = window.devicePixelRatio || 1; W = innerWidth; H = innerHeight;
+    c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const base = { confeti:14000, estrellas:5000, destellos:22000, petalos:20000, corazones:24000, burbujas:18000 }[D.tipo] || 20000;
+    const n = Math.round(W * H / base * D.cant), R = Math.random;
+    P = Array.from({length: n}, (_, i) => ({ x: R() * W, y: R() * H, s: R(), a: R() * 6.28, va: (R() - .5) * .05, f: R() * 6.28, c: col(i),
+      vy: D.tipo === "burbujas" ? -(.2 + R() * .5) : (D.tipo === "confeti" ? .4 + R() * .9 : .15 + R() * .45), vx: (R() - .5) * .3 }));
+  }
+  function corazon(s){ x.beginPath(); x.moveTo(0, s * .35); x.bezierCurveTo(-s * 1.1, -s * .35, -s * .45, -s * 1.05, 0, -s * .45); x.bezierCurveTo(s * .45, -s * 1.05, s * 1.1, -s * .35, 0, s * .35); x.fill(); }
+  function destello(s){ x.beginPath(); for(let k = 0; k < 8; k++){ const r = k % 2 ? s * .28 : s, a = k * Math.PI / 4; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.closePath(); x.fill(); }
+  function abanicos(){
+    x.strokeStyle = col(0); x.lineWidth = 1; x.globalAlpha = D.op;
+    const ab = (cx, cy, d, h, r) => { for(let i = 0; i <= 12; i++){ const a = d + (h - d) * i / 12; x.beginPath(); x.moveTo(cx, cy); x.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r); x.stroke(); }
+      for(const k of [.35, .55, .75]){ x.beginPath(); x.arc(cx, cy, r * k, d, h); x.stroke(); } };
+    const r = Math.min(W, H) * .42;
+    ab(0, 0, 0, Math.PI / 2, r); ab(W, 0, Math.PI / 2, Math.PI, r); ab(0, H, -Math.PI / 2, 0, r); ab(W, H, Math.PI, Math.PI * 1.5, r);
+  }
+  function dibujar(t){
+    t = t || 0; x.clearRect(0, 0, W, H);
+    if(quietos){ abanicos(); return; }
+    for(const p of P){
+      const mover = !reduce;
+      if(mover){ p.y += p.vy; p.x += p.vx + (D.tipo === "petalos" || D.tipo === "corazones" ? Math.sin(t / 1400 + p.f) * .35 : 0); p.a += p.va;
+        if(p.y > H + 20){ p.y = -20; p.x = Math.random() * W; } if(p.y < -20){ p.y = H + 20; p.x = Math.random() * W; } }
+      x.save(); x.translate(p.x, p.y); x.fillStyle = p.c; x.strokeStyle = p.c;
+      let al = D.op;
+      if(D.tipo === "estrellas" || D.tipo === "destellos") al *= .35 + .65 * Math.abs(Math.sin(t / (900 + p.s * 900) + p.f));
+      x.globalAlpha = al;
+      switch(D.tipo){
+        case "confeti": x.rotate(p.a); if(p.s > .7){ x.beginPath(); x.arc(0, 0, 3 + p.s * 2, 0, 6.28); x.fill(); } else x.fillRect(-3, -5, 6 + p.s * 4, (8 + p.s * 6) * Math.abs(Math.cos(p.a)) + 2); break;
+        case "estrellas": x.beginPath(); x.arc(0, 0, .5 + p.s * 1.3, 0, 6.28); x.fill(); break;
+        case "destellos": x.rotate(p.a * .2); destello(3 + p.s * 6); break;
+        case "petalos": x.rotate(p.a); x.beginPath(); x.ellipse(0, 0, 4 + p.s * 5, 2 + p.s * 2.5, 0, 0, 6.28); x.fill(); break;
+        case "corazones": x.rotate(Math.sin(p.a) * .4); corazon(5 + p.s * 6); break;
+        case "burbujas": x.lineWidth = 1; x.beginPath(); x.arc(Math.sin(p.f + t / 900) * 3, 0, 3 + p.s * 9, 0, 6.28); x.stroke(); break;
+      }
+      x.restore();
+    }
+    if(!reduce) requestAnimationFrame(dibujar);
+  }
+  armar(); addEventListener("resize", () => { armar(); if(reduce || quietos) dibujar(); }); dibujar();
+})();`;
+
+function cssVariables(F){
+  const c = F.colores, s = F.sobre, l = F.letras, fo = F.forma, im = F.imagenes;
+  const fondoSobre = {
+    liso: s.fondo1, degrade: `linear-gradient(180deg,${s.fondo1},${s.fondo2})`, luz: `radial-gradient(circle at 50% 30%,${s.fondo2},${s.fondo1} 72%)`,
+    lunares: `radial-gradient(circle at 20% 20%,${s.fondo2} 0 6px,transparent 7px) 0 0/46px 46px, radial-gradient(circle at 70% 60%,${s.fondo2} 0 4px,transparent 5px) 0 0/58px 58px, ${s.fondo1}`,
+    rayas: `repeating-linear-gradient(45deg,${s.fondo1} 0 16px,${s.fondo2} 16px 32px)`, mitad: `linear-gradient(90deg,${s.fondo1} 50%,${s.fondo2} 50%)`,
+    imagen: s.imagen ? `center/cover no-repeat url("${s.imagen}"), ${s.fondo1}` : s.fondo1
+  }[s.textura] || s.fondo1;
+  const lacre = { brillo: `radial-gradient(circle at 35% 30%,${aclarar(s.lacre, .45)} 0,${s.lacre} 55%,${oscurecer(s.lacre, .25)} 100%)`,
+    plano: s.lacre, mitad: `linear-gradient(90deg,${s.lacre} 50%,${s.lacre2} 50%)` }[s.lacreEstilo] || s.lacre;
+  const bandaOp = (c.bandaOp == null ? 100 : c.bandaOp) / 100;
+  const banda = c.bandaEstilo === "degrade" ? `linear-gradient(180deg,${rgba(c.banda, 0)},${rgba(c.banda, bandaOp)} 15%,${rgba(c.banda, bandaOp)} 85%,${rgba(c.banda, 0)})` : rgba(c.banda, bandaOp);
+  const k = (c.tarjetaOp == null ? 100 : c.tarjetaOp) / 100;
+  const letraLacre = s.lacreLetra === "texto" ? fam(l.texto) : s.lacreLetra === "detalle" ? fam(l.detalle) : fam(l.titulo);
+  const num = l.numeros === "texto" ? l.texto : l.numeros === "detalle" ? l.detalle : l.titulo;
+  const ribbonBg = c.oscuro ? c.principal : c.texto, ribbonInk = c.oscuro ? c.sobrePrincipal : c.fondo;
+  return `:root{
+  --bg:${c.fondo}; --banda:${banda}; --card:${rgba(c.tarjeta, k)}; --card-solid:${mezcla(c.tarjeta, c.fondo, Math.max(k, .5))};
+  --ink:${c.texto}; --muted:${c.suave}; --acc:${c.principal}; --acc-ink:${c.sobrePrincipal}; --acc-soft:${rgba(c.principal, .14)}; --hl:${c.detalle};
+  --line:${rgba(c.lineas, (c.lineasOp == null ? 100 : c.lineasOp) / 100)}; --field:${c.campos}; --err:${c.error};
+  --f-title:${fam(l.titulo)}; --title-w:${l.tituloPeso}; --h2:${l.tamTitulo}rem;
+  --f-body:${fam(l.texto)}; --f-sans:${fam(l.detalle)}; --f-num:${fam(num)}; --num-w:${l.tituloPeso >= 600 ? 700 : 500};
+  --sub-style:${l.cursiva ? "italic" : "normal"}; --r-btn:${fo.botones}px; --r-card:${fo.tarjetas}px; --dot-r:${fo.puntos === "circulo" ? "50%" : fo.puntos === "cuadrado" ? "3px" : "0"}; --bullet:"${String(fo.vineta || "•").replace(/["\\]/g, "")}"; --fs:${l.tamTexto}px;
+  --sobre-bg:${fondoSobre};
+  --env-back:${s.color}; --env-front:${s.frente}; --env-flap:${s.solapa}; --env-ink:${s.tinta};
+  --seal-bg:${lacre}; --seal-ink:${s.lacreTinta}; --seal-font:${letraLacre}; --seal-fs:${s.lacreTam}rem;
+  --tap:${s.tap}; --ribbon-bg:${ribbonBg}; --ribbon-ink:${ribbonInk};
+  --foto-w:${im.ancho}%; --logo-h:${im.logoTam}px;
+  color-scheme:${c.oscuro ? "dark" : "light"};
+}${fo.puntos === "rombo" ? "\n.timeline .t::before{transform:rotate(45deg)}" : ""}`;
+}
+
+function linksLetras(F){
+  const usadas = [...new Set([F.letras.titulo, F.letras.texto, F.letras.detalle])].filter(n => !propia(n));
+  return usadas.map(n => `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${(LETRAS[n] || [n.replace(/ /g, "+")])[0]}&display=swap">`).join("\n");
+}
+
+function htmlSecciones(F){
+  const im = F.imagenes, act = F.secciones.filter(s => s.activa !== false);
+  const ctx = { copia: 0, copyMsg: false, diaLab: false, cuenta: false };
+  let par = 0;
+  const pieSec = act.find(s => s.tipo === "pie");
+  const partes = act.filter(s => s.tipo !== "pie").map(s => {
+    if(s.tipo === "portada") return htmlSeccion(s, false, ctx, F);
+    let banda = par % 2 === 1; par++;
+    if(s.fondo === "banda") banda = true; else if(s.fondo === "sin") banda = false;
+    return htmlSeccion(s, banda, ctx, F);
+  });
+  const pie = pieSec ? htmlSeccion(pieSec, false, ctx, F) : "";
+  const sinCuenta = ctx.cuenta ? "" : `\n  <div hidden><b id="cdD"></b><b id="cdH"></b><b id="cdM"></b><b id="cdS"></b><a id="agendar" href="#"></a></div>`;
+  return `<main>\n${partes.join("\n\n")}${sinCuenta}\n</main>\n\n${pie}`;
+}
+
+function htmlSeccion(s, banda, ctx, F){
+  const cls = banda ? ' class="banda"' : "", im = F.imagenes;
+  const cab = (lab, titulo, id = "") => `      ${lab ? `<span class="lab"${id}>${esc(lab)}</span>` : (id ? `<span class="lab"${id}></span>` : "")}\n      ${titulo ? `<h2>${esc(titulo)}</h2>` : ""}`;
+  switch(s.tipo){
+    case "portada": {
+      const foto = im.portada && s.foto !== "no" ? `      <img class="foto-portada ${im.forma}${im.borde ? " borde" : ""}" src="${im.portada}" alt="">\n` : "";
+      const logo = im.logo && s.logo ? `      <img class="logo-portada" src="${im.logo}" alt="">\n` : "";
+      const interior = `${logo}${s.foto === "arriba" ? foto : ""}      <p class="saludo" id="saludo">${esc(TXT_ACTUAL.saludo)} ${esc(F.evento.invitado)}</p>
+${s.arriba ? `      <p class="pre${s.arribaEstilo === "titulo" ? " t" : ""}">${br(s.arriba)}</p>\n` : ""}      <h1 class="nombre" style="--nombre-fs:${s.nombreTam}rem">${br(s.nombre)}</h1>
+${s.abajo ? `      <p class="post">${br(s.abajo)}</p>\n` : ""}${s.foto === "abajo" ? foto : ""}${s.fecha ? `      <p class="fecha-grande">${esc(s.fecha)}</p>\n` : ""}${s.frase ? `      <p class="invita">${br(s.frase)}</p>\n` : ""}`;
+      return `  <section class="portada">\n    <div class="wrap">\n${s.marco ? `      <div class="marco">\n${interior.replace(/^/gm, "  ")}      </div>\n` : interior}    </div>\n  </section>`;
+    }
+    case "cuenta":
+      ctx.cuenta = true;
+      return `  <section${banda ? ' class="banda"' : ' style="padding-top:8px"'}>
+    <div class="wrap">
+${cab(s.lab, s.titulo)}
+      <div class="cd" aria-live="off">
+        <div><b id="cdD">--</b><small>Días</small></div>
+        <div><b id="cdH">--</b><small>Horas</small></div>
+        <div><b id="cdM">--</b><small>Min</small></div>
+        <div><b id="cdS">--</b><small>Seg</small></div>
+      </div>
+      <a class="btn out" id="agendar" target="_blank" rel="noopener" href="#">${esc(s.boton || "Agendar la fecha")}</a>
+    </div>
+  </section>`;
+    case "cronograma": {
+      const id = ctx.diaLab ? "" : ' id="diaLab"'; ctx.diaLab = true;
+      const items = (s.items || []).map(it => `        <li${it.parte === "cena" ? ' data-parte="cena"' : ""}><span class="h">${esc(it.hora)}</span><div class="t"><h3>${esc(it.titulo)}</h3>${it.detalle ? `<p>${br(it.detalle)}</p>` : ""}${it.mapa ? `<a target="_blank" rel="noopener" href="${mapa(it.mapa)}">Cómo llegar</a>` : ""}</div></li>`).join("\n");
+      return `  <section${cls}>\n    <div class="wrap">\n${cab(s.lab, s.titulo, id)}\n${s.sub ? `      <p class="sub">${br(s.sub)}</p>\n` : ""}      <ol class="timeline">\n${items}\n      </ol>\n    </div>\n  </section>`;
+    }
+    case "lugar": {
+      const id = ctx.diaLab ? "" : ' id="diaLab"'; ctx.diaLab = true;
+      return `  <section${cls}>\n    <div class="wrap">\n${cab(s.lab, s.titulo, id)}
+      <div class="card lugar">
+${s.hora ? `        <span class="hora">${esc(s.hora)}</span>\n` : ""}        <h3>${esc(s.nombre)}</h3>
+${s.direccion ? `        <p class="sub">${br(s.direccion)}</p>\n` : ""}${s.mapa ? `        <a target="_blank" rel="noopener" href="${mapa(s.mapa)}">Cómo llegar</a>\n` : ""}      </div>
+    </div>\n  </section>`;
+    }
+    case "texto": {
+      const ps = String(s.texto || "").split(/\n\s*\n/).filter(t => t.trim()).map(t => `<p class="sub">${br(t.trim())}</p>`).join("\n        ");
+      return `  <section${cls}>\n    <div class="wrap">\n${cab(s.lab, s.titulo)}\n      ${s.tarjeta ? `<div class="card texto-libre">\n        ${ps}\n      </div>` : `<div class="texto-libre">\n        ${ps}\n      </div>`}\n    </div>\n  </section>`;
+    }
+    case "lista": {
+      const lis = String(s.items || "").split("\n").map(t => t.trim()).filter(Boolean).map(t => `          <li>${esc(t)}</li>`).join("\n");
+      return `  <section${cls}>\n    <div class="wrap">\n${cab(s.lab, s.titulo)}\n      <div class="card">\n        <ul class="lista">\n${lis}\n        </ul>\n      </div>\n    </div>\n  </section>`;
+    }
+    case "datos": {
+      let algunaCopia = false;
+      const filas = (s.filas || []).filter(f => f.etiqueta || f.valor).map(f => {
+        if(f.copiar){ algunaCopia = true; const id = "copia" + (++ctx.copia); return `          <div class="dato"><span>${esc(f.etiqueta)}</span><b id="${id}">${esc(f.valor)}</b><button class="copiar" type="button" data-copy="${id}">Copiar</button></div>`; }
+        return `          <div class="dato"><span>${esc(f.etiqueta)}</span><b>${esc(f.valor)}</b></div>`;
+      }).join("\n");
+      let msg = "";
+      if(algunaCopia){ msg = ctx.copyMsg ? `        <p class="err" role="status"></p>\n` : `        <p class="err" id="copyMsg" role="status"></p>\n`; ctx.copyMsg = true; }
+      const precio = s.precio ? `        <p class="valor">${esc(s.precio)}${s.precioDetalle ? `<small>${esc(s.precioDetalle)}</small>` : ""}</p>\n` : "";
+      return `  <section${cls}>\n    <div class="wrap">\n${cab(s.lab, s.titulo)}\n${s.texto ? `      <p class="sub">${br(s.texto)}</p>\n` : ""}      <div class="card">
+${precio}${filas ? `        <div class="datos"${precio ? ' style="margin-top:22px"' : ""}>\n${filas}\n        </div>\n` : ""}${msg}${s.nota ? `        <p class="sub" style="margin-top:6px">${br(s.nota)}</p>\n` : ""}      </div>
+    </div>\n  </section>`;
+    }
+    case "galeria": {
+      const fotos = s.fotos || []; if(!fotos.length) return `  <!-- galería sin fotos -->`;
+      const imgs = fotos.map((f, i) => `        <img src="${f}" alt=""${fotos.length % 2 === 1 && i === 0 ? ' class="ancha"' : ""} loading="lazy">`).join("\n");
+      return `  <section${cls}>\n    <div class="wrap">\n${cab(s.lab, s.titulo)}\n      <div class="galeria">\n${imgs}\n      </div>\n    </div>\n  </section>`;
+    }
+    case "album": {
+      const rep = (h, a, b) => h.split(a).join(b);
+      let h = rep(rep(rep(BASE.ALBUM_HTML, "Álbum de la fiesta", esc(s.lab)), "Compartí tus fotos", esc(s.titulo)),
+        "Durante la fiesta, subí acá tus fotos. Todas van a un mismo álbum para que nadie se pierda nada.", br(s.sub));
+      if(F.tono === "usted") h = rep(h, "Tu nombre (opcional)", "Su nombre (opcional)");
+      if(banda) h = rep(h, '<section id="album">', '<section class="banda" id="album">');
+      return h.replace(/\n+$/, "");
+    }
+    case "confirmacion": {
+      const ops = String(s.menuOpciones || "").split("\n").map(t => t.trim()).filter(Boolean);
+      const chicos = s.chicos ? `          <div class="campo" data-si>
+            <label for="chicos">${esc(s.chicosLabel)}</label>
+            <select id="chicos" data-extra="Chicos"></select>
+          </div>\n` : "";
+      const extra = s.extra ? `          <div class="campo" data-si>
+            <label for="extra1">${esc(s.extraLabel)}</label>
+            <input type="text" id="extra1" data-extra="${esc(s.extraPanel || s.extraLabel)}" maxlength="80"${s.extraEjemplo ? ` placeholder="${esc(s.extraEjemplo)}"` : ""} autocomplete="off">
+          </div>\n` : "";
+      const menu = s.menu && ops.length ? `          <div class="campo" data-si>
+            <label for="menu">¿Alguien necesita un menú especial?</label>
+            <select id="menu">${ops.map(o => `<option>${esc(o)}</option>`).join("")}</select>
+          </div>\n` : "";
+      return `  <section${cls} id="confirmar">
+    <div class="wrap">
+${cab(s.lab, s.titulo)}
+      <p class="sub" id="lugares">${esc(TXT_ACTUAL.reservamos)} ${F.evento.lugares} lugares para ${esc(F.evento.invitado)}.</p>
+      <div class="card" id="rsvpCard">
+        <form id="rsvp" novalidate>
+          <div class="campo" id="campoNombre" hidden>
+            <label for="nombreInv">Tu nombre y apellido</label>
+            <input type="text" id="nombreInv" maxlength="80" autocomplete="name">
+          </div>
+          <fieldset>
+            <legend>${esc(s.pregunta || "¿Vienen?")}</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="asiste" id="asisteSi" value="si"><span>${esc(s.si)}</span></label>
+              <label class="choice"><input type="radio" name="asiste" id="asisteNo" value="no"><span>${esc(s.no)}</span></label>
+            </div>
+          </fieldset>
+          <div class="campo" data-si>
+            <label for="cant">${esc(s.cantLabel || "¿Cuántos van a ir?")}</label>
+            <select id="cant"></select>
+          </div>
+${chicos}${extra}${menu}          <div class="campo">
+            <label for="mensaje">${esc(s.mensajeLabel)}</label>
+            <textarea id="mensaje" rows="3" placeholder="Opcional"></textarea>
+          </div>
+          <p class="err" id="rsvpErr" role="alert"></p>
+          <button class="btn" type="submit">Enviar confirmación</button>
+        </form>
+      </div>
+      <p class="fine" id="finePersonal">${esc(s.fine)}</p>
+    </div>
+  </section>`;
+    }
+    case "pie":
+      return `<footer>\n  ${s.lab ? `<p class="lab">${esc(s.lab)}</p>` : ""}\n  ${s.texto ? `<p class="pie">${br(s.texto)}</p>` : ""}${s.logo && im.logo ? `\n  <img class="pie-logo" src="${im.logo}" alt="">` : ""}\n</footer>`;
+  }
+  return "";
+}
+
+let TXT_ACTUAL = TONOS.vos;
+function textos(F){
+  const t = Object.assign({}, TONOS[F.tono] || TONOS.vos);
+  const conf = F.secciones.find(s => s.tipo === "confirmacion") || {};
+  const por = F.secciones.find(s => s.tipo === "portada") || {};
+  if(por.saludo) t.saludo = por.saludo;
+  if(por.saludoGenerico) t.saludoGenerico = por.saludoGenerico;
+  for(const k of ["nota", "graciasSi", "graciasNo", "graciasNoP"]) if(conf[k]) t[k] = conf[k];
+  return t;
+}
+
+function datosInvitacion(F, modo){
+  const e = F.evento, z = "-03:00";
+  const album = F.secciones.some(s => s.tipo === "album" && s.activa !== false);
+  const o = { invitado: e.invitado, lugares: Number(e.lugares) || 1, fechaEvento: `${e.fecha}T${e.hora || "00:00"}:00${z}`, fechaFin: `${e.fechaFin || e.fecha}T${e.horaFin || e.hora || "23:59"}:00${z}`,
+    titulo: e.titulo, lugarAgenda: e.lugarAgenda, horaFiesta: e.horaFiesta || e.hora };
+  const plan = modo === "panel" ? (e.planilla || "").trim() : "", wa = modo === "whatsapp" ? String(e.whatsapp || "").replace(/\D/g, "") : "";
+  let s = JSON.stringify(o, null, 2).replace(/\n}$/, "");
+  s += `,\n  /* Plan Básico (sin planilla): número del cliente que recibe las confirmaciones por WhatsApp, con código de país. Ej: 5491112345678 */\n  "whatsapp": ${JSON.stringify(wa)}`;
+  s += `,\n  /* Plan Básico: hasta cuántas personas puede confirmar cada invitado */\n  "maxLugares": ${Number(e.maxLugares) || 6}`;
+  s += `,\n  /* Álbum de fotos: true = los invitados pueden subir fotos (necesita planilla). false = se oculta la sección */\n  "albumActivo": ${album}`;
+  s += `,\n  /* Dirección de la planilla del evento (termina en /exec). Vacía = invitación de muestra. */\n  "planilla": ${JSON.stringify(plan)}\n}`;
+  return s;
+}
+
+function armarInvitacion(F, opciones = {}){
+  const modo = opciones.vista ? "muestra" : F.evento.modo;
+  TXT_ACTUAL = textos(F);
+  const s = F.sobre, im = F.imagenes, por = F.secciones.find(x => x.tipo === "portada") || {};
+  const sello = s.lacreTipo === "logo" && im.logo ? `<img src="${im.logo}" alt="">` : esc(s.lacreTexto);
+  const sinMusica = !MUSICAS[F.musica] || !MUSICAS[F.musica][1];
+  const js = BASE.JS_BASE.replace("\n    return j.invitado;\n  }\n};", () => "\n    return j.invitado;\n  }" + BASE.CONEXION_FOTO);
+  const cinta = F.evento.cinta || `Modelo ${F.nombre.replace(/\s*\(copia\)$/, "").replace(/^Modelo\s+/i, "")} · invitación de muestra con datos de ejemplo`;
+  let cuerpo = `<title>${esc(por.nombre ? String(por.nombre).replace(/\n/g, " ") + (por.arriba ? " · " + String(por.arriba).replace(/\n/g, " ") : "") : F.nombre)}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="generator" content="Estudio Evocard">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+${linksLetras(F)}
+<style>
+/* Layout: invitación de una columna angosta; un solo tema de color, a propósito (es la estética del evento). */
+${cssVariables(F)}
+${cssLetrasPropias(F)}
+${BASE.CSS_BASE}
+${CSS_EXTRA}${sinMusica ? "#musica{display:none!important}\n" : ""}${BASE.ALBUM_CSS}</style>
+
+${im.fondo ? `<div id="fondoImg" aria-hidden="true" style="background-image:url('${im.fondo}');opacity:${im.fondoOp / 100}"></div>\n` : ""}<canvas id="deco" aria-hidden="true"></canvas>
+
+<div id="sobre" role="button" tabindex="0" aria-label="Abrir la invitación">
+  <div>
+    <div class="env">
+      <div class="back"></div>
+      <div class="front"></div>
+      <div class="flap"></div>
+      <div class="seal">${sello}</div>
+      <div class="to" id="sobreNombre">Para ${esc(F.evento.invitado)}</div>
+    </div>
+    <p class="tap">${esc(s.tapTexto || "Tocá para abrir")}</p>
+  </div>
+</div>
+
+<button id="musica" type="button" aria-label="Activar música" hidden>
+  <svg viewBox="0 0 24 24" id="musIcon"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>
+</button>
+
+${htmlSecciones(F)}
+
+<div class="ribbon" id="ribbon">${esc(cinta)}</div>
+
+<script>
+/* ===== DATOS DE LA INVITACIÓN: se cambian por cada cliente ===== */
+const INV = ${datosInvitacion(F, modo)};
+/* ================================================================ */
+const TXT = ${JSON.stringify(TXT_ACTUAL, null, 2)};
+const MUSICA = ${sinMusica ? '{ onda:"sine", notas:[0], paso:100000, volumen:0, cola:0.1 }' : MUSICAS[F.musica][1]};
+${js}
+${sinMusica ? "iniciarMusica = function(){}; pararMusica = function(){};\n" : ""}/* Decoración del fondo */
+const DECO = ${JSON.stringify({ tipo: F.deco.tipo, colores: F.deco.colores && F.deco.colores.length ? F.deco.colores : ["#FFFFFF"], cant: F.deco.cant || 1, op: (F.deco.op == null ? 55 : F.deco.op) / 100 })};
+${DECO_JS}
+${BASE.ALBUM_JS}
+iniciarInvitado();
+<\/script>
+`;
+  if(opciones.vista && !opciones.conSobre) cuerpo += `<style>#sobre{display:none!important}</style>\n`;
+  return BASE.ESQUELETO + cuerpo + "\n</body>\n</html>\n";
+}
+
+/* ===================================================== EDITOR ===================================================== */
+let F = null, pestana = "empezar", abierta = null;
+const $ = s => document.querySelector(s);
+const get = (o, p) => p.split(".").reduce((a, k) => a == null ? a : a[k], o);
+const set = (o, p, v) => { const ks = p.split("."); let a = o; ks.slice(0, -1).forEach(k => a = a[k]); a[ks[ks.length - 1]] = v; };
+function toast(t, ms = 2600){ const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, ms); }
+
+/* Piezas del formulario */
+const campo = (p, label, tipo = "text", extra = "") => {
+  const v = get(F, p) ?? "";
+  if(tipo === "area") return `<div class="f"><label>${label}</label><textarea data-p="${p}" rows="3"${extra}>${esc(v)}</textarea></div>`;
+  return `<div class="f"><label>${label}</label><input type="${tipo}" data-p="${p}" value="${esc(v)}"${tipo === "number" ? ' data-num' : ""}${extra}></div>`;
+};
+const color = (p, label) => `<div class="color"><label>${label}</label><span class="der"><small>${esc(get(F, p))}</small><input type="color" data-p="${p}" value="${esc(get(F, p))}"></span></div>`;
+const rango = (p, label, min, max, paso = 1, unidad = "") => { const v = get(F, p); return `<div class="rango"><span>${label}</span><input type="range" data-p="${p}" data-num min="${min}" max="${max}" step="${paso}" value="${v}" data-u="${unidad}"><output>${v}${unidad}</output></div>`; };
+const elegir = (p, label, opciones, re = false) => `<div class="f"><label>${label}</label><select data-p="${p}"${re ? " data-re" : ""}>${Object.entries(opciones).map(([k, t]) => `<option value="${esc(k)}"${String(get(F, p)) === String(k) ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>`;
+const tilde = (p, label, re = false) => `<label class="check"><input type="checkbox" data-p="${p}"${get(F, p) ? " checked" : ""}${re ? " data-re" : ""}> ${label}</label>`;
+const grupo = (titulo, cont, ayuda = "") => `<div class="grupo"><h3>${titulo}</h3>${ayuda ? `<p class="ayuda">${ayuda}</p>` : ""}${cont}</div>`;
+const listaLetras = () => Object.fromEntries([...(F.letrasPropias || []).map(l => [l.nombre, "★ " + l.nombre + " (tuya)"]), ...Object.keys(LETRAS).map(n => [n, n])]);
+const imagen = (p, label, max, formato, ayuda = "") => { const v = get(F, p);
+  return `<div class="f"><span>${label}</span><div class="miniatura">${v ? `<img src="${v}" alt="">` : `<div class="vacia">Sin imagen</div>`}<div class="botones"><button class="b out chico" type="button" data-subir="${p}" data-max="${max}" data-fmt="${formato}">${v ? "Cambiar" : "Subir"}</button>${v ? `<button class="b out chico" type="button" data-sacar="${p}">Quitar</button>` : ""}</div></div>${ayuda ? `<p class="ayuda">${ayuda}</p>` : ""}</div>`; };
+
+const PESTANAS = {
+  empezar: ["Empezar", () => grupo("Este diseño", campo("nombre", "Nombre del modelo") + `<p class="ayuda">Empezó como: ${esc(F.desde)}.</p>`)
+    + grupo("Empezar de nuevo", `<div class="botones"><button class="b out chico" type="button" data-accion="blanco">Nuevo en blanco</button></div>
+      <div class="f"><label>O copiar un modelo que ya existe</label><select id="elegirModelo">${Object.entries(MODELOS).map(([k, m]) => `<option value="${k}">${esc(m.nombre)}</option>`).join("")}</select></div>
+      <div class="botones"><button class="b out chico" type="button" data-accion="copiar">Copiar este modelo</button></div>`,
+      "Se copian colores, letras, sobre, música, adornos y textos. Las funciones especiales (la votación de Revelación, el selector de colores de Brindis, el número grande de Confeti) no se copian. Empezar de nuevo reemplaza lo que tenés ahora: guardá la ficha antes si la querés conservar.")
+    + grupo("Guardar y descargar", `<div class="botones"><button class="b chico" type="button" data-accion="guardarFicha">Guardar ficha</button><button class="b out chico" type="button" data-accion="abrirFicha">Abrir una ficha</button></div>
+      <p class="ayuda"><b>La ficha</b> es el archivo de trabajo: guarda todo lo que elegiste para seguir editándolo otro día. Lo que hacés también queda guardado solo en esta compu, pero si borrás el historial del navegador se pierde: guardá la ficha.</p>
+      <div class="botones"><button class="b oro chico" type="button" data-accion="descargar">Descargar invitación</button></div>
+      <p class="ayuda"><b>La invitación</b> es el archivo final (.html) que se sube a GitHub. Antes de descargarla, en la pestaña <b>Datos</b> elegís si es una muestra para la página o la invitación de un cliente.</p>`) ],
+  colores: ["Colores", () => grupo("Paletas listas", `<div class="chips">${Object.entries(MODELOS).map(([k, m]) => { const c = m.f.colores; return `<button class="chip" type="button" data-paleta="${k}"><i><b style="background:${c.fondo}"></b><b style="background:${c.principal}"></b><b style="background:${c.texto}"></b></i>${esc(m.nombre)}</button>`; }).join("")}</div>`, "Toca una para usar sus colores. Después podés cambiar cada uno.")
+    + grupo("Colores de la invitación", color("colores.fondo", "Fondo") + color("colores.texto", "Texto principal") + color("colores.suave", "Texto suave (frases y aclaraciones)")
+      + color("colores.principal", "Color principal (botones)") + color("colores.sobrePrincipal", "Letras dentro de los botones") + color("colores.detalle", "Detalles (títulos chiquitos y horarios)")
+      + color("colores.campos", "Fondo de las casillas para escribir") + tilde("colores.oscuro", "Es una invitación de fondo oscuro"))
+    + grupo("Bandas (franjas de fondo que se alternan)", color("colores.banda", "Color de las bandas") + elegir("colores.bandaEstilo", "Forma", { lisa: "Franja lisa", degrade: "Se funde con el fondo (suave)" }) + rango("colores.bandaOp", "Intensidad", 0, 100, 1, "%"))
+    + grupo("Tarjetas y líneas", color("colores.tarjeta", "Color de las tarjetas") + rango("colores.tarjetaOp", "Qué tan tapada (100% = color lleno; bajo = transparente)", 0, 100, 1, "%")
+      + color("colores.lineas", "Líneas y bordes") + rango("colores.lineasOp", "Intensidad de las líneas", 5, 100, 1, "%") + color("colores.error", "Avisos de error")) ],
+  letras: ["Letras", () => grupo("Tus letras", `<div class="botones"><button class="b chico" type="button" data-accion="cargarLetra">+ Cargar una letra</button></div>
+      ${(F.letrasPropias || []).map((l, i) => `<div class="item"><button class="quitar" type="button" data-quitarletra="${i}">Quitar</button>
+        <p style="font-family:${esc(fam(l.nombre))};font-size:1.7rem;line-height:1.2;padding-right:50px">${esc(l.nombre)}</p><p style="font-family:${esc(fam(l.nombre))};font-size:1.1rem">Lucía &amp; Tomás · 14 de marzo · 0123456789</p>
+        ${elegir("letrasPropias." + i + ".parecida", "Si el celular no la puede mostrar, usar una", { serif: "clásica (con remates)", cursive: "de firma (manuscrita)", sans: "moderna (sin remates)" })}</div>`).join("")}`,
+      "Bajala de la página y cargá el archivo tal cual: sirve el .zip o la letra suelta (.ttf, .otf, .woff, .woff2). Después elegila abajo; aparece con una ★. Ojo: como vendés las invitaciones, usá letras que digan <b>gratis para uso comercial</b> (\"free for commercial use\"). Las de uso personal no se pueden usar en un trabajo que cobrás.")
+    + grupo("Tipos de letra", elegir("letras.titulo", "Títulos y nombres", listaLetras()) + elegir("letras.texto", "Textos", listaLetras()) + elegir("letras.detalle", "Detalles (títulos chiquitos, botones)", listaLetras())
+      + elegir("letras.numeros", "Números de la cuenta regresiva", { titulo: "Igual que los títulos", texto: "Igual que los textos", detalle: "Igual que los detalles" }))
+    + grupo("Tamaños", rango("letras.tamTitulo", "Tamaño de los títulos", 1.6, 4, .1, " rem") + rango("letras.tamTexto", "Tamaño del texto", 15, 21, 1, " px")
+      + elegir("letras.tituloPeso", "Grosor de los títulos", { 400: "Normal", 500: "Un poco más grueso", 600: "Grueso", 700: "Muy grueso", 800: "Extra grueso" }) + tilde("letras.cursiva", "Frases en cursiva"),
+      "Algunas letras (sobre todo las de firma) tienen un solo grosor: si no cambia, es por eso.")
+    + grupo("Formas", rango("forma.botones", "Redondez de los botones", 0, 40, 1, " px") + rango("forma.tarjetas", "Redondez de las tarjetas", 0, 32, 1, " px")
+      + elegir("forma.puntos", "Puntitos del cronograma", { circulo: "Círculo", cuadrado: "Cuadradito", rombo: "Rombo" }) + campo("forma.vineta", "Viñeta de las listas (un símbolo: • ★ ♥ ✦ → ◆ ♡)")) ],
+  sobre: ["Sobre", () => grupo("Lo que se ve detrás del sobre", elegir("sobre.textura", "Fondo", TEXTURAS, true) + color("sobre.fondo1", "Color 1")
+      + (["liso", "imagen"].includes(F.sobre.textura) ? "" : color("sobre.fondo2", "Color 2")) + (F.sobre.textura === "imagen" ? imagen("sobre.imagen", "Imagen del fondo", 1400, "jpeg") : ""))
+    + grupo("El sobre", color("sobre.color", "Color del sobre") + `<p class="ayuda">Al cambiarlo se ajustan solos el frente y la solapa. Si querés, los retocás abajo.</p>`
+      + color("sobre.frente", "Frente (las solapas de los costados)") + color("sobre.solapa", "Solapa de arriba (la que se abre)") + color("sobre.tinta", "Letras del sobre (\"Para…\")")
+      + color("sobre.tap", "Color de \"Tocá para abrir\"") + campo("sobre.tapTexto", "Texto debajo del sobre"))
+    + grupo("El lacre (el sello del medio)", elegir("sobre.lacreTipo", "Qué lleva", { letras: "Letras o números", logo: "El logo (se sube en Imágenes)" }, true)
+      + (F.sobre.lacreTipo === "logo" ? (F.imagenes.logo ? "" : `<p class="aviso">Todavía no subiste un logo. Hacelo en la pestaña Imágenes.</p>`) : campo("sobre.lacreTexto", "Letras (iniciales, edad, etc.)")
+        + elegir("sobre.lacreLetra", "Tipo de letra", { titulo: "La de los títulos", texto: "La de los textos", detalle: "La de los detalles" }) + rango("sobre.lacreTam", "Tamaño", .8, 3.2, .1, " rem"))
+      + elegir("sobre.lacreEstilo", "Terminación", { brillo: "Con brillo (como lacre de verdad)", plano: "Color liso", mitad: "Mitad y mitad (dos colores)" }, true)
+      + color("sobre.lacre", "Color del lacre") + (F.sobre.lacreEstilo === "mitad" ? color("sobre.lacre2", "Segundo color") : "") + color("sobre.lacreTinta", "Color de las letras del lacre")) ],
+  imagenes: ["Imágenes", () => grupo("Foto de la portada", imagen("imagenes.portada", "Foto principal", 1400, "jpeg", "Se achica sola para que la invitación cargue rápido.")
+      + elegir("imagenes.forma", "Forma", { arco: "Arco (redondeada arriba)", circulo: "Círculo", rect: "Rectángulo", libre: "Como es la foto" })
+      + rango("imagenes.ancho", "Ancho", 30, 100, 1, "%") + tilde("imagenes.borde", "Con borde y sombra")
+      + `<p class="ayuda">Dónde va (arriba o abajo de los nombres) se elige en Secciones → Portada.</p>`)
+    + grupo("Logo", imagen("imagenes.logo", "Logo (mejor en PNG con fondo transparente)", 700, "png") + rango("imagenes.logoTam", "Alto del logo en la portada", 30, 200, 1, " px"),
+      "Se puede mostrar arriba de la portada, en el cierre y en el lacre del sobre.")
+    + grupo("Imagen de fondo", imagen("imagenes.fondo", "Imagen que queda quieta detrás de todo", 1400, "jpeg") + rango("imagenes.fondoOp", "Qué tanto se ve", 3, 100, 1, "%"),
+      "Conviene bajita (10 a 25%) para que se lea bien el texto.") ],
+  adornos: ["Adornos", () => grupo("Adornos del fondo", elegir("deco.tipo", "Tipo", ADORNOS, true)
+      + (F.deco.tipo === "ninguna" ? "" : `<div class="f"><span>Colores de los adornos</span><div class="botones">${(F.deco.colores || []).map((c, i) => `<span class="der" style="display:flex;gap:4px;align-items:center"><input type="color" data-p="deco.colores.${i}" value="${c}" style="width:40px;height:30px;border:1px solid var(--linea);border-radius:6px;padding:2px">${F.deco.colores.length > 1 ? `<button class="b out chico" type="button" data-quitarcolor="${i}" title="Quitar">×</button>` : ""}</span>`).join("")}${(F.deco.colores || []).length < 5 ? `<button class="b out chico" type="button" data-accion="masColor">+ color</button>` : ""}</div></div>`
+        + rango("deco.op", "Qué tanto se ven", 5, 100, 1, "%") + (F.deco.tipo === "abanicos" ? "" : rango("deco.cant", "Cantidad", .3, 3, .1, "×"))))
+    + grupo("Música al abrir el sobre", elegir("musica", "Melodía", Object.fromEntries(Object.entries(MUSICAS).map(([k, v]) => [k, v[0]]))),
+      "Suena cuando el invitado abre el sobre, y la puede apagar con el botón redondo. Para escucharla acá, tocá \"Ver cómo se abre el sobre\" y abrilo.") ],
+  secciones: ["Secciones", () => {
+    const n = F.secciones.length;
+    const lista = F.secciones.map((s, i) => {
+      const fija = FIJAS.includes(s.tipo), extremo = s.tipo === "portada" || s.tipo === "pie";
+      const puedeSubir = !extremo && i > 1, puedeBajar = !extremo && i < n - 2;
+      const nombre = s.titulo || s.nombre || s.texto || TIPOS_SECCION[s.tipo];
+      return `<div class="sec${s.activa === false ? " apagada" : ""}" data-id="${s.id}">
+        <div class="sec-cab" data-abrir="${s.id}">
+          ${fija ? "" : `<input type="checkbox" data-p="secciones.${i}.activa" data-re ${s.activa === false ? "" : "checked"} title="Mostrar u ocultar" onclick="event.stopPropagation()">`}
+          <span class="nom">${esc(String(nombre).split("\n")[0].slice(0, 40))}<br><span class="tipo">${TIPOS_SECCION[s.tipo]}</span></span>
+          <button type="button" data-mover="${i}" data-dir="-1" ${puedeSubir ? "" : "disabled"} title="Subir">↑</button>
+          <button type="button" data-mover="${i}" data-dir="1" ${puedeBajar ? "" : "disabled"} title="Bajar">↓</button>
+          ${fija ? "" : `<button type="button" data-borrar="${i}" title="Borrar">🗑</button>`}
+        </div>
+        ${abierta === s.id ? `<div class="sec-cuerpo">${editorSeccion(s, i)}</div>` : ""}
+      </div>`;
+    }).join("");
+    const agregables = Object.entries(TIPOS_SECCION).filter(([k]) => !FIJAS.includes(k) && !(UNICAS.includes(k) && F.secciones.some(s => s.tipo === k)));
+    return grupo("Partes de la invitación", lista, "Tocá una parte para editarla. La casilla la muestra u oculta; las flechas cambian el orden. La portada, la confirmación y el cierre van siempre.")
+      + grupo("Agregar una parte", `<div class="f"><select id="nuevaSeccion">${agregables.map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}</select></div><div class="botones"><button class="b chico" type="button" data-accion="agregarSeccion">Agregar</button></div>`);
+  } ],
+  datos: ["Datos", () => grupo("Fecha y lugar (para la cuenta regresiva y \"Agendar\")", `<div class="fila">${campo("evento.fecha", "Día", "date")}${campo("evento.hora", "Hora", "time")}</div>
+      <div class="fila">${campo("evento.fechaFin", "Termina el día", "date")}${campo("evento.horaFin", "a la hora", "time")}</div>`
+      + campo("evento.titulo", "Nombre del evento en el calendario") + campo("evento.lugarAgenda", "Lugar en el calendario")
+      + campo("evento.horaFiesta", "Hora de la fiesta (para invitados \"solo fiesta\")", "time"))
+    + grupo("Cómo le habla a los invitados", elegir("tono", "Trato", { vos: "De vos (\"Confirmá\", \"Te esperamos\")", usted: "De usted (\"Confirme\", \"Lo esperamos\")" }, true)
+      + campo("secciones." + F.secciones.findIndex(s => s.tipo === "portada") + ".saludo", "Saludo (antes del nombre del invitado)", "text", ` placeholder="${esc((TONOS[F.tono] || TONOS.vos).saludo)}"`))
+    + grupo("Invitado de ejemplo (lo que se ve en la muestra)", `<div class="fila">${campo("evento.invitado", "Nombre")}${campo("evento.lugares", "Lugares", "number", ' min="1" max="20"')}</div>`)
+    + grupo("¿Para qué es esta invitación?", elegir("evento.modo", "Tipo", { muestra: "Muestra para la página (con datos de ejemplo)", panel: "Cliente con panel (planilla de Google)", whatsapp: "Cliente plan Básico (confirman por WhatsApp)" }, true)
+      + (F.evento.modo === "muestra" ? campo("evento.cinta", "Cartel de abajo (vacío = \"Modelo … · invitación de muestra\")")
+        : F.evento.modo === "panel" ? campo("evento.planilla", "Dirección de la planilla (termina en /exec)", "url") + `<p class="ayuda">Es la misma dirección que pegás en el panel. Los invitados entran con su link personal (…html?i=CÓDIGO).</p>`
+        : `<div class="fila">${campo("evento.whatsapp", "WhatsApp del cliente (con 549…)")}${campo("evento.maxLugares", "Máximo por invitado", "number", ' min="1" max="20"')}</div>`)
+      + `<p class="ayuda">La vista previa de la derecha siempre muestra la versión de muestra. Este dato cambia solo el archivo que descargás.</p>`) ]
+};
+
+function editorSeccion(s, i){
+  const p = k => `secciones.${i}.${k}`;
+  const fondo = s.tipo === "portada" || s.tipo === "pie" ? "" : elegir(p("fondo"), "Fondo de esta parte", { "": "Automático (va alternando)", banda: "Con banda", sin: "Sin banda" });
+  const cab = (s.tipo !== "pie" && s.tipo !== "portada") ? `<div class="fila">${campo(p("lab"), "Título chiquito")}${campo(p("titulo"), "Título")}</div>` : "";
+  switch(s.tipo){
+    case "portada": return tilde(p("marco"), "Con marco doble (estilo Gala)") + campo(p("arriba"), "Frase de arriba (ej: Nos casamos)")
+      + elegir(p("arribaEstilo"), "Estilo de esa frase", { chico: "Mayúsculas chiquitas", titulo: "Con la letra de los títulos" })
+      + campo(p("nombre"), "Nombres (Enter = otra línea)", "area") + rango(p("nombreTam"), "Tamaño de los nombres", 2, 8, .1, " rem")
+      + campo(p("abajo"), "Frase debajo de los nombres (opcional)") + campo(p("fecha"), "Fecha como se muestra") + campo(p("frase"), "Frase de invitación", "area")
+      + elegir(p("foto"), "Foto de portada", { arriba: "Arriba de los nombres", abajo: "Abajo de los nombres", no: "No mostrar" }) + tilde(p("logo"), "Mostrar el logo arriba (si subiste uno)");
+    case "cuenta": return cab + campo(p("boton"), "Texto del botón") + fondo;
+    case "cronograma": return cab + campo(p("sub"), "Frase debajo del título (opcional)")
+      + (s.items || []).map((it, j) => `<div class="item"><button class="quitar" type="button" data-quitaritem="${i}.items.${j}">Quitar</button>
+        <div class="fila">${campo(p(`items.${j}.hora`), "Hora")}${campo(p(`items.${j}.titulo`), "Qué pasa")}</div>${campo(p(`items.${j}.detalle`), "Detalle o lugar")}
+        ${campo(p(`items.${j}.mapa`), "Dirección para el mapa (vacía = sin botón)")}${tilde(p(`items.${j}.parte`), "Solo para invitados completos (no \"solo fiesta\")")}</div>`).join("")
+      + `<div class="botones"><button class="b out chico" type="button" data-masitem="${i}">+ Agregar horario</button></div>` + fondo;
+    case "lugar": return cab + `<div class="fila">${campo(p("hora"), "Horario")}${campo(p("nombre"), "Nombre del lugar")}</div>` + campo(p("direccion"), "Dirección (se muestra)") + campo(p("mapa"), "Dirección para el mapa") + fondo;
+    case "texto": return cab + campo(p("texto"), "Texto (dejá una línea vacía para separar párrafos)", "area") + tilde(p("tarjeta"), "Dentro de una tarjeta") + fondo;
+    case "lista": return cab + campo(p("items"), "Puntos (uno por línea)", "area") + fondo;
+    case "datos": return cab + campo(p("texto"), "Frase (opcional)", "area") + `<div class="fila">${campo(p("precio"), "Precio de tarjeta (opcional)")}${campo(p("precioDetalle"), "Aclaración del precio")}</div>`
+      + (s.filas || []).map((f, j) => `<div class="item"><button class="quitar" type="button" data-quitaritem="${i}.filas.${j}">Quitar</button><div class="fila">${campo(p(`filas.${j}.etiqueta`), "Dato (ej: Alias)")}${campo(p(`filas.${j}.valor`), "Valor")}</div>${tilde(p(`filas.${j}.copiar`), "Con botón Copiar")}</div>`).join("")
+      + `<div class="botones"><button class="b out chico" type="button" data-masfila="${i}">+ Agregar dato</button></div>` + campo(p("nota"), "Nota al final (opcional)", "area") + fondo;
+    case "galeria": return cab + `<div class="galeria-ed">${(s.fotos || []).map((f, j) => `<div><img src="${f}" alt=""><button type="button" data-quitaritem="${i}.fotos.${j}" title="Quitar">×</button></div>`).join("")}</div>
+      <div class="botones"><button class="b out chico" type="button" data-fotos="${i}">+ Agregar fotos</button></div><p class="ayuda">Cada foto suma peso. Con 4 a 8 alcanza.</p>` + fondo;
+    case "album": return cab + campo(p("sub"), "Explicación", "area") + `<p class="ayuda">Funciona solo con planilla (plan con panel). En la muestra, el botón explica qué pasaría.</p>` + fondo;
+    case "confirmacion": return cab + `<div class="fila">${campo(p("si"), "Botón de sí")}${campo(p("no"), "Botón de no")}</div>` + `<div class="fila">${campo(p("pregunta"), "Pregunta")}${campo(p("cantLabel"), "Pregunta de cantidad")}</div>`
+      + tilde(p("chicos"), "Preguntar cuántos son chicos", true) + (s.chicos ? campo(p("chicosLabel"), "Pregunta de chicos") : "")
+      + tilde(p("menu"), "Preguntar por menú especial", true) + (s.menu ? campo(p("menuOpciones"), "Opciones del menú (una por línea)", "area") : "")
+      + tilde(p("extra"), "Agregar una pregunta propia (ej: institución, empresa, canción)", true)
+      + (s.extra ? campo(p("extraLabel"), "La pregunta") + `<div class="fila">${campo(p("extraPanel"), "Cómo aparece en el panel")}${campo(p("extraEjemplo"), "Ejemplo gris (opcional)")}</div>` : "")
+      + campo(p("mensajeLabel"), "Título del mensaje") + campo(p("fine"), "Letra chica de abajo")
+      + `<p class="ayuda">Mensajes después de responder (vacío = los de siempre):</p>` + campo(p("nota"), "En la muestra: \"esta respuesta …\"", "text", ` placeholder="${esc((TONOS[F.tono] || TONOS.vos).nota)}"`)
+      + `<div class="fila">${campo(p("graciasSi"), "Si viene", "text", ` placeholder="${esc((TONOS[F.tono] || TONOS.vos).graciasSi)}"`)}${campo(p("graciasNo"), "Si no viene", "text", ` placeholder="${esc((TONOS[F.tono] || TONOS.vos).graciasNo)}"`)}</div>` + fondo;
+    case "pie": return campo(p("lab"), "Título chiquito") + campo(p("texto"), "Texto grande", "area") + tilde(p("logo"), "Mostrar el logo (si subiste uno)");
+  }
+  return "";
+}
+
+function pintarPestanas(){
+  $("#pestanas").innerHTML = Object.entries(PESTANAS).map(([k, [t]]) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${k === pestana}">${t}</button>`).join("");
+}
+function pintarLetrasEstudio(){
+  let st = document.getElementById("letrasPropiasCss");
+  if(!st){ st = document.createElement("style"); st.id = "letrasPropiasCss"; document.head.appendChild(st); }
+  st.textContent = cssLetrasPropias(F, true);
+}
+function pintarPanel(){
+  const sc = $("#panel").scrollTop;
+  $("#panel").innerHTML = PESTANAS[pestana][1]();
+  $("#panel").scrollTop = sc;
+}
+
+/* Guardado automático en esta compu */
+let tGuardar = null;
+function cambio(redibujar){
+  pintarLetrasEstudio();
+  if(redibujar) pintarPanel();
+  clearTimeout(tGuardar); tGuardar = setTimeout(() => {
+    const ok = guardar.poner("evocard-estudio-ficha", JSON.stringify(F));
+    $("#guardado").textContent = ok ? "Guardado en esta compu" : "No entra en la compu: guardá la ficha";
+  }, 500);
+  programarVista();
+}
+
+/* Vista previa */
+let tVista = null, conSobre = false;
+function programarVista(){ clearTimeout(tVista); tVista = setTimeout(actualizarVista, 350); }
+function actualizarVista(){
+  const fr = $("#previa"); let y = 0;
+  try{ y = fr.contentWindow ? fr.contentWindow.scrollY : 0; }catch(e){}
+  const html = armarInvitacion(F, { vista: true, conSobre });
+  const cs = conSobre;
+  fr.onload = () => { try{ if(!cs) fr.contentWindow.scrollTo(0, y); }catch(e){} };
+  fr.style.background = F.colores.fondo;
+  fr.srcdoc = html;
+  const kb = Math.round(new Blob([armarInvitacion(F)]).size / 1024);
+  $("#peso").textContent = `Peso: ${kb >= 1024 ? (kb / 1024).toFixed(1) + " MB" : kb + " KB"}${kb > 2500 ? " · pesada, conviene sacar fotos" : ""}`;
+}
+
+/* Imágenes: se achican antes de guardarlas */
+function achicar(archivo, max, formato){
+  return new Promise((ok, mal) => {
+    const url = URL.createObjectURL(archivo), im = new Image();
+    im.onload = () => { const k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement("canvas");
+      c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); ok(formato === "png" ? c.toDataURL("image/png") : c.toDataURL("image/jpeg", .82)); };
+    im.onerror = () => { URL.revokeObjectURL(url); mal(new Error("No se pudo leer esa imagen. Probá con JPG o PNG.")); };
+    im.src = url;
+  });
+}
+function pedirArchivos(multiple, alElegir){
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*"; inp.multiple = multiple;
+  inp.onchange = () => alElegir([...inp.files]); inp.click();
+}
+
+function descargar(nombre, contenido, tipo){
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([contenido], { type: tipo })); a.download = nombre;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+const slug = t => String(t || "modelo").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\(copia\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "modelo";
+function descargarInvitacion(){
+  const e = F.evento;
+  if(e.modo === "panel" && !/^https:\/\/script\.google\.com\/.+\/exec\/?$/.test((e.planilla || "").trim())){ pestana = "datos"; pintarPestanas(); pintarPanel(); toast("Falta la dirección de la planilla (la que termina en /exec), en la pestaña Datos.", 4200); return; }
+  if(e.modo === "whatsapp" && String(e.whatsapp || "").replace(/\D/g, "").length < 10){ pestana = "datos"; pintarPestanas(); pintarPanel(); toast("Falta el WhatsApp del cliente, con código de país (549…), en la pestaña Datos.", 4200); return; }
+  descargar(slug(F.nombre) + ".html", armarInvitacion(F), "text/html;charset=utf-8");
+  toast(e.modo === "muestra" ? "Listo: se descargó la muestra." : "Listo: se descargó la invitación del cliente.");
+}
+
+function moverColorSobre(){ F.sobre.frente = aclarar(F.sobre.color, .08); F.sobre.solapa = oscurecer(F.sobre.color, .06); }
+
+function iniciar(){
+  let guardada = null;
+  try{ guardada = JSON.parse(guardar.leer("evocard-estudio-ficha") || "null"); }catch(e){}
+  F = guardada && guardada.version ? conIds(mezclarFicha(fichaBase(), Object.assign(guardada, { secciones: guardada.secciones }))) : conIds(fichaBase());
+  if(guardada) $("#guardado").textContent = "Retomaste lo último que hiciste";
+  pintarLetrasEstudio(); pintarPestanas(); pintarPanel(); actualizarVista();
+
+  $("#pestanas").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if(!b) return; pestana = b.dataset.tab; pintarPestanas(); pintarPanel(); $("#panel").scrollTop = 0; });
+
+  const leer = el => el.type === "checkbox" ? (el.dataset.p.endsWith(".parte") ? (el.checked ? "cena" : "") : el.checked) : ("num" in el.dataset ? Number(el.value) : el.value);
+  $("#panel").addEventListener("input", e => {
+    const el = e.target; if(!el.dataset.p || el.tagName === "SELECT" || el.type === "checkbox") return;
+    set(F, el.dataset.p, leer(el));
+    if(el.type === "range") el.nextElementSibling.textContent = el.value + (el.dataset.u || "");
+    if(el.type === "color" && el.previousElementSibling) el.previousElementSibling.textContent = el.value.toUpperCase();
+    if(el.dataset.p === "sobre.color"){ moverColorSobre(); document.querySelectorAll('[data-p="sobre.frente"],[data-p="sobre.solapa"]').forEach(i => { i.value = get(F, i.dataset.p); i.previousElementSibling.textContent = i.value.toUpperCase(); }); }
+    cambio(false);
+  });
+  $("#panel").addEventListener("change", e => {
+    const el = e.target; if(!el.dataset.p) return;
+    if(el.tagName === "SELECT" || el.type === "checkbox"){
+      let v = leer(el); if(el.dataset.p.startsWith("letras.tituloPeso")) v = Number(v);
+      set(F, el.dataset.p, v); cambio("re" in el.dataset || el.dataset.p.endsWith(".activa"));
+    }
+  });
+  $("#panel").addEventListener("click", async e => {
+    const t = e.target.closest("button,[data-abrir]"); if(!t) return;
+    const d = t.dataset;
+    if(d.abrir){ abierta = abierta === d.abrir ? null : d.abrir; pintarPanel(); return; }
+    if(d.paleta){ Object.assign(F.colores, JSON.parse(JSON.stringify(Object.assign({ bandaOp:100, lineasOp:100, error:"#A0453C", oscuro:false, bandaEstilo:"lisa", tarjetaOp:100 }, MODELOS[d.paleta].f.colores)))); cambio(true); toast("Colores de " + MODELOS[d.paleta].nombre + " aplicados."); return; }
+    if(d.mover){ const i = +d.mover, j = i + +d.dir; [F.secciones[i], F.secciones[j]] = [F.secciones[j], F.secciones[i]]; cambio(true); return; }
+    if(d.borrar){ const i = +d.borrar; if(!confirmarBorrado(F.secciones[i])) return; F.secciones.splice(i, 1); cambio(true); return; }
+    if(d.masitem){ F.secciones[+d.masitem].items.push({ hora:"", titulo:"", detalle:"", mapa:"", parte:"" }); cambio(true); return; }
+    if(d.masfila){ F.secciones[+d.masfila].filas.push({ etiqueta:"", valor:"", copiar:true }); cambio(true); return; }
+    if(d.quitaritem){ const ks = d.quitaritem.split("."), lista = get(F, "secciones." + ks.slice(0, -1).join(".")); lista.splice(+ks[ks.length - 1], 1); cambio(true); return; }
+    if(d.quitarcolor){ F.deco.colores.splice(+d.quitarcolor, 1); cambio(true); return; }
+    if(d.quitarletra){ const l = F.letrasPropias[+d.quitarletra];
+      if(!confirm(`¿Quitar la letra ${l.nombre}?`)) return;
+      F.letrasPropias.splice(+d.quitarletra, 1);
+      for(const k of ["titulo", "texto", "detalle"]) if(F.letras[k] === l.nombre) F.letras[k] = k === "detalle" ? "DM Sans" : "Cormorant Garamond";
+      pintarLetrasEstudio(); cambio(true); return; }
+    if(d.sacar){ set(F, d.sacar, ""); cambio(true); return; }
+    if(d.subir){ pedirArchivos(false, async ([a]) => { if(!a) return; try{ set(F, d.subir, await achicar(a, +d.max, d.fmt)); cambio(true); }catch(err){ toast(err.message); } }); return; }
+    if(d.fotos){ pedirArchivos(true, async archivos => { const s = F.secciones[+d.fotos]; for(const a of archivos){ try{ s.fotos.push(await achicar(a, 1000, "jpeg")); }catch(err){ toast(err.message); } } cambio(true); }); return; }
+    switch(d.accion){
+      case "blanco": if(confirm("¿Empezar uno nuevo en blanco? Se reemplaza lo que tenés ahora.")){ F = conIds(Object.assign(fichaBase(), { letrasPropias: F.letrasPropias || [] })); abierta = null; cambio(true); toast("Listo, diseño nuevo en blanco."); } break;
+      case "copiar": { const k = $("#elegirModelo").value; if(confirm(`¿Copiar el modelo ${MODELOS[k].nombre}? Se reemplaza lo que tenés ahora.`)){ F = Object.assign(fichaDeModelo(k), { letrasPropias: F.letrasPropias || [] }); abierta = null; cambio(true); toast("Copiaste " + MODELOS[k].nombre + ". Ya lo podés cambiar."); } break; }
+      case "guardarFicha": descargar(slug(F.nombre) + ".evocard.json", JSON.stringify(F, null, 1), "application/json"); toast("Se descargó la ficha. Guardala en una carpeta tuya."); break;
+      case "abrirFicha": $("#abrirFicha").click(); break;
+      case "descargar": descargarInvitacion(); break;
+      case "cargarLetra": {
+        const inp = document.createElement("input"); inp.type = "file"; inp.multiple = true; inp.accept = ".ttf,.otf,.woff,.woff2,.zip";
+        inp.onchange = async () => { const r = await cargarLetras([...inp.files]); pintarLetrasEstudio(); cambio(true);
+          toast((r.agregadas ? (r.agregadas === 1 ? "Letra cargada. Elegila abajo (tiene una ★)." : r.agregadas + " letras cargadas. Elegilas abajo (tienen una ★).") : "No se cargó ninguna letra.") + (r.avisos.length ? " " + r.avisos.join(" ") : ""), 5000); };
+        inp.click(); break;
+      }
+      case "masColor": F.deco.colores.push(F.colores.principal); cambio(true); break;
+      case "agregarSeccion": {
+        const tipo = $("#nuevaSeccion").value;
+        const nueva = { cuenta: () => S.cuenta(), cronograma: () => S.crono("", "Cronograma", [["20:00", "Algo que pasa", "Lugar"]]), lugar: () => S.lugar("", "Dónde", "20 h", "Nombre del lugar", "Dirección"),
+          texto: () => S.texto("", "Título", "Escribí acá el texto."), lista: () => S.lista("", "Para tener en cuenta", ["Primer punto", "Segundo punto"]),
+          datos: () => S.datos("Regalos", "Regalos", "", [["Alias", "nombre.alias"]]), galeria: () => S.galeria(), album: () => S.album() }[tipo]();
+        nueva.id = nuevoId();
+        const pos = F.secciones.findIndex(s => s.tipo === "confirmacion");
+        F.secciones.splice(pos < 0 ? F.secciones.length - 1 : pos, 0, nueva); abierta = nueva.id; cambio(true);
+        toast("Agregada. Quedó antes de la confirmación: movela con las flechas."); break;
+      }
+    }
+  });
+  $("#abrirFicha").addEventListener("change", async e => {
+    const a = e.target.files[0]; e.target.value = ""; if(!a) return;
+    try{ const j = JSON.parse(await a.text()); if(!j.version || !j.secciones) throw 0; const antes = F.letrasPropias || []; F = conIds(mezclarFicha(fichaBase(), j)); F.secciones = conIds({ secciones: j.secciones }).secciones; F.letrasPropias = [...(F.letrasPropias || []), ...antes.filter(l => !(F.letrasPropias || []).some(x => x.nombre === l.nombre))]; abierta = null; cambio(true); toast("Ficha abierta: " + F.nombre); }
+    catch(err){ toast("Ese archivo no es una ficha del Estudio."); }
+  });
+  $("#verSobre").addEventListener("click", () => { conSobre = true; actualizarVista(); conSobre = false; });
+  $("#descargarArriba").addEventListener("click", descargarInvitacion);
+}
+let yaEntro = false; try{ yaEntro = sessionStorage.getItem("evoEstudio") === "1"; }catch(e){}
+if(yaEntro) entrar();
+function confirmarBorrado(s){ return confirm(`¿Borrar la parte "${TIPOS_SECCION[s.tipo]}"${s.titulo ? ` (${s.titulo})` : ""}?`); }
+</script>
+</body>
+</html>
