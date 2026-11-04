@@ -681,6 +681,506 @@ footer .evento{font-size:1.4rem;margin:6px 0 0}
   dibujar(); addEventListener("resize", dibujar);
 })();""")
 
+# ---------------------------------------------------------------- MAGIA (temática: fiesta de magia, diseño original)
+SOMBRERO = """<svg class="sombrero" viewBox="0 0 160 150" aria-hidden="true">
+  <defs><linearGradient id="gS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5B3FA8"/><stop offset="1" stop-color="#2A1A5E"/></linearGradient></defs>
+  <path d="M84 6 C70 40 58 78 48 112 L118 112 C112 86 104 62 100 44 C108 40 118 42 126 50 C118 30 102 20 84 6 Z" fill="url(#gS)"/>
+  <path d="M52 100 L114 100 L118 112 L48 112 Z" fill="#E7B84B"/>
+  <ellipse cx="82" cy="118" rx="70" ry="14" fill="#3A2580"/>
+  <path d="M74 60 l3.5 7.5 8 .9-6 5.5 1.7 8-7.2-4.1-7.2 4.1 1.7-8-6-5.5 8-.9z" fill="#F6D57A"/>
+  <circle cx="92" cy="84" r="3" fill="#F6D57A"/><circle cx="66" cy="40" r="2" fill="#F6D57A"/>
+</svg>"""
+MODELOS["magia"] = dict(
+  titulo="Una noche de magia · Sofía cumple 8",
+  fuentes="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap",
+  css=""":root{
+  --bg:#120D2B; --banda:rgba(255,255,255,.04); --card:rgba(255,255,255,.06); --card-solid:#1E1645;
+  --ink:#F4ECDA; --muted:#BDB3D6; --acc:#E7B84B; --acc-ink:#1A1238; --acc-soft:rgba(231,184,75,.14); --hl:#F2CF73; --line:rgba(231,184,75,.28); --field:#1A1238; --err:#F4A8A0;
+  --f-title:"Cinzel Decorative", "Cinzel", Georgia, serif; --title-w:700; --h2:2.2rem;
+  --f-body:"EB Garamond", Georgia, serif; --f-sans:"Cinzel", Georgia, serif; --f-num:"Cinzel", Georgia, serif; --num-w:600;
+  --r-btn:6px; --r-card:14px; --dot-r:50%; --bullet:"✦"; --fs:19px;
+  --sobre-bg:radial-gradient(ellipse at 50% 20%,#2C1F66,#0B0820 70%);
+  --env-back:#C9B48A; --env-front:#E9DCB8; --env-flap:#D8C79D; --env-ink:#3B2A12;
+  --seal-bg:radial-gradient(circle at 35% 30%,#8E6CE0 0,#4B2C9C 60%,#2E1A66 100%); --seal-ink:#F6D57A; --seal-font:"Cinzel Decorative", serif; --seal-fs:2.2rem;
+  --tap:#F2CF73; --ribbon-bg:#E7B84B; --ribbon-ink:#1A1238;
+  color-scheme:dark;
+}""",
+  css_extra="""h2{letter-spacing:.02em}
+.sombrero{display:block;width:150px;height:auto;margin:6px auto 0;filter:drop-shadow(0 10px 22px rgba(120,90,220,.45));animation:flotar 5s ease-in-out infinite}
+@keyframes flotar{50%{transform:translateY(-8px) rotate(-2deg)}}
+@media (prefers-reduced-motion: reduce){.sombrero{animation:none}}
+.anuncio{font-family:var(--f-sans);font-size:.85rem;letter-spacing:.32em;text-transform:uppercase;color:var(--hl);margin-top:14px}
+.nombre{font-family:var(--f-title);font-weight:700;font-size:clamp(3.4rem,16vw,5.2rem);line-height:1.02;margin-block:8px 6px;background:linear-gradient(180deg,#FFF1C2,#E7B84B 60%,#B9862E);-webkit-background-clip:text;background-clip:text;color:transparent}
+.edad{font-family:var(--f-sans);font-size:1.25rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.edad b{color:var(--hl);font-size:1.6rem}
+.fecha-grande{color:var(--ink)}
+.cd div{background:rgba(255,255,255,.05)}
+.timeline h3{font-family:var(--f-sans);font-weight:600;font-size:1.1rem;letter-spacing:.03em}
+.lugar{display:grid;gap:4px}
+.lugar h3{font-family:var(--f-sans);font-weight:600;font-size:1.3rem}
+.lugar .hora{font-family:var(--f-title);font-size:1.7rem;color:var(--hl)}
+.pergamino{background:linear-gradient(180deg,#F1E6C8,#E3D3A8);color:#3B2A12;border:0;box-shadow:0 18px 40px -20px rgba(0,0,0,.7)}
+.pergamino .lista li::before{color:#7A4FC9}
+footer .nombre{font-size:3rem;margin:4px 0 0}""",
+  sello="S",
+  cuerpo=f"""<main>
+  <section class="portada">
+    <div class="wrap">
+      <p class="saludo" id="saludo">Querida Familia Gómez</p>
+      {SOMBRERO}
+      <p class="anuncio">Están invitados a una noche de magia</p>
+      <h1 class="nombre">Sofía</h1>
+      <p class="edad">cumple <b>8</b> años</p>
+      <p class="fecha-grande">Sáb 15 · 05 · 2027</p>
+      <p class="invita">Preparen la varita y el sombrero: habrá pociones de colores, trucos imposibles y una torta encantada.</p>
+    </div>
+  </section>
+
+{cuenta_regresiva("Falta poco para el hechizo", "Cuenta regresiva")}
+
+  <section class="banda">
+    <div class="wrap">
+      <span class="lab" id="diaLab">Sábado 15 de mayo</span>
+      <h2>El programa mágico</h2>
+      <ol class="timeline">
+        <li data-parte="cena"><span class="h">17:00</span><div class="t"><h3>Llegada de los magos</h3><p>Cada invitado recibe su varita</p></div></li>
+        <li data-parte="cena"><span class="h">17:30</span><div class="t"><h3>Taller de pociones</h3><p>Jugos que cambian de color</p></div></li>
+        <li data-parte="fiesta"><span class="h">18:15</span><div class="t"><h3>Show de magia</h3><p>Con un mago de verdad</p></div></li>
+        <li data-parte="fiesta"><span class="h">19:00</span><div class="t"><h3>La torta encantada</h3><p>¡Y a soplar las velitas!</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <span class="lab">Dónde</span>
+      <h2>El salón de los hechizos</h2>
+      <div class="card lugar">
+        <span class="hora">17 a 20 h</span>
+        <h3>Salón Luna Llena</h3>
+        <p class="sub">Calle Mitre 456 · Marcos Paz</p>
+        <a target="_blank" rel="noopener" href="{mapa('Marcos Paz, Buenos Aires')}">Cómo llegar</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="banda">
+    <div class="wrap">
+      <span class="lab">Vestimenta</span>
+      <h2>Vengan disfrazados</h2>
+      <div class="card pergamino">
+        <ul class="lista">
+          <li>Capa, sombrero puntiagudo o túnica de mago.</li>
+          <li>Si tenés varita, ¡traela!</li>
+          <li>Premio al disfraz más mágico.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <span class="lab">Regalos</span>
+      <h2>Si querés regalarme algo</h2>
+      <p class="sub">Me encantan los libros de aventuras y los juegos de ciencia. También podés colaborar con este alias.</p>
+      <div class="card">
+        <div class="datos">
+          <div class="dato"><span>Titular</span><b>Laura Pérez (mamá)</b></div>
+          {dato_copia("Alias", "alias", "sofia.cumple8")}
+        </div>
+        <p class="err" id="copyMsg" role="status"></p>
+      </div>
+    </div>
+  </section>
+
+{confirmacion("Confirmá antes del 8 de mayo", "¿Venís a la fiesta?", "Reservamos 3 lugares para Familia Gómez.",
+  "¡Ahí estaremos!", "No podemos",
+  '', "Un mensaje para Sofía", "Los adultos que acompañan también cuentan como lugar.",
+  menu_opciones=["Ninguno", "Sin TACC (celíaco)", "Vegetariano", "Alergia (la aclaramos en el mensaje)"])}
+</main>
+
+<footer>
+  <p class="lab">Los espero</p>
+  <p class="nombre">Sofía</p>
+</footer>""",
+  ribbon="Temática Magia · invitación de muestra con datos de ejemplo",
+  inv=inv(fechaEvento="2027-05-15T17:00:00-03:00", fechaFin="2027-05-15T20:00:00-03:00",
+          titulo="Cumple de Sofía · Una noche de magia", lugarAgenda="Salón Luna Llena, Marcos Paz, Buenos Aires", horaFiesta="18:15"),
+  txt=txt(saludo="Querida", saludoGenerico="Querido mago", nota="les llega a los papás de Sofía",
+          graciasSi="¡Que empiece la magia!", graciasNo="¡Te vamos a extrañar!", graciasNoP="Gracias por avisar. ¡Otra vez será!"),
+  musica='{ onda:"sine", notas:[587.33,698.46,880,1174.66,1046.5,880,698.46,783.99,932.33,1174.66,1396.91,1174.66,932.33,880,698.46,587.33], paso:300, volumen:0.04, cola:1.4 }',
+  deco=r"""(function(){
+  const c = $("#deco"), x = c.getContext("2d");
+  let W, H, estrellas = [], chispas = [];
+  function armar(){
+    const dpr = window.devicePixelRatio || 1; W = innerWidth; H = innerHeight;
+    c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    estrellas = Array.from({length: Math.round(W * H / 5000)}, () => ({ x: Math.random() * W, y: Math.random() * H, r: .4 + Math.random() * 1.3, f: Math.random() * 6.28, v: .5 + Math.random() * 1.5 }));
+  }
+  function chispa(px, py, n){
+    for(let i = 0; i < n; i++){ const a = Math.random() * 6.28, s = .6 + Math.random() * 2.4;
+      chispas.push({ x: px, y: py, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, vida: 1, r: 1 + Math.random() * 2, c: Math.random() > .5 ? "242,207,115" : "180,150,255" }); }
+  }
+  addEventListener("pointerdown", e => { if(!reduce) chispa(e.clientX, e.clientY, 22); });
+  function luna(){
+    const r = Math.min(W, H) * .07, cx = W - r * 1.8, cy = r * 1.9;
+    const g = x.createRadialGradient(cx, cy, r * .2, cx, cy, r * 3); g.addColorStop(0, "rgba(246,213,122,.18)"); g.addColorStop(1, "rgba(246,213,122,0)");
+    x.fillStyle = g; x.beginPath(); x.arc(cx, cy, r * 3, 0, 6.28); x.fill();
+    x.fillStyle = "#F6E3A6"; x.beginPath(); x.arc(cx, cy, r, 0, 6.28); x.fill();
+    x.globalCompositeOperation = "destination-out"; x.beginPath(); x.arc(cx + r * .45, cy - r * .2, r * .9, 0, 6.28); x.fill(); x.globalCompositeOperation = "source-over";
+  }
+  function dibujar(t){
+    t = t || 0;
+    const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#0B0820"); g.addColorStop(.6, "#1B1342"); g.addColorStop(1, "#2A1A5E");
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    for(const e of estrellas){ x.globalAlpha = .35 + .65 * Math.abs(Math.sin(e.f + t / 1000 * e.v)); x.fillStyle = "#FFF6DA"; x.beginPath(); x.arc(e.x, e.y, e.r, 0, 6.28); x.fill(); }
+    x.globalAlpha = 1; luna();
+    if(!reduce && Math.random() < .25) chispas.push({ x: Math.random() * W, y: H + 5, vx: (Math.random() - .5) * .3, vy: -(.4 + Math.random() * .8), vida: 1, r: .8 + Math.random() * 1.6, c: "242,207,115", lenta: true });
+    chispas = chispas.filter(p => p.vida > 0);
+    for(const p of chispas){ p.x += p.vx; p.y += p.vy; if(!p.lenta) p.vy += .03; p.vida -= p.lenta ? .003 : .02;
+      x.fillStyle = "rgba(" + p.c + "," + Math.max(0, p.vida) + ")"; x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.28); x.fill(); }
+    if(!reduce) requestAnimationFrame(dibujar);
+  }
+  armar(); addEventListener("resize", () => { armar(); if(reduce) dibujar(); }); dibujar();
+})();""")
+
+CAMPO_VOTO = """          <div class="campo" data-si>
+            <span class="votoForm" id="votoForm">Todavía no votaste: hacelo arriba, en "¿Vos qué decís?"</span>
+            <input type="hidden" id="votoTxt" data-extra="Voto">
+          </div>
+"""
+
+# ---------------------------------------------------------------- REVELACIÓN (gender reveal, con votación)
+MODELOS["revelacion"] = dict(
+  titulo="¿Nena o nene? · Revelación de Lucía y Martín",
+  fuentes="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap",
+  css=""":root{
+  --bg:#FFF9F4; --banda:#FFF1F5; --card:#FFFFFF; --card-solid:#FFFFFF; --ink:#3B3350; --muted:#7D7590;
+  --rosa:#F28DB2; --rosa-f:#D9568A; --celeste:#7CB7EC; --celeste-f:#3E86C9;
+  --acc:#8C6BD9; --acc-ink:#FFFFFF; --acc-soft:#F1ECFF; --hl:#8C6BD9; --line:#EADFEF; --field:#FFFDFB;
+  --f-title:"Fredoka", "Arial Rounded MT Bold", sans-serif; --title-w:700; --h2:2.4rem;
+  --f-body:"Quicksand", "Segoe UI", sans-serif; --f-sans:"Quicksand", "Segoe UI", sans-serif; --f-num:"Fredoka", sans-serif; --num-w:600;
+  --sub-style:normal; --r-btn:999px; --r-card:24px; --bullet:"♥"; --fs:18px;
+  --sobre-bg:linear-gradient(90deg,#FFE3EE 50%,#E2F0FD 50%);
+  --env-back:#E9DDF7; --env-front:#F6F0FD; --env-flap:#E2D3F5; --env-ink:#3B3350;
+  --seal-bg:linear-gradient(90deg,#F28DB2 50%,#7CB7EC 50%); --seal-ink:#FFFFFF; --seal-font:"Fredoka", sans-serif; --seal-fs:2.8rem;
+  --tap:#8C6BD9; --ribbon-bg:#3B3350; --ribbon-ink:#FFF9F4;
+  color-scheme:light;
+}""",
+  css_extra=""".invitan{font-family:var(--f-sans);font-weight:600;font-size:1rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:46px}
+.padres{font-family:var(--f-title);font-weight:600;font-size:clamp(2rem,9vw,2.8rem);line-height:1.1;margin-top:6px}
+.pregunta{font-family:var(--f-title);font-weight:700;font-size:clamp(3.2rem,16vw,5.2rem);line-height:.98;margin-block:18px 14px;letter-spacing:-.01em}
+.pregunta .n{display:block}
+.pregunta .n{color:var(--rosa-f)} .pregunta .o{color:var(--muted);font-size:.55em;vertical-align:middle;margin-inline:.12em} .pregunta .m{color:var(--celeste-f)}
+.globos{display:flex;justify-content:center;gap:14px;margin-top:30px}
+.globos i{display:block;width:46px;height:56px;border-radius:50% 50% 48% 48%;position:relative;animation:subir 3.2s ease-in-out infinite}
+.globos i::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:34px;background:#C9BFD6}
+.globos i:nth-child(1){background:var(--rosa)} .globos i:nth-child(2){background:#C9B5F2;animation-delay:.6s;margin-top:-10px} .globos i:nth-child(3){background:var(--celeste);animation-delay:1.2s}
+@keyframes subir{50%{transform:translateY(-10px) rotate(3deg)}}
+@media (prefers-reduced-motion: reduce){.globos i{animation:none}}
+.timeline h3{font-family:var(--f-title);font-weight:600}
+.timeline li.grande h3{font-size:1.35rem;background:linear-gradient(90deg,var(--rosa-f),var(--celeste-f));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lugar{display:grid;gap:4px} .lugar h3{font-family:var(--f-title);font-weight:600;font-size:1.4rem} .lugar .hora{font-family:var(--f-title);font-weight:700;font-size:1.8rem;color:var(--acc)}
+.votar{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.voto{border:0;border-radius:22px;padding:22px 10px 18px;cursor:pointer;font-family:var(--f-title);font-weight:700;font-size:1.6rem;color:#fff;display:grid;gap:6px;justify-items:center;transition:transform .2s, box-shadow .2s, opacity .2s;box-shadow:0 10px 0 -2px rgba(0,0,0,.08)}
+.voto small{font-family:var(--f-sans);font-weight:600;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.voto.nena{background:linear-gradient(160deg,#F7A8C6,var(--rosa-f))} .voto.nene{background:linear-gradient(160deg,#9FCBF2,var(--celeste-f))}
+.voto:active{transform:scale(.97)}
+.votar.elegido .voto{opacity:.45} .votar.elegido .voto.si{opacity:1;transform:scale(1.04);box-shadow:0 0 0 4px #fff,0 0 0 7px var(--acc)}
+.miVoto{margin-top:16px;font-family:var(--f-title);font-weight:600;font-size:1.2rem;min-height:1.5em}
+.estallido{position:fixed;inset:0;pointer-events:none;z-index:70;overflow:hidden}
+.estallido i{position:absolute;width:10px;height:14px;border-radius:3px;animation:caer 1.6s ease-out forwards}
+@keyframes caer{to{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+.votoForm{font-family:var(--f-title);font-weight:600;color:var(--acc)}
+footer .padres{font-size:2rem}""",
+  sello="?",
+  cuerpo=f"""<main>
+  <section class="portada">
+    <div class="wrap">
+      <p class="saludo" id="saludo">Querida Familia Gómez</p>
+      <div class="globos" aria-hidden="true"><i></i><i></i><i></i></div>
+      <p class="invitan">Te invitan a descubrir</p>
+      <h1 class="pregunta"><span class="n">¿Nena</span><span class="o">o</span><span class="m">nene?</span></h1>
+      <p class="padres">Lucía y Martín</p>
+      <p class="fecha-grande" style="margin-top:16px">Dom 20 · 06 · 2027</p>
+      <p class="invita">Queremos que estés con nosotros en el momento en que se revela el gran secreto.</p>
+    </div>
+  </section>
+
+{cuenta_regresiva("Falta poco para saberlo", "Cuenta regresiva")}
+
+  <section class="banda" id="votacion">
+    <div class="wrap">
+      <span class="lab">La gran apuesta</span>
+      <h2>¿Vos qué decís?</h2>
+      <p class="sub">Votá ahora. En la fiesta se revela quién acertó.</p>
+      <div class="votar" id="votar">
+        <button class="voto nena" type="button" data-voto="Nena">Nena<small>Team rosa</small></button>
+        <button class="voto nene" type="button" data-voto="Nene">Nene<small>Team celeste</small></button>
+      </div>
+      <p class="miVoto" id="miVoto" role="status"></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <span class="lab" id="diaLab">Domingo 20 de junio</span>
+      <h2>Cómo será la tarde</h2>
+      <ol class="timeline">
+        <li data-parte="cena"><span class="h">16:00</span><div class="t"><h3>Llegada y merienda</h3><p>Mesa dulce para todos</p></div></li>
+        <li data-parte="cena"><span class="h">16:45</span><div class="t"><h3>Juegos y adivinanzas</h3><p>¿Quién conoce mejor a los futuros papás?</p></div></li>
+        <li data-parte="fiesta" class="grande"><span class="h">17:30</span><div class="t"><h3>¡La gran revelación!</h3><p>Globos, humo de colores y la respuesta</p></div></li>
+        <li data-parte="fiesta"><span class="h">18:00</span><div class="t"><h3>Brindis</h3><p>Por la familia que crece</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="banda">
+    <div class="wrap">
+      <span class="lab">Dónde</span>
+      <h2>Te esperamos en casa</h2>
+      <div class="card lugar">
+        <span class="hora">16 a 19 h</span>
+        <h3>Casa de Lucía y Martín</h3>
+        <p class="sub">Los Aromos 789 · Marcos Paz</p>
+        <a target="_blank" rel="noopener" href="{mapa('Marcos Paz, Buenos Aires')}">Cómo llegar</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <span class="lab">Regalos</span>
+      <h2>Si querés regalarle algo al bebé</h2>
+      <p class="sub">Pañales (talle 1 y 2) siempre suman. Si preferís, también podés colaborar con este alias.</p>
+      <div class="card">
+        <div class="datos">
+          <div class="dato"><span>Titular</span><b>Lucía Fernández</b></div>
+          {dato_copia("Alias", "alias", "bebe.lucia.martin")}
+        </div>
+        <p class="err" id="copyMsg" role="status"></p>
+      </div>
+    </div>
+  </section>
+
+{confirmacion("Confirmá antes del 13 de junio", "¿Venís?", "Reservamos 3 lugares para Familia Gómez.",
+  "¡Ahí estaremos!", "No podemos",
+  CAMPO_VOTO, "Un mensaje para los futuros papás", "Los chicos también cuentan como lugar.", menu=False)}
+</main>
+
+<footer>
+  <p class="lab">Te esperamos</p>
+  <p class="padres">Lucía y Martín</p>
+</footer>""",
+  ribbon="Modelo Revelación · invitación de muestra con datos de ejemplo",
+  inv=inv(fechaEvento="2027-06-20T16:00:00-03:00", fechaFin="2027-06-20T19:00:00-03:00",
+          titulo="Revelación de Lucía y Martín", lugarAgenda="Marcos Paz, Buenos Aires", horaFiesta="17:30"),
+  txt=txt(nota="les llega a Lucía y Martín", graciasSi="¡Nos vemos ahí!", graciasNo="¡Te vamos a extrañar!", graciasNoP="Gracias por avisar. ¡Te contamos la respuesta!"),
+  musica='{ onda:"triangle", notas:[783.99,987.77,1174.66,987.77,880,1046.5,1318.51,1046.5,783.99,987.77,1174.66,1567.98,1318.51,1174.66,987.77,880], paso:380, volumen:0.035, cola:1.1 }',
+  extra_js=r"""/* Votación: nena o nene. El voto viaja con la confirmación y se ve en el panel */
+(function(){
+  const caja = $("#votar"), txt = $("#votoTxt"), msg = $("#miVoto"), enForm = $("#votoForm");
+  let guardado = ""; try{ guardado = localStorage.getItem("evocard-voto") || ""; }catch(e){}
+  function marcar(v, festejo){
+    caja.classList.add("elegido");
+    caja.querySelectorAll(".voto").forEach(b => b.classList.toggle("si", b.dataset.voto === v));
+    txt.value = v;
+    msg.textContent = "Votaste: Team " + (v === "Nena" ? "rosa" : "celeste") + ". Podés cambiarlo cuando quieras.";
+    msg.style.color = v === "Nena" ? "var(--rosa-f)" : "var(--celeste-f)";
+    enForm.textContent = "Tu voto: " + v + " (va junto con tu confirmación)";
+    try{ localStorage.setItem("evocard-voto", v); }catch(e){}
+    if(festejo && !reduce){
+      const capa = document.createElement("div"); capa.className = "estallido";
+      const cols = v === "Nena" ? ["#F28DB2","#D9568A","#FFD1E1","#FFFFFF"] : ["#7CB7EC","#3E86C9","#D4E9FB","#FFFFFF"];
+      const r = caja.getBoundingClientRect();
+      for(let i = 0; i < 46; i++){
+        const p = document.createElement("i"); const a = Math.random() * 6.28, d = 120 + Math.random() * 220;
+        p.style.left = (r.left + r.width / 2) + "px"; p.style.top = (r.top + r.height / 2) + "px";
+        p.style.background = cols[i % cols.length];
+        p.style.setProperty("--dx", Math.cos(a) * d + "px"); p.style.setProperty("--dy", Math.sin(a) * d + 160 + "px");
+        capa.appendChild(p);
+      }
+      document.body.appendChild(capa); setTimeout(() => capa.remove(), 1800);
+    }
+  }
+  caja.addEventListener("click", e => { const b = e.target.closest(".voto"); if(b) marcar(b.dataset.voto, true); });
+  if(guardado) marcar(guardado, false);
+})();""",
+  deco=r"""(function(){
+  const c = $("#deco"), x = c.getContext("2d");
+  const cols = ["rgba(242,141,178,", "rgba(124,183,236,", "rgba(201,181,242,"];
+  let W, H, globos = [];
+  function armar(){
+    const dpr = window.devicePixelRatio || 1; W = innerWidth; H = innerHeight;
+    c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    globos = Array.from({length: Math.max(6, Math.round(W / 70))}, () => nuevo(Math.random() * H));
+  }
+  function nuevo(y){ return { x: Math.random() * W, y: y, r: 14 + Math.random() * 16, v: .25 + Math.random() * .45, f: Math.random() * 6.28, c: cols[Math.floor(Math.random() * 3)] }; }
+  function dibujar(t){
+    t = t || 0; x.clearRect(0, 0, W, H);
+    for(const g of globos){
+      if(!reduce){ g.y -= g.v; if(g.y < -g.r * 4) Object.assign(g, nuevo(H + g.r * 2)); }
+      const gx = g.x + Math.sin(g.f + t / 1400) * 10;
+      x.strokeStyle = "rgba(160,150,180,.35)"; x.lineWidth = 1; x.beginPath(); x.moveTo(gx, g.y + g.r * 1.15); x.quadraticCurveTo(gx + 6, g.y + g.r * 2, gx, g.y + g.r * 2.8); x.stroke();
+      x.fillStyle = g.c + ".35)"; x.beginPath(); x.ellipse(gx, g.y, g.r * .86, g.r * 1.1, 0, 0, 6.28); x.fill();
+      x.fillStyle = "rgba(255,255,255,.45)"; x.beginPath(); x.ellipse(gx - g.r * .3, g.y - g.r * .4, g.r * .18, g.r * .28, -.5, 0, 6.28); x.fill();
+    }
+    if(!reduce) requestAnimationFrame(dibujar);
+  }
+  armar(); addEventListener("resize", () => { armar(); if(reduce) dibujar(); }); dibujar();
+})();""")
+
+# ---------------------------------------------------------------- BRINDIS (fin de año de empresas)
+CAMPO_SECTOR = """          <div class="campo" data-si>
+            <label for="sector">Área o sector</label>
+            <input type="text" id="sector" data-extra="Sector" maxlength="60" placeholder="Ej: Ventas, Depósito, Administración" autocomplete="off">
+          </div>
+"""
+MODELOS["brindis"] = dict(
+  titulo="Fiesta de fin de año 2026 · Tu empresa",
+  fuentes="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@400;500;600&display=swap",
+  css=""":root{
+  --bg:#0C1120; --banda:rgba(255,255,255,.035); --card:rgba(255,255,255,.05); --card-solid:#161D33;
+  --ink:#F5EFE2; --muted:#B5B0A4; --acc:#E3C27A; --acc-ink:#141414; --acc-soft:rgba(227,194,122,.14); --hl:#E3C27A; --line:rgba(227,194,122,.26); --field:#121933; --err:#F4A8A0;
+  --f-title:"Playfair Display", Georgia, serif; --title-w:700; --h2:2.3rem;
+  --f-body:"Montserrat", "Segoe UI", sans-serif; --f-sans:"Montserrat", "Segoe UI", sans-serif; --f-num:"Playfair Display", Georgia, serif; --num-w:700;
+  --sub-style:normal; --r-btn:999px; --r-card:16px; --bullet:"✦"; --fs:17px;
+  --sobre-bg:radial-gradient(ellipse at 50% 10%,#23305A,#080B16 70%);
+  --env-back:#1A2340; --env-front:#222D52; --env-flap:#2B3866; --env-ink:#F5EFE2;
+  --seal-bg:radial-gradient(circle at 35% 30%,#FBE7B0 0,#E3C27A 50%,#A9843B 100%); --seal-ink:#141414; --seal-font:"Playfair Display", serif; --seal-fs:1.9rem;
+  --tap:#E3C27A; --ribbon-bg:#E3C27A; --ribbon-ink:#141414;
+  color-scheme:dark;
+}""",
+  css_extra=""".empresa{font-family:var(--f-sans);font-weight:600;font-size:.85rem;letter-spacing:.3em;text-transform:uppercase;color:var(--hl);margin-top:20px}
+.tulogo{width:118px;height:118px;margin:18px auto 0;border-radius:50%;border:2px dashed var(--acc);display:grid;place-items:center;background:var(--acc-soft)}
+.tulogo span{font-family:var(--f-sans);font-weight:600;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--hl)}
+.tonos{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:44;display:flex;gap:8px;align-items:center;background:rgba(10,14,28,.82);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-family:var(--f-sans);font-size:.72rem;color:var(--muted);backdrop-filter:blur(6px)}
+.tonos span{white-space:nowrap}
+.tonos button{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.tonos button[aria-pressed=true]{border-color:#fff}
+.titulo{font-family:var(--f-title);font-weight:700;font-size:clamp(2.6rem,12vw,4rem);line-height:1.05;margin-block:10px 6px}
+.titulo em{font-style:italic;font-weight:600;color:var(--hl)}
+.anio{font-family:var(--f-title);font-weight:700;font-size:clamp(4.4rem,24vw,7rem);line-height:.9;letter-spacing:.02em;background:linear-gradient(180deg,#FFF3CF,#E3C27A 55%,#A9843B);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:18px}
+.timeline h3{font-family:var(--f-sans);font-weight:600;font-size:1.02rem}
+.timeline p{font-size:.92rem}
+.lugar{display:grid;gap:4px} .lugar h3{font-family:var(--f-title);font-weight:700;font-size:1.5rem} .lugar .hora{font-family:var(--f-sans);font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--hl)}
+.datos-utiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px;text-align:left}
+.datos-utiles div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 14px}
+.datos-utiles b{display:block;font-family:var(--f-title);font-size:1.12rem;color:var(--hl);margin-bottom:4px}
+.datos-utiles span{font-size:.88rem;color:var(--muted);line-height:1.45}
+footer .anio{font-size:3.4rem;margin:4px 0 0}
+@media (max-width:360px){.datos-utiles{grid-template-columns:1fr}}""",
+  sello="<span style=\"font-size:.42em;letter-spacing:.06em;line-height:1.1;text-align:center\">TU<br>LOGO</span>",
+  cuerpo=f"""<main>
+  <section class="portada">
+    <div class="wrap">
+      <p class="saludo" id="saludo">Hola Laura Méndez</p>
+      <div class="tulogo" aria-label="Acá va el logo de la empresa"><span>Tu logo</span></div>
+      <p class="empresa">Tu empresa</p>
+      <h1 class="titulo">Brindemos por <em>un gran año</em></h1>
+      <p class="anio">2026</p>
+      <p class="fecha-grande">Vie 11 · 12 · 2026</p>
+      <p class="invita">Este año lo hicimos entre todos. Te esperamos para celebrarlo como se merece: con buena comida, música y todo el equipo junto.</p>
+    </div>
+  </section>
+
+{cuenta_regresiva("Falta poco para el brindis", "Cuenta regresiva")}
+
+  <section class="banda">
+    <div class="wrap">
+      <span class="lab" id="diaLab">Viernes 11 de diciembre</span>
+      <h2>La noche</h2>
+      <ol class="timeline">
+        <li data-parte="cena"><span class="h">20:30</span><div class="t"><h3>Recepción</h3><p>Tragos de bienvenida y entrada</p></div></li>
+        <li data-parte="cena"><span class="h">21:30</span><div class="t"><h3>Cena</h3><p>Mesas por sector</p></div></li>
+        <li data-parte="cena"><span class="h">23:00</span><div class="t"><h3>Palabras de la dirección</h3><p>Lo que logramos y lo que viene</p></div></li>
+        <li data-parte="fiesta"><span class="h">23:20</span><div class="t"><h3>Reconocimientos del año</h3><p>Y sorteos para todos los presentes</p></div></li>
+        <li data-parte="fiesta"><span class="h">00:00</span><div class="t"><h3>Brindis y fiesta</h3><p>DJ hasta las 3</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <span class="lab">Dónde</span>
+      <h2>El lugar</h2>
+      <div class="card lugar">
+        <span class="hora">Desde las 20:30</span>
+        <h3>Salón Los Robles</h3>
+        <p class="sub">Ruta 200 km 52 · Marcos Paz</p>
+        <a target="_blank" rel="noopener" href="{mapa('Marcos Paz, Buenos Aires')}">Cómo llegar</a>
+      </div>
+      <div class="datos-utiles">
+        <div><b>Vestimenta</b><span>Elegante sport. Nada de uniforme: esta noche es para festejar.</span></div>
+        <div><b>Traslado</b><span>Combi desde la planta a las 20 h y vuelta a las 3 h.</span></div>
+        <div><b>Acompañante</b><span>Podés venir con una persona. Avisanos al confirmar.</span></div>
+        <div><b>Sorteos</b><span>Participan todos los presentes al momento del brindis.</span></div>
+      </div>
+    </div>
+  </section>
+
+{confirmacion("Confirmá antes del 1 de diciembre", "¿Venís a la fiesta?", "Reservamos 2 lugares para Laura Méndez.",
+  "¡Sí, voy!", "No puedo ir",
+  CAMPO_SECTOR, "Un mensaje para el equipo", "Es para organizar las mesas y el menú: confirmá aunque no puedas venir.")}
+</main>
+
+<footer>
+  <p class="lab">Gracias por este año</p>
+  <p class="anio">2026</p>
+</footer>""",
+  ribbon="Modelo Brindis · fin de año de empresas · con el logo y los colores de tu marca",
+  inv=inv(invitado="Laura Méndez", lugares=2, fechaEvento="2026-12-11T20:30:00-03:00", fechaFin="2026-12-12T03:00:00-03:00",
+          titulo="Fiesta de fin de año · Tu empresa", lugarAgenda="Salón Los Robles, Marcos Paz, Buenos Aires", horaFiesta="00:00"),
+  txt=txt(saludo="Hola", saludoGenerico="¡Hola!", nota="le llega a la organización", graciasSi="¡Nos vemos en el brindis!",
+          graciasNo="¡Te vamos a extrañar!", graciasNoP="Gracias por avisarnos. ¡Felices fiestas!"),
+  musica='{ onda:"triangle", notas:[659.25,783.99,987.77,1318.51,1174.66,987.77,880,987.77,659.25,783.99,1046.5,1318.51,1567.98,1318.51,1174.66,987.77], paso:260, volumen:0.035, cola:0.9 }',
+  extra_js=r"""/* Solo en la muestra: probar la invitación con distintos colores de marca */
+(function(){
+  if(INV.planilla || INV.whatsapp) return;
+  const tonos = [["Dorado","227,194,122"],["Rojo","232,76,76"],["Verde","72,196,146"],["Azul","92,168,240"],["Violeta","170,130,240"]];
+  const barra = document.createElement("div"); barra.className = "tonos"; barra.innerHTML = "<span>Probá con tu color:</span>";
+  tonos.forEach(([n, rgb], i) => {
+    const b = document.createElement("button"); b.type = "button"; b.title = n; b.setAttribute("aria-label", "Color " + n);
+    b.style.background = "rgb(" + rgb + ")"; b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+    b.addEventListener("click", () => {
+      const r = document.documentElement.style;
+      r.setProperty("--acc", "rgb(" + rgb + ")"); r.setProperty("--hl", "rgb(" + rgb + ")");
+      r.setProperty("--acc-soft", "rgba(" + rgb + ",.14)"); r.setProperty("--line", "rgba(" + rgb + ",.28)"); r.setProperty("--ribbon-bg", "rgb(" + rgb + ")");
+      document.querySelectorAll(".anio").forEach(e => e.style.backgroundImage = "linear-gradient(180deg,#FFFFFF,rgb(" + rgb + ") 60%)");
+      window.TONO = rgb; barra.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    });
+    barra.appendChild(b);
+  });
+  const mostrar = () => document.body.appendChild(barra);
+  $("#sobre").addEventListener("click", () => setTimeout(mostrar, 800), { once: true });
+})();""",
+  deco=r"""(function(){
+  const c = $("#deco"), x = c.getContext("2d");
+  let W, H, burbujas = [], chispas = [], prox = 0;
+  function armar(){
+    const dpr = window.devicePixelRatio || 1; W = innerWidth; H = innerHeight;
+    c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    burbujas = Array.from({length: Math.round(W / 22)}, () => ({ x: Math.random() * W, y: Math.random() * H, r: 1 + Math.random() * 2.6, v: .3 + Math.random() * .7, f: Math.random() * 6.28 }));
+  }
+  function fuego(){
+    const cx = W * (.15 + Math.random() * .7), cy = H * (.08 + Math.random() * .35), n = 46, col = Math.random() > .5 ? (window.TONO || "227,194,122") : "255,243,207";
+    for(let i = 0; i < n; i++){ const a = i / n * 6.28, s = 1.4 + Math.random() * 1.6; chispas.push({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, v: 1, c: col }); }
+  }
+  function dibujar(t){
+    t = t || 0;
+    x.fillStyle = "rgba(12,17,32,.32)"; x.fillRect(0, 0, W, H);
+    if(!reduce && t > prox){ fuego(); prox = t + 1800 + Math.random() * 2200; }
+    chispas = chispas.filter(p => p.v > 0);
+    for(const p of chispas){ p.x += p.vx; p.y += p.vy; p.vy += .025; p.vx *= .985; p.v -= .012;
+      x.fillStyle = "rgba(" + p.c + "," + Math.max(0, p.v) + ")"; x.beginPath(); x.arc(p.x, p.y, 1.6, 0, 6.28); x.fill(); }
+    for(const b of burbujas){ if(!reduce){ b.y -= b.v; if(b.y < -5){ b.y = H + 5; b.x = Math.random() * W; } }
+      x.strokeStyle = "rgba(" + (window.TONO || "227,194,122") + ",.35)"; x.lineWidth = 1; x.beginPath(); x.arc(b.x + Math.sin(b.f + t / 900) * 3, b.y, b.r, 0, 6.28); x.stroke(); }
+    if(!reduce) requestAnimationFrame(dibujar);
+  }
+  armar(); x.fillStyle = "#0C1120"; x.fillRect(0, 0, W, H);
+  addEventListener("resize", () => { armar(); x.fillStyle = "#0C1120"; x.fillRect(0, 0, W, H); if(reduce) dibujar(); }); dibujar();
+})();""")
+
 if __name__ == "__main__":
     import sys
     from base import ESQUELETO
@@ -689,6 +1189,8 @@ if __name__ == "__main__":
     for nombre, m in MODELOS.items():
         if nombre == "gala":
             html = agregar(armar(m), sub="Durante la celebración, suba aquí sus fotos. Todas van a un mismo álbum del Club.").replace("Tu nombre (opcional)", "Su nombre (opcional)")
+        elif nombre == "brindis":
+            html = agregar(armar(m), sub="Durante la fiesta, subí acá tus fotos. Todas van a un mismo álbum para el equipo.")
         elif nombre == "agenda":
             html = agregar(armar(m), sub="Durante la jornada, suba aquí sus fotos. Todas van a un mismo álbum del evento.").replace("Tu nombre (opcional)", "Su nombre (opcional)")
             for a, b in [("<legend>¿Vienen?</legend>", "<legend>¿Asistirá?</legend>"), ("¿Cuántos van a ir?", "¿Cuántas personas asistirán?"),
