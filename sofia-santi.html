@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sofía y Santi</title>
+<meta name="description" content="Te invitamos a nuestro casamiento">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&family=Jost:wght@400;500&display=swap">
+<style>
+/* Modelo Boda Completa (base Jardín). Los colores salen de ESTILO, en el script de abajo. */
+:root{
+  --paper:#F7F6F0; --card:#FFFFFF; --ink:#2F3B32; --leaf:#5E7A68; --blush:#C98E86;
+  --muted:color-mix(in srgb, var(--ink) 68%, var(--paper));
+  --leaf-soft:color-mix(in srgb, var(--leaf) 22%, #fff);
+  --leaf-pale:color-mix(in srgb, var(--leaf) 9%, #fff);
+  --line:color-mix(in srgb, var(--leaf) 16%, #dcdcd6);
+  --f-script:"Pinyon Script", "Snell Roundhand", cursive;
+  --f-serif:"Cormorant Garamond", "Garamond", Georgia, serif;
+  --f-sans:"Jost", "Futura", "Segoe UI", sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--paper);color:var(--ink)}
+body{font-family:var(--f-serif);font-size:19px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--paper)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--leaf);outline-offset:3px;border-radius:6px}
+h1,h2,h3,p{margin:0}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+section{padding-block:56px;text-align:center}
+section.alt{background:var(--leaf-pale)}
+.lab{font-family:var(--f-sans);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--leaf)}
+h2{font-family:var(--f-script);font-weight:400;font-size:2.9rem;line-height:1.1;color:var(--ink);margin-top:6px}
+.sub{color:var(--muted);font-style:italic;margin-top:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--f-sans);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;padding:12px 22px;border-radius:999px;border:1px solid var(--leaf);background:var(--leaf);color:#fff;cursor:pointer;text-decoration:none}
+.btn.out{background:transparent;color:var(--leaf)}
+.btn[disabled]{opacity:.6;cursor:default}
+.ribbon{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ink);color:#F3F3EE;font-family:var(--f-sans);font-size:.72rem;letter-spacing:.06em;text-align:center;padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 22px;margin-top:26px}
+.fine{font-family:var(--f-sans);font-size:.75rem;color:var(--muted);margin-top:14px}
+.err{color:#A0453C;font-family:var(--f-sans);font-size:.85rem;min-height:1.2em}
+
+/* Sobre de entrada */
+#sobre{position:fixed;inset:0;z-index:50;background:var(--leaf-pale);display:grid;place-items:center;padding:24px;cursor:pointer;transition:opacity .8s ease, visibility .8s}
+#sobre.abierto{opacity:0;visibility:hidden}
+.env{position:relative;width:min(360px,88vw);aspect-ratio:1.5;max-width:100%}
+.env .back{position:absolute;inset:0;background:color-mix(in srgb, var(--leaf) 17%, #fff);border-radius:8px;box-shadow:0 30px 60px -30px rgba(40,40,40,.45)}
+.env .front{position:absolute;inset:0;border-radius:8px;overflow:hidden}
+.env .front::before,.env .front::after{content:"";position:absolute;bottom:0;width:60%;height:100%;background:color-mix(in srgb, var(--leaf) 11%, #fff)}
+.env .front::before{left:0;clip-path:polygon(0 0,100% 62%,100% 100%,0 100%)}
+.env .front::after{right:0;clip-path:polygon(100% 0,0 62%,0 100%,100% 100%)}
+.env .flap{position:absolute;left:0;right:0;top:0;height:62%;background:color-mix(in srgb, var(--leaf) 26%, #fff);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s ease}
+#sobre.abriendo .flap{transform:rotateX(180deg)}
+.env .seal{position:absolute;left:50%;top:58%;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb, var(--blush) 70%, #fff) 0,color-mix(in srgb, var(--blush) 80%, #000) 62%);display:grid;place-items:center;color:#fff;font-family:var(--f-script);font-size:1.4rem;padding:0 6px 0 2px;white-space:nowrap;box-shadow:0 6px 14px -6px rgba(0,0,0,.45);transition:transform .4s ease, opacity .4s}
+#sobre.abriendo .seal{transform:scale(.4);opacity:0}
+.env .to{position:absolute;left:0;right:0;bottom:12%;text-align:center;font-family:var(--f-serif);font-style:italic;color:var(--ink);font-size:1.05rem}
+.tap{margin-top:28px;font-family:var(--f-sans);font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:var(--leaf);text-align:center;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+@media (prefers-reduced-motion: reduce){.tap{animation:none}.env .flap,.env .seal,#sobre{transition:none}}
+
+/* Botón música */
+#musica{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:45;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 16px -8px rgba(40,40,40,.4)}
+#musica svg{width:20px;height:20px;fill:none;stroke:var(--leaf);stroke-width:1.6}
+
+/* Portada */
+.portada{position:relative;padding-block:84px 64px;overflow:hidden}
+#hojas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.portada .wrap{position:relative}
+.saludo{font-family:var(--f-sans);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.nombres{font-family:var(--f-script);font-weight:400;font-size:clamp(3.6rem,15vw,5.6rem);line-height:1;margin-block:18px}
+.nombres span{display:block;font-family:var(--f-serif);font-style:italic;font-weight:400;font-size:.6em;color:var(--blush);line-height:1;margin-block:.02em}
+footer .nombres span{display:inline;margin-inline:.12em}
+.fecha-grande{font-family:var(--f-sans);letter-spacing:.3em;font-size:.95rem;text-transform:uppercase;border-block:1px solid var(--line);display:inline-block;padding:10px 4px;margin-top:8px}
+.invita{max-width:30ch;margin:22px auto 0;font-style:italic;color:var(--muted)}
+
+/* Cuenta regresiva */
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:420px;margin:26px auto 24px}
+.cd div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 4px;display:grid;gap:2px}
+.cd b{font-family:var(--f-serif);font-weight:500;font-size:2rem;font-variant-numeric:tabular-nums;line-height:1}
+.cd small{font-family:var(--f-sans);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+/* Historia */
+.historia{display:grid;gap:22px;margin-top:28px;text-align:left}
+.cap{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start}
+.cap .anio{font-family:var(--f-script);font-size:2.2rem;color:var(--blush);line-height:1;min-width:76px;text-align:right}
+.cap h3{font-family:var(--f-serif);font-weight:600;font-size:1.2rem}
+.cap p{color:var(--muted);font-size:1rem}
+
+/* Galería de fotos de la pareja */
+.galeria{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:28px}
+.galeria .foto{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;border:0;padding:0;background:var(--leaf-soft);cursor:pointer}
+.galeria .foto:first-child{grid-column:1 / -1;aspect-ratio:3/2}
+.galeria .foto img{width:100%;height:100%;object-fit:cover;display:block}
+.galeria .vacia{display:grid;place-items:center;align-content:center;gap:6px;color:var(--leaf);font-family:var(--f-sans);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;cursor:default;background:linear-gradient(150deg,var(--leaf-soft),color-mix(in srgb, var(--blush) 22%, #fff))}
+.galeria .vacia svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.3;opacity:.8}
+#visor{position:fixed;inset:0;z-index:70;background:rgba(20,20,20,.92);display:grid;place-items:center;padding:20px;cursor:zoom-out}
+#visor img{max-height:90vh;border-radius:8px}
+
+/* Video */
+.video{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;margin-top:26px;background:var(--ink)}
+.video iframe,.video img{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+.video button{position:absolute;inset:0;width:100%;border:0;background:transparent;cursor:pointer;padding:0}
+.video .play{position:absolute;left:50%;top:50%;width:68px;height:68px;margin:-34px 0 0 -34px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+.video .play svg{width:26px;height:26px;fill:var(--leaf);margin-left:4px}
+.video.vacio{display:grid;place-items:center;align-content:center;gap:8px;background:linear-gradient(150deg,var(--leaf-soft),color-mix(in srgb, var(--blush) 22%, #fff));color:var(--leaf);font-family:var(--f-sans);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase}
+
+/* Padrinos y testigos */
+.padrinos{display:grid;gap:14px;margin-top:26px}
+.rol{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px}
+.rol .lab{font-size:.66rem}
+.rol p{font-family:var(--f-serif);font-size:1.25rem;margin-top:6px}
+
+/* Cronograma */
+.timeline{list-style:none;margin:30px auto 0;padding:0;display:grid;text-align:left;max-width:440px}
+.timeline li{display:grid;grid-template-columns:72px 1fr;gap:16px;padding-bottom:24px;position:relative}
+.timeline li::before{content:"";position:absolute;left:83px;top:10px;bottom:-4px;width:1px;background:var(--line)}
+.timeline li:last-child::before{display:none}
+.timeline .h{font-family:var(--f-sans);font-size:.9rem;letter-spacing:.06em;color:var(--leaf);text-align:right;padding-top:2px;font-variant-numeric:tabular-nums}
+.timeline .t{padding-left:16px;position:relative}
+.timeline .t::before{content:"";position:absolute;left:-7px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--paper);border:1.5px solid var(--leaf)}
+.timeline h3{font-family:var(--f-serif);font-weight:600;font-size:1.2rem}
+.timeline p{color:var(--muted);font-size:1rem}
+.timeline a{font-family:var(--f-sans);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--leaf);display:inline-block;margin-top:6px}
+
+/* Dress code */
+.paleta{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.paleta span{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);position:relative}
+.paleta span::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;background:color-mix(in srgb, var(--blush) 80%, #000);transform:rotate(45deg)}
+
+/* Hospedaje */
+.hoteles{display:grid;gap:14px;margin-top:26px;text-align:left}
+.hotel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.hotel h3{font-family:var(--f-serif);font-weight:600;font-size:1.25rem}
+.hotel p{color:var(--muted);font-size:1rem;margin-top:2px}
+.hotel .acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hotel .btn{font-size:.72rem;padding:9px 14px}
+
+/* Preguntas frecuentes */
+.faq{margin-top:26px;text-align:left;display:grid;gap:10px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 18px}
+.faq summary{cursor:pointer;list-style:none;padding:16px 0;font-weight:600;font-size:1.1rem;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--f-sans);font-weight:400;color:var(--leaf);font-size:1.3rem;line-height:1;flex-shrink:0}
+.faq details[open] summary::after{content:"–"}
+.faq details p{color:var(--muted);padding-bottom:16px;font-size:1rem}
+
+/* Regalos */
+.datos{display:grid;gap:10px;text-align:left;margin-top:16px}
+.dato{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px dashed var(--line);padding-block:8px;min-width:0}
+.dato span:first-child{font-family:var(--f-sans);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.dato b{font-weight:500;word-break:break-all}
+.copiar{font-family:var(--f-sans);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;background:var(--leaf-pale);border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer;color:var(--leaf);flex-shrink:0}
+.o{display:flex;align-items:center;gap:12px;margin:22px 0 16px;font-family:var(--f-sans);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.o::before,.o::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* Confirmación */
+form{display:grid;gap:18px;text-align:left;margin-top:8px}
+.campo{display:grid;gap:6px}
+.campo > label,.campo legend{font-family:var(--f-sans);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:6px}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{position:relative}
+.choice input{position:absolute;opacity:0}
+.choice span{display:inline-block;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--paper);cursor:pointer;font-size:1rem}
+.choice input:checked + span{background:var(--leaf);border-color:var(--leaf);color:#fff}
+.choice input:focus-visible + span{outline:2px solid var(--leaf);outline-offset:2px}
+select,textarea,input[type=text]{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper);width:100%}
+.gracias{display:grid;gap:10px;justify-items:center}
+.gracias h3{font-family:var(--f-script);font-weight:400;font-size:2.6rem}
+.gracias p{color:var(--muted)}
+
+/* Álbum y hashtag */
+.album-card .campo{text-align:left;margin-bottom:16px}
+.album-barra{height:6px;border-radius:9px;background:var(--line);overflow:hidden;margin:16px auto 0;max-width:320px}
+.album-barra i{display:block;height:100%;width:0;background:var(--leaf);transition:width .3s}
+.hashtag{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.hashtag b{font-family:var(--f-serif);font-weight:600;font-size:1.5rem;color:var(--leaf)}
+
+/* Agradecimiento (se ve después del casamiento) */
+#agradecimiento .foto-gracias{margin:26px auto 0;max-width:420px;aspect-ratio:3/2;border-radius:16px;overflow:hidden;background:linear-gradient(150deg,var(--leaf-soft),color-mix(in srgb, var(--blush) 22%, #fff))}
+#agradecimiento .foto-gracias img{width:100%;height:100%;object-fit:cover}
+#agradecimiento .texto{max-width:34ch;margin:22px auto 24px;color:var(--muted);font-style:italic}
+
+footer{padding-block:40px 90px;text-align:center}
+footer .nombres{font-size:3rem;margin:0}
+</style>
+</head>
+<body>
+
+<div id="sobre" role="button" tabindex="0" aria-label="Abrir la invitación">
+  <div>
+    <div class="env">
+      <div class="back"></div>
+      <div class="front"></div>
+      <div class="flap"></div>
+      <div class="seal" id="sello">S&amp;S</div>
+      <div class="to" id="sobreNombre">Para Familia Gómez</div>
+    </div>
+    <p class="tap">Tocá para abrir</p>
+  </div>
+</div>
+
+<button id="musica" type="button" aria-label="Activar música" hidden>
+  <svg viewBox="0 0 24 24" id="musIcon"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>
+</button>
+<audio id="cancionFondo" loop preload="none"></audio>
+
+<main>
+  <!-- 1. PORTADA -->
+  <section class="portada" data-sec="portada">
+    <canvas id="hojas" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <p class="saludo" id="saludo">Querida Familia Gómez</p>
+      <h1 class="nombres">Sofía <span>&amp;</span> Santi</h1>
+      <p class="fecha-grande">17 · 04 · 2027</p>
+      <p class="invita" id="invita">Elegimos compartir la vida, y queremos que estés con nosotros el día que lo celebramos.</p>
+    </div>
+  </section>
+
+  <!-- 16. AGRADECIMIENTO (aparece solo después del casamiento) -->
+  <section id="agradecimiento" data-sec="agradecimiento" hidden>
+    <div class="wrap">
+      <span class="lab">17 de abril de 2027</span>
+      <h2>¡Gracias por acompañarnos!</h2>
+      <div class="foto-gracias" id="fotoGracias"></div>
+      <p class="texto">Fue el día más feliz de nuestras vidas y fue así porque estuviste. Gracias por cada abrazo, cada baile y cada foto.</p>
+      <a class="btn" href="#album">Ver y subir fotos</a>
+    </div>
+  </section>
+
+  <!-- 4. CUENTA REGRESIVA -->
+  <section data-sec="cuenta" class="antes">
+    <div class="wrap">
+      <span class="lab">Falta muy poco</span>
+      <h2>Cuenta regresiva</h2>
+      <div class="cd" aria-live="off">
+        <div><b id="cdD">--</b><small>Días</small></div>
+        <div><b id="cdH">--</b><small>Horas</small></div>
+        <div><b id="cdM">--</b><small>Min</small></div>
+        <div><b id="cdS">--</b><small>Seg</small></div>
+      </div>
+      <a class="btn out" id="agendar" target="_blank" rel="noopener" href="#">Agendar la fecha</a>
+    </div>
+  </section>
+
+  <!-- 5. NUESTRA HISTORIA -->
+  <section data-sec="historia">
+    <div class="wrap">
+      <span class="lab">Nuestra historia</span>
+      <h2>Cómo llegamos acá</h2>
+      <div class="historia">
+        <div class="cap"><span class="anio">2018</span><div><h3>Nos conocimos</h3><p>Acá va cómo se conocieron: dónde, con quién, qué pasó esa noche.</p></div></div>
+        <div class="cap"><span class="anio">2021</span><div><h3>Empezamos a vivir juntos</h3><p>Un momento importante del camino: un viaje, una mudanza, una mascota.</p></div></div>
+        <div class="cap"><span class="anio">2026</span><div><h3>La propuesta</h3><p>Cómo fue la pregunta y quién lloró más.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. GALERÍA DE FOTOS DE LA PAREJA -->
+  <section data-sec="galeria">
+    <div class="wrap">
+      <span class="lab">Nosotros</span>
+      <h2>Momentos</h2>
+      <div class="galeria" id="galeria"></div>
+    </div>
+  </section>
+
+  <!-- 7. VIDEO -->
+  <section data-sec="video">
+    <div class="wrap">
+      <span class="lab">Un mensaje para vos</span>
+      <h2>Nuestro video</h2>
+      <div class="video" id="video"></div>
+    </div>
+  </section>
+
+  <!-- 8. PADRINOS Y TESTIGOS -->
+  <section data-sec="padrinos">
+    <div class="wrap">
+      <span class="lab">Nos acompañan</span>
+      <h2>Padrinos y testigos</h2>
+      <div class="padrinos">
+        <div class="rol"><span class="lab">Padrinos de iglesia</span><p>Nombre de la madrina &amp; Nombre del padrino</p></div>
+        <div class="rol"><span class="lab">Testigos del civil</span><p>Testigo 1 · Testigo 2</p></div>
+        <div class="rol"><span class="lab">Damas de honor</span><p>Nombre · Nombre · Nombre</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. CRONOGRAMA -->
+  <section data-sec="cronograma" class="antes">
+    <div class="wrap">
+      <span class="lab" id="diaLab">Sábado 17 de abril</span>
+      <h2>Cómo será el día</h2>
+      <ol class="timeline">
+        <li data-parte="cena"><span class="h">17:00</span><div class="t"><h3>Ceremonia civil</h3><p>Registro Civil · Ciudad</p><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Registro%20Civil">Cómo llegar</a></div></li>
+        <li data-parte="cena"><span class="h">18:30</span><div class="t"><h3>Ceremonia religiosa</h3><p>Parroquia · Ciudad</p><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Parroquia">Cómo llegar</a></div></li>
+        <li data-parte="cena"><span class="h">20:00</span><div class="t"><h3>Recepción</h3><p>Nombre del salón o quinta</p><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Sal%C3%B3n%20de%20fiestas">Cómo llegar</a></div></li>
+        <li data-parte="cena"><span class="h">21:30</span><div class="t"><h3>Cena</h3><p>En el salón principal</p></div></li>
+        <li data-parte="fiesta"><span class="h">00:30</span><div class="t"><h3>Fiesta</h3><p>A bailar hasta que salga el sol</p></div></li>
+        <li data-parte="fiesta"><span class="h">05:00</span><div class="t"><h3>Cierre</h3><p>Hay traslado de vuelta al centro</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 10. DRESS CODE -->
+  <section data-sec="dresscode" class="antes">
+    <div class="wrap">
+      <span class="lab">Dress code</span>
+      <h2>Elegante</h2>
+      <p class="sub">Si la fiesta es en un parque, recomendamos taco ancho.</p>
+      <div class="card">
+        <p>Te pedimos evitar estos colores, reservados para la novia y el cortejo:</p>
+        <div class="paleta" aria-label="Colores a evitar: blanco, marfil, verde salvia y rosa empolvado">
+          <span style="background:#FFFFFF" title="Blanco"></span>
+          <span style="background:#F3EAD7" title="Marfil"></span>
+          <span style="background:#9DB3A1" title="Verde salvia"></span>
+          <span style="background:#E2B9B2" title="Rosa empolvado"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. HOSPEDAJE -->
+  <section data-sec="hospedaje" class="antes">
+    <div class="wrap">
+      <span class="lab">Si venís de lejos</span>
+      <h2>Dónde quedarte</h2>
+      <p class="sub">Estos lugares están cerca del salón.</p>
+      <div class="hoteles">
+        <div class="hotel">
+          <h3>Hotel de ejemplo</h3>
+          <p>A 5 minutos del salón · Mencioná el casamiento y te hacen descuento.</p>
+          <div class="acciones">
+            <a class="btn out" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=hotel">Ver en el mapa</a>
+            <a class="btn out" target="_blank" rel="noopener" href="https://wa.me/5491100000000">WhatsApp</a>
+          </div>
+        </div>
+        <div class="hotel">
+          <h3>Cabañas de ejemplo</h3>
+          <p>A 10 minutos · Ideal para familias o grupos.</p>
+          <div class="acciones">
+            <a class="btn out" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=caba%C3%B1as">Ver en el mapa</a>
+            <a class="btn out" target="_blank" rel="noopener" href="https://wa.me/5491100000000">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. PREGUNTAS FRECUENTES -->
+  <section data-sec="preguntas" class="antes">
+    <div class="wrap">
+      <span class="lab">Por las dudas</span>
+      <h2>Preguntas frecuentes</h2>
+      <div class="faq">
+        <details><summary>¿Pueden ir chicos?</summary><p>Amamos a sus hijos, pero esta vez la fiesta es solo para adultos.</p></details>
+        <details><summary>¿Hay estacionamiento?</summary><p>Sí, el salón tiene estacionamiento propio y sin cargo.</p></details>
+        <details><summary>¿Hasta qué hora es la fiesta?</summary><p>Hasta las 5 de la mañana, con traslado de vuelta al centro.</p></details>
+        <details><summary>¿Qué pasa si llueve?</summary><p>No hay problema: todo se hace bajo techo.</p></details>
+        <details><summary>¿Puedo llevar acompañante?</summary><p>En tu link personal figuran los lugares reservados para vos. Si tenés dudas, escribinos.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. REGALOS -->
+  <section data-sec="regalos">
+    <div class="wrap">
+      <span class="lab">Regalos</span>
+      <h2>Si querés hacernos un regalo</h2>
+      <p class="sub">Tu presencia es lo más importante. Si además querés ayudarnos con la luna de miel, te dejamos estas opciones.</p>
+      <div class="card">
+        <div data-sec="transferencia">
+          <div class="datos">
+            <div class="dato"><span>Titular</span><b>Sofía Apellido</b></div>
+            <div class="dato"><span>Alias</span><b id="alias">sofi.santi.boda</b><button class="copiar" type="button" data-copy="alias">Copiar</button></div>
+            <div class="dato"><span>CBU</span><b id="cbu">0000000000000000000000</b><button class="copiar" type="button" data-copy="cbu">Copiar</button></div>
+          </div>
+          <p class="err" id="copyMsg" role="status"></p>
+        </div>
+        <div data-sec="listaRegalos">
+          <p class="o" id="separadorLista">o también</p>
+          <p>Armamos una lista con cosas para la casa nueva.</p>
+          <a class="btn out" id="linkLista" style="margin-top:14px" target="_blank" rel="noopener" href="#">Ver lista de regalos</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. CONFIRMACIÓN -->
+  <section id="confirmar" data-sec="confirmar" class="antes">
+    <div class="wrap">
+      <span class="lab">Antes del 17 de marzo</span>
+      <h2>Confirmá tu asistencia</h2>
+      <p class="sub" id="lugares">Reservamos 3 lugares para Familia Gómez.</p>
+      <div class="card" id="rsvpCard">
+        <form id="rsvp" novalidate>
+          <div class="campo" id="campoNombre" hidden>
+            <label for="nombreInv">Tu nombre y apellido</label>
+            <input type="text" id="nombreInv" maxlength="80" autocomplete="name">
+          </div>
+          <fieldset>
+            <legend>¿Vienen?</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="asiste" id="asisteSi" value="si"><span>¡Sí, vamos!</span></label>
+              <label class="choice"><input type="radio" name="asiste" id="asisteNo" value="no"><span>No podemos ir</span></label>
+            </div>
+          </fieldset>
+          <div class="campo si-va" id="campoCant">
+            <label for="cant">¿Cuántos van a ir?</label>
+            <select id="cant"></select>
+          </div>
+          <div class="campo si-va" id="campoMenu" data-sec="menu">
+            <label for="menu">¿Alguien necesita un menú especial?</label>
+            <select id="menu">
+              <option>Ninguno</option><option>Vegetariano</option><option>Vegano</option><option>Sin TACC (celíaco)</option><option>Otro (lo aclaramos en el mensaje)</option>
+            </select>
+          </div>
+          <fieldset class="si-va" id="campoTraslado" data-sec="traslado">
+            <legend>¿Usan el traslado de vuelta?</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="traslado" id="trasSi" value="si"><span>Sí</span></label>
+              <label class="choice"><input type="radio" name="traslado" id="trasNo" value="no" checked><span>No, vamos en auto</span></label>
+            </div>
+          </fieldset>
+          <div class="campo si-va" id="campoCancion" data-sec="cancion">
+            <label for="cancion">¿Qué canción no puede faltar en la fiesta?</label>
+            <input type="text" id="cancion" maxlength="100" placeholder="Canción y artista (opcional)">
+          </div>
+          <div class="campo">
+            <label for="mensaje">Un mensaje para los novios</label>
+            <textarea id="mensaje" rows="3" placeholder="Opcional"></textarea>
+          </div>
+          <p class="err" id="rsvpErr" role="alert"></p>
+          <button class="btn" type="submit">Enviar confirmación</button>
+        </form>
+      </div>
+      <p class="fine" id="finePersonal">Esta invitación es personal. Te pedimos no reenviarla.</p>
+    </div>
+  </section>
+
+  <!-- 15. ÁLBUM DE FOTOS + HASHTAG -->
+  <section id="album" data-sec="album">
+    <div class="wrap">
+      <span class="lab">Álbum de la fiesta</span>
+      <h2>Compartí tus fotos</h2>
+      <p class="sub">Durante la fiesta, subí acá tus fotos. Todas van a un mismo álbum para que nadie se pierda nada.</p>
+      <div class="card album-card">
+        <input type="file" id="albumArchivos" accept="image/*" multiple hidden>
+        <div class="campo" id="albumAutorCampo">
+          <label for="albumAutor">Tu nombre (opcional)</label>
+          <input type="text" id="albumAutor" maxlength="60" autocomplete="name">
+        </div>
+        <button class="btn" type="button" id="albumBtn">Subir mis fotos</button>
+        <div class="album-barra" id="albumBarra" hidden><i id="albumProg"></i></div>
+        <p class="fine" id="albumMsg" role="status"></p>
+        <div data-sec="hashtag">
+          <p class="o">y en Instagram</p>
+          <p>Si subís fotos a tus redes, usá nuestro hashtag:</p>
+          <div class="hashtag"><b id="hashtagTxt">#SofiYSanti2027</b><button class="copiar" type="button" data-copy="hashtagTxt">Copiar</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p class="lab" id="pieLab">Te esperamos</p>
+  <p class="nombres">Sofía <span>&amp;</span> Santi</p>
+</footer>
+
+<div class="ribbon" id="ribbon">Invitación de Sofía y Santi · borrador con datos de ejemplo</div>
+
+<script>
+/* ================================================================
+   1) DATOS DE LA INVITACIÓN: se cambian por cada cliente
+   ================================================================ */
+const INV = {
+  invitado: "Familia Gómez",
+  lugares: 3,
+  fechaEvento: "2027-04-17T17:00:00-03:00",
+  fechaFin: "2027-04-18T05:00:00-03:00",
+  titulo: "Casamiento de Sofía y Santi",
+  lugarAgenda: "Registro Civil, Ciudad",
+  horaFiesta: "00:30",
+  /* Música: link a un archivo .mp3 (subido al sitio, ej. "musica/sofia-santi.mp3"). Vacío = melodía suave de muestra */
+  musica: "",
+  /* Fotos de la pareja para la galería (links o nombres de archivo). Vacío = se ven recuadros de muestra */
+  fotos: [],
+  /* Foto para el agradecimiento (después del casamiento). Vacío = usa la primera de la galería */
+  fotoGracias: "",
+  /* Video: link de YouTube. Vacío = recuadro de muestra */
+  video: "",
+  /* Lista de regalos: link a la tienda o lista */
+  listaRegalos: "",
+  /* Plan Básico (sin planilla): número que recibe las confirmaciones por WhatsApp. Ej: 5491112345678 */
+  whatsapp: "",
+  maxLugares: 6,
+  /* Álbum externo (Google Fotos) si no hay planilla */
+  album: "",
+  /* Dirección de la planilla del evento (termina en /exec). Vacía = invitación de muestra */
+  planilla: ""
+};
+
+/* ================================================================
+   2) SECCIONES: true = se ve · false = no se ve
+   ================================================================ */
+const SECCIONES = {
+  cuenta: true,          // cuenta regresiva + agendar
+  historia: true,        // nuestra historia
+  galeria: true,         // fotos de la pareja
+  video: true,           // video de YouTube
+  padrinos: true,        // padrinos y testigos
+  cronograma: true,      // cómo será el día + cómo llegar
+  dresscode: true,       // dress code + colores a evitar
+  hospedaje: true,       // hoteles para los que vienen de lejos
+  preguntas: true,       // preguntas frecuentes
+  regalos: true,         // sección regalos completa
+  transferencia: true,   //   alias y CBU
+  listaRegalos: true,    //   botón a la lista de regalos
+  confirmar: true,       // confirmación de asistencia
+  menu: true,            //   pregunta de menú especial
+  traslado: true,        //   pregunta de traslado
+  cancion: true,         //   canción para la fiesta
+  album: true,           // álbum de fotos con QR
+  hashtag: true,         //   hashtag de Instagram
+  agradecimiento: true   // al día siguiente, la invitación se convierte en "¡Gracias!"
+};
+
+/* ================================================================
+   3) ESTILO: colores y letras
+   ================================================================ */
+const ESTILO = {
+  fondo: "#F7F6F0",      // color del papel
+  texto: "#2F3B32",      // color de las letras
+  principal: "#5E7A68",  // botones, hojas, detalles (verde salvia)
+  detalle: "#C98E86",    // sello, "&", años de la historia (rosa)
+  letraNombres: "Pinyon Script",       // letra de los nombres y títulos (de Google Fonts)
+  letraTextos: "Cormorant Garamond"    // letra de los textos
+};
+/* ================================================================ */
+
+const $ = s => document.querySelector(s);
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const PARAMS = new URLSearchParams(location.search);
+
+/* Estilo */
+(function(){
+  const r = document.documentElement.style;
+  r.setProperty("--paper", ESTILO.fondo); r.setProperty("--ink", ESTILO.texto);
+  r.setProperty("--leaf", ESTILO.principal); r.setProperty("--blush", ESTILO.detalle);
+  const traer = [];
+  if(ESTILO.letraNombres && ESTILO.letraNombres !== "Pinyon Script"){ r.setProperty("--f-script", `"${ESTILO.letraNombres}", cursive`); traer.push(ESTILO.letraNombres); }
+  if(ESTILO.letraTextos && ESTILO.letraTextos !== "Cormorant Garamond"){ r.setProperty("--f-serif", `"${ESTILO.letraTextos}", Georgia, serif`); traer.push(ESTILO.letraTextos + ":ital,wght@0,400;0,600;1,400"); }
+  if(traer.length){
+    const l = document.createElement("link"); l.rel = "stylesheet";
+    l.href = "https://fonts.googleapis.com/css2?" + traer.map(f => "family=" + f.replace(/ /g, "+")).join("&") + "&display=swap";
+    document.head.appendChild(l);
+  }
+})();
+
+/* Después del casamiento: al mediodía del día siguiente (o con ?gracias en el link para verlo antes) */
+const DESPUES = SECCIONES.agradecimiento && (PARAMS.has("gracias") || Date.now() > new Date(INV.fechaFin).getTime() + 7 * 36e5);
+
+/* Prender / apagar secciones y alternar los fondos */
+function aplicarSecciones(){
+  document.querySelectorAll("[data-sec]").forEach(el => {
+    const k = el.dataset.sec;
+    if(k in SECCIONES) el.hidden = !SECCIONES[k];
+  });
+  if(!SECCIONES.transferencia || !SECCIONES.listaRegalos) $("#separadorLista").hidden = true;
+  if(!SECCIONES.transferencia && !SECCIONES.listaRegalos) $('[data-sec="regalos"]').hidden = true;
+  $("#agradecimiento").hidden = !DESPUES;
+  if(DESPUES){
+    document.querySelectorAll("section.antes").forEach(s => s.hidden = true);
+    $("#invita").textContent = "Gracias por ser parte del día más lindo de nuestras vidas.";
+    $("#pieLab").textContent = "Gracias";
+  }
+  let n = 0;
+  document.querySelectorAll("main > section").forEach(s => {
+    s.classList.remove("alt");
+    if(s.hidden || s.classList.contains("portada")) return;
+    if(n++ % 2 === 0) s.classList.add("alt");
+  });
+}
+aplicarSecciones();
+
+/* Galería */
+(function(){
+  const g = $("#galeria"), fotos = INV.fotos.filter(Boolean);
+  const icono = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-8 7"/></svg>';
+  if(!fotos.length){
+    g.innerHTML = Array.from({length: 5}, (_, i) => `<div class="foto vacia">${icono}Foto ${i + 1}</div>`).join("");
+  } else {
+    fotos.forEach((src, i) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "foto"; b.setAttribute("aria-label", "Ver foto " + (i + 1));
+      const im = document.createElement("img"); im.src = src; im.alt = ""; im.loading = "lazy"; b.appendChild(im);
+      b.addEventListener("click", () => {
+        const v = document.createElement("div"); v.id = "visor"; v.innerHTML = `<img alt="">`; v.firstChild.src = src;
+        v.addEventListener("click", () => v.remove()); document.body.appendChild(v);
+      });
+      g.appendChild(b);
+    });
+  }
+  const fg = INV.fotoGracias || fotos[0];
+  if(fg){ const im = document.createElement("img"); im.src = fg; im.alt = ""; $("#fotoGracias").appendChild(im); }
+})();
+
+/* Video de YouTube: primero se ve la imagen, el video carga al tocar */
+(function(){
+  const box = $("#video");
+  const m = (INV.video || "").match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
+  if(!m){
+    box.classList.add("vacio");
+    box.innerHTML = '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>Acá va su video';
+    return;
+  }
+  const id = m[1];
+  box.innerHTML = `<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt=""><button type="button" aria-label="Reproducir video"><span class="play"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></span></button>`;
+  box.querySelector("button").addEventListener("click", () => {
+    if(sonando) pararMusica();
+    box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="Video de los novios" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
+  });
+})();
+
+/* Lista de regalos */
+if(INV.listaRegalos) $("#linkLista").href = INV.listaRegalos;
+else $("#linkLista").addEventListener("click", e => { e.preventDefault(); $("#linkLista").textContent = "Acá va el link de la lista"; });
+
+/* ===== PIEZA DE CONEXIÓN (igual que en los otros modelos) ===== */
+const Conexion = {
+  activa: () => !!INV.planilla,
+  async invitado(codigo){
+    let r;
+    try{ r = await fetch(INV.planilla + "?accion=invitado&codigo=" + encodeURIComponent(codigo)); }
+    catch(e){ throw new Error("No pudimos cargar tu invitación. Revisá tu conexión y volvé a abrir el link."); }
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || "No encontramos tu invitación.");
+    return j.invitado;
+  },
+  async confirmar(datos){
+    let r;
+    try{ r = await fetch(INV.planilla, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ accion:"confirmar" }, datos)) }); }
+    catch(e){ throw new Error("No se pudo enviar. Revisá tu conexión e intentá de nuevo."); }
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || "No se pudo guardar tu respuesta.");
+    return j.invitado;
+  },
+  async subirFoto(datos){
+    let r;
+    try{ r = await fetch(INV.planilla, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ accion:"subirFoto" }, datos)) }); }
+    catch(e){ throw new Error("No se pudo subir. Revisá tu conexión e intentá de nuevo."); }
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error || "No se pudo subir la foto.");
+    return j.foto;
+  }
+};
+
+/* El código del invitado viene en el link: sofia-santi.html?i=K7PQ2M */
+const CODIGO = (PARAMS.get("i") || location.hash.slice(1) || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+let respuestaPrevia = null;
+const MODO = INV.planilla ? "planilla" : (INV.whatsapp ? "whatsapp" : "muestra");
+
+function aplicarInvitado(){
+  const generico = !INV.invitado;
+  $("#sobreNombre").textContent = DESPUES ? "Gracias por acompañarnos" : (generico ? "Para vos" : "Para " + INV.invitado);
+  $("#saludo").textContent = generico ? "Querido invitado" : "Querida " + INV.invitado;
+  $("#lugares").textContent = generico ? "Para confirmar, usá el link personal que te enviaron."
+    : `Reservamos ${INV.lugares} ${INV.lugares === 1 ? "lugar" : "lugares"} para ${INV.invitado}.`;
+  $("#cant").innerHTML = Array.from({length: INV.lugares}, (_, i) => `<option value="${i+1}">${i+1} ${i ? "personas" : "persona"}</option>`).join("");
+  $("#cant").value = String(INV.lugares);
+  const soloFiesta = INV.tipo === "solo_fiesta";
+  document.querySelectorAll('[data-parte="cena"]').forEach(li => li.hidden = soloFiesta);
+  if(soloFiesta) $("#diaLab").textContent = "Te esperamos desde las " + INV.horaFiesta;
+  if(generico) $("#rsvp").hidden = true;
+  if(respuestaPrevia && respuestaPrevia.estado !== "pendiente"){
+    const r = respuestaPrevia;
+    (r.estado === "confirmado" ? $("#asisteSi") : $("#asisteNo")).checked = true;
+    if(r.cantidad) $("#cant").value = String(Math.min(r.cantidad, INV.lugares));
+    if(r.menu) $("#menu").value = r.menu;
+    if(r.traslado) (r.traslado === "si" ? $("#trasSi") : $("#trasNo")).checked = true;
+    $("#lugares").textContent = r.estado === "confirmado"
+      ? `Ya confirmaste ${r.cantidad} ${r.cantidad === 1 ? "lugar" : "lugares"}. Si algo cambió, podés modificar tu respuesta.`
+      : "Nos avisaste que no podés venir. Si algo cambió, podés modificar tu respuesta.";
+    mostrarCampos();
+  }
+}
+
+async function iniciarInvitado(){
+  if(MODO === "whatsapp"){
+    $("#ribbon").hidden = true;
+    INV.invitado = ""; INV.lugares = INV.maxLugares || 6;
+    aplicarInvitado();
+    $("#rsvp").hidden = false; $("#campoNombre").hidden = false; $("#finePersonal").hidden = true;
+    $("#cant").value = "1";
+    $("#lugares").textContent = "Completá tus datos y tu respuesta nos llega por WhatsApp.";
+    return;
+  }
+  if(!Conexion.activa()){ aplicarInvitado(); return; }
+  $("#ribbon").hidden = true;
+  if(!CODIGO){ INV.invitado = ""; INV.lugares = 1; aplicarInvitado(); return; }
+  INV.invitado = ""; aplicarInvitado();
+  try{
+    const g = await Conexion.invitado(CODIGO);
+    INV.invitado = g.nombre; INV.lugares = Number(g.lugares) || 1; INV.tipo = g.tipo;
+    respuestaPrevia = g;
+    $("#rsvp").hidden = false;
+    aplicarInvitado();
+  }catch(e){
+    $("#sobreNombre").textContent = "Invitación no encontrada";
+    $("#lugares").textContent = e.message;
+  }
+}
+
+/* Agendar en Google Calendar */
+(function(){
+  const f = d => new Date(d).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  $("#agendar").href = "https://calendar.google.com/calendar/render?action=TEMPLATE"
+    + "&text=" + encodeURIComponent(INV.titulo)
+    + "&dates=" + f(INV.fechaEvento) + "/" + f(INV.fechaFin)
+    + "&location=" + encodeURIComponent(INV.lugarAgenda);
+})();
+
+/* Cuenta regresiva */
+const meta = new Date(INV.fechaEvento).getTime();
+function tick(){
+  let ms = Math.max(0, meta - Date.now());
+  const d = Math.floor(ms / 864e5); ms -= d * 864e5;
+  const h = Math.floor(ms / 36e5); ms -= h * 36e5;
+  const m = Math.floor(ms / 6e4); ms -= m * 6e4;
+  const s = Math.floor(ms / 1e3);
+  $("#cdD").textContent = d; $("#cdH").textContent = String(h).padStart(2, "0");
+  $("#cdM").textContent = String(m).padStart(2, "0"); $("#cdS").textContent = String(s).padStart(2, "0");
+}
+tick(); setInterval(tick, 1000);
+
+/* Hojas en acuarela (toman los colores de ESTILO) */
+function rgb(hex){ const h = hex.replace("#", ""); const n = parseInt(h.length === 3 ? h.replace(/./g, "$&$&") : h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function mezcla(a, b, t){ return a.map((v, i) => Math.round(v + (b[i] - v) * t)); }
+function hojas(){
+  const c = $("#hojas"), r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  c.width = r.width * dpr; c.height = r.height * dpr;
+  const x = c.getContext("2d"); x.scale(dpr, dpr);
+  let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const p = rgb(ESTILO.principal), d = rgb(ESTILO.detalle), w = [255, 255, 255];
+  const colores = [p, mezcla(p, w, .35), mezcla(p, w, .55), d].map(c => `rgba(${c.join(",")},`);
+  const rama = (ox, oy, ang, largo, n) => {
+    for(let i = 0; i < n; i++){
+      const t = i / n, px = ox + Math.cos(ang) * largo * t, py = oy + Math.sin(ang) * largo * t;
+      for(const lado of [-1, 1]){
+        const a = ang + lado * (0.9 + rnd() * 0.3);
+        const tam = 14 + rnd() * 16 * (1 - t * 0.5);
+        const col = colores[i % 7 === 3 ? 3 : Math.floor(rnd() * 3)];
+        x.save(); x.translate(px, py); x.rotate(a);
+        x.fillStyle = col + (0.18 + rnd() * 0.22) + ")";
+        x.beginPath(); x.ellipse(tam * 0.6, 0, tam * 0.65, tam * 0.28, 0, 0, Math.PI * 2); x.fill();
+        x.restore();
+      }
+    }
+    x.strokeStyle = colores[0] + ".25)"; x.lineWidth = 1.2;
+    x.beginPath(); x.moveTo(ox, oy); x.lineTo(ox + Math.cos(ang) * largo, oy + Math.sin(ang) * largo); x.stroke();
+  };
+  const W = r.width, H = r.height;
+  rama(-10, H * 0.15, 0.35, Math.min(260, W * 0.5), 9);
+  rama(W + 10, H * 0.08, Math.PI - 0.5, Math.min(240, W * 0.45), 8);
+  rama(-10, H * 0.95, -0.45, Math.min(220, W * 0.4), 7);
+  rama(W + 10, H * 0.92, Math.PI + 0.4, Math.min(230, W * 0.42), 8);
+}
+hojas(); window.addEventListener("resize", hojas);
+
+/* Música: canción elegida (mp3) o melodía suave de muestra */
+let audio = null, sonando = false, timer = null;
+const cancionFondo = $("#cancionFondo");
+if(INV.musica) cancionFondo.src = INV.musica;
+function iniciarMusica(){
+  if(INV.musica){
+    cancionFondo.volume = 0.6;
+    cancionFondo.play().then(() => { sonando = true; pintarBoton(); }, () => { sonando = false; pintarBoton(); });
+    return;
+  }
+  try{
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    if(audio.state === "suspended") audio.resume();
+    const notas = [523.25, 659.25, 783.99, 659.25, 587.33, 698.46, 880, 698.46, 523.25, 659.25, 783.99, 1046.5, 987.77, 783.99, 659.25, 587.33];
+    let i = 0;
+    const tocar = () => {
+      if(!sonando) return;
+      const t = audio.currentTime, o = audio.createOscillator(), g = audio.createGain();
+      o.type = "sine"; o.frequency.value = notas[i % notas.length];
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.06, t + 0.04); g.gain.exponentialRampToValueAtTime(0.0008, t + 1.6);
+      o.connect(g).connect(audio.destination); o.start(t); o.stop(t + 1.7); i++;
+    };
+    sonando = true; tocar(); timer = setInterval(tocar, 450);
+  }catch(e){ sonando = false; }
+  pintarBoton();
+}
+function pararMusica(){ sonando = false; clearInterval(timer); cancionFondo.pause(); pintarBoton(); }
+function pintarBoton(){
+  $("#musica").setAttribute("aria-label", sonando ? "Silenciar música" : "Activar música");
+  $("#musIcon").innerHTML = sonando
+    ? '<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>'
+    : '<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/><path d="M3 3l18 18"/>';
+}
+$("#musica").addEventListener("click", () => sonando ? pararMusica() : iniciarMusica());
+
+/* Abrir el sobre */
+function abrir(){
+  const s = $("#sobre"); if(s.classList.contains("abriendo")) return;
+  s.classList.add("abriendo");
+  $("#musica").hidden = false;
+  iniciarMusica();
+  setTimeout(() => s.classList.add("abierto"), reduce ? 0 : 750);
+}
+$("#sobre").addEventListener("click", abrir);
+$("#sobre").addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); abrir(); } });
+
+/* Copiar alias, CBU y hashtag */
+document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => {
+  const el = $("#" + b.dataset.copy), txt = el.textContent;
+  const avisar = t => { const v = b.textContent; b.textContent = t; setTimeout(() => b.textContent = v, 1600); };
+  const ok = () => { avisar("¡Listo!"); if(b.dataset.copy !== "hashtagTxt"){ $("#copyMsg").style.color = "var(--leaf)"; $("#copyMsg").textContent = "Copiado: " + txt; } };
+  const manual = () => { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); avisar("Copialo"); };
+  try{ navigator.clipboard.writeText(txt).then(ok, manual); }catch(e){ manual(); }
+}));
+
+/* Confirmación */
+function mostrarCampos(){
+  const no = $("#asisteNo").checked;
+  document.querySelectorAll("#rsvp .si-va").forEach(el => {
+    const k = el.dataset.sec;
+    el.hidden = no || (k && SECCIONES[k] === false);
+  });
+}
+document.querySelectorAll('input[name="asiste"]').forEach(r => r.addEventListener("change", mostrarCampos));
+$("#rsvp").addEventListener("submit", async e => {
+  e.preventDefault();
+  const asiste = (document.querySelector('input[name="asiste"]:checked') || {}).value;
+  if(!asiste){ $("#rsvpErr").textContent = "Elegí si vienen o no para poder enviar."; return; }
+  $("#rsvpErr").textContent = "";
+  const cant = $("#cant").value;
+  const cancion = SECCIONES.cancion && asiste === "si" ? $("#cancion").value.trim() : "";
+  /* La canción viaja dentro del mensaje: así aparece en la planilla y en el panel sin cambiar nada más */
+  const mensaje = [cancion ? "🎵 Canción: " + cancion : "", $("#mensaje").value.trim()].filter(Boolean).join("\n");
+  const boton = $("#rsvp").querySelector('button[type="submit"]');
+  if(MODO === "whatsapp"){
+    const quien = $("#nombreInv").value.trim();
+    if(!quien){ $("#rsvpErr").textContent = "Escribí tu nombre para saber quién confirma."; $("#nombreInv").focus(); return; }
+    const lineas = asiste === "si"
+      ? [`¡Hola! Confirmo asistencia a ${INV.titulo}.`, `Nombre: ${quien}`, `Vamos: ${cant === "1" ? "1 persona" : cant + " personas"}`,
+         SECCIONES.menu && $("#menu").value !== "Ninguno" ? `Menú especial: ${$("#menu").value}` : "",
+         SECCIONES.traslado && $("#trasSi").checked ? "Usamos el traslado: sí" : ""]
+      : [`¡Hola! Lamentablemente no vamos a poder ir a ${INV.titulo}.`, `Nombre: ${quien}`];
+    if(mensaje) lineas.push(mensaje);
+    const url = `https://wa.me/${INV.whatsapp}?text=${encodeURIComponent(lineas.filter(Boolean).join("\n"))}`;
+    window.open(url, "_blank", "noopener");
+    $("#rsvpCard").innerHTML = `<div class="gracias"><h3>${asiste === "si" ? "¡Nos vemos ahí!" : "Te vamos a extrañar"}</h3><p>Se abrió WhatsApp con tu respuesta. Tocá Enviar para que nos llegue.</p><a class="btn out" target="_blank" rel="noopener" href="${url}">Abrir WhatsApp</a></div>`;
+    return;
+  }
+  const real = Conexion.activa();
+  if(real){
+    boton.disabled = true; boton.textContent = "Enviando…";
+    try{
+      await Conexion.confirmar({ codigo: CODIGO, asiste, cantidad: cant,
+        menu: SECCIONES.menu ? $("#menu").value : "",
+        traslado: SECCIONES.traslado ? (document.querySelector('input[name="traslado"]:checked') || {}).value : "no",
+        mensaje });
+    }catch(err){
+      $("#rsvpErr").textContent = err.message; boton.disabled = false; boton.textContent = "Enviar confirmación"; return;
+    }
+  }
+  const nota = real ? "" : `<p class="fine">En la invitación real, esta respuesta les llega al instante a Sofía y Santi en su panel.</p>`;
+  const nombre = document.createElement("span"); nombre.textContent = INV.invitado;
+  $("#rsvpCard").innerHTML = asiste === "si"
+    ? `<div class="gracias"><h3>¡Nos vemos ahí!</h3><p>Confirmaste ${cant} ${cant === "1" ? "lugar" : "lugares"} para ${nombre.innerHTML}. Si algo cambia, podés volver a esta invitación y modificar tu respuesta.</p>${nota}</div>`
+    : `<div class="gracias"><h3>Te vamos a extrañar</h3><p>Gracias por avisarnos con tiempo.</p>${nota}</div>`;
+});
+
+/* ===== Álbum de fotos: los invitados suben sus fotos a la carpeta del evento ===== */
+(function(){
+  const sec = $("#album"); if(!sec || !SECCIONES.album) return;
+  const btn = $("#albumBtn"), input = $("#albumArchivos"), msg = $("#albumMsg"), barra = $("#albumBarra"), prog = $("#albumProg");
+  const real = !!INV.planilla;
+  if(!real && INV.album){
+    $("#albumAutorCampo").hidden = true; btn.textContent = "Abrir el álbum";
+    btn.addEventListener("click", () => window.open(INV.album, "_blank", "noopener")); return;
+  }
+  btn.addEventListener("click", () => input.click());
+  async function achicar(archivo){
+    const url = URL.createObjectURL(archivo);
+    try{
+      const img = await new Promise((ok, mal) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => mal(new Error("No se pudo leer la foto.")); im.src = url; });
+      const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      return c.toDataURL("image/jpeg", 0.82).split(",")[1];
+    } finally { URL.revokeObjectURL(url); }
+  }
+  input.addEventListener("change", async () => {
+    const archivos = [...input.files].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|heif|webp)$/i.test(f.name)); input.value = "";
+    if(!archivos.length) return;
+    if(!real){ msg.textContent = `Elegiste ${archivos.length === 1 ? "1 foto" : archivos.length + " fotos"}. En la invitación real se suben al álbum del evento y se ven en el panel.`; return; }
+    btn.disabled = true; barra.hidden = false; let subidas = 0, fallas = 0, aviso = "";
+    for(let i = 0; i < archivos.length; i++){
+      msg.textContent = `Subiendo ${i + 1} de ${archivos.length}…`; prog.style.width = (i / archivos.length * 100) + "%";
+      try{
+        const datos = await achicar(archivos[i]);
+        await Conexion.subirFoto({ tipo:"image/jpeg", datos, autor: $("#albumAutor").value.trim() || INV.invitado || "" });
+        subidas++;
+      }catch(e){ fallas++; if(/cerrado|lleno/.test(e.message)){ aviso = e.message; break; } }
+    }
+    prog.style.width = "100%"; btn.disabled = false; setTimeout(() => barra.hidden = true, 1500);
+    msg.textContent = aviso || (subidas
+      ? `¡Gracias! ${subidas === 1 ? "Se subió 1 foto" : "Se subieron " + subidas + " fotos"} al álbum.` + (fallas ? ` ${fallas === 1 ? "Una no se pudo subir" : fallas + " no se pudieron subir"}: probá de nuevo con esas.` : "")
+      : "No se pudo subir. Revisá tu conexión e intentá de nuevo.");
+  });
+  /* El QR de las mesas abre la invitación con ?album: saltea el sobre y va directo a esta sección */
+  if(PARAMS.has("album")){
+    const s = $("#sobre"); s.classList.add("abriendo", "abierto"); $("#musica").hidden = false;
+    setTimeout(() => sec.scrollIntoView({ block:"start" }), 150);
+  }
+})();
+
+iniciarInvitado();
+</script>
+</body>
+</html>
